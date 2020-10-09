@@ -1,15 +1,39 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    redirect: '/dashboard'
   },
+  {
+    path: '/',
+    component: () => import(/* webpackChunkName: "home" */ '../components/common/Home.vue'),
+    meta: { title: '自述文件' },
+    children: [
+      {
+        path: '/dashboard',
+        component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue'),
+        meta: { title: '系统首页' }
+      }
+    ]
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/Login.vue'),
+    meta:{title:'登录'}
+  },
+  {
+    path: '/forgetPassword',
+    name: 'ForgetPassword',
+    component: () => import('../views/ForgetPassword.vue')
+   
+  },
+
   {
     path: '/about',
     name: 'About',
