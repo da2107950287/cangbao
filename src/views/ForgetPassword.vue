@@ -1,32 +1,27 @@
 <template>
   <div class="login-wrap">
     <div class="ms-login">
-      <div class="ms-title">重置密码</div>
+      <div class="ms-title">忘记密码</div>
       <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
-        <el-form-item prop="username">
-          <el-input v-model="param.username" placeholder="请输入手机号">
-            <!-- <el-button slot="prepend" icon="el-icon-user"></el-button> -->
+        <el-form-item prop="mobile">
+          <el-input v-model="param.mobile" placeholder="请输入手机号">
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="verify">
+          <el-input placeholder="请输入验证码" v-model="param.verify">
+            <el-button slot="append" @click="codeClick">{{codeMsg}}</el-button>
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input type="password" placeholder="请输入验证码" v-model="param.password" @keyup.enter.native="submitForm()">
-            <el-button slot="append">获取验证码</el-button>
-          </el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input type="password" placeholder="请输入图形验证码" v-model="param.password" @keyup.enter.native="submitForm()">
-            <div style="margin-right:-5px" slot="suffix" @click="refreshCode">
+          <el-input type="password" placeholder="请输入密码" v-model="param.password" @keyup.enter.native="submitForm()">
+            <!-- <div style="margin-right:-5px" slot="suffix" @click="refreshCode">
               <s-identify :identifyCode="identifyCode"></s-identify>
-            </div>
+            </div> -->
           </el-input>
         </el-form-item>
         <div class="login-btn">
-          <el-button type="primary"login @click="submitForm()">下一步</el-button>
+          <el-button type="primary" login @click="submitForm()">下一步</el-button>
         </div>
-        <el-form-item style="text-align: center;" class="login-tips">
-          <router-link to="login">已注册，去登录</router-link>
-        
-        </el-form-item>
       </el-form>
 
     </div>
@@ -39,15 +34,19 @@
     data: function () {
       return {
         param: {
-          username: '',
+          mobile: '',
+          verify:'',
           password: '',
-          checked: false,
         },
+        codeMsg: '获取验证码',
+        totalTime:60,//倒计时60s
+        canClick:false,//短信验证码开关
         identifyCodes: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         identifyCode: "",
         rules: {
-          username: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
-          password: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+          mobile: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
+          verify: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+          password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         },
       };
     },
@@ -74,14 +73,58 @@
           ];
         }
       },
+      //点击验证码
+      codeClick() {
+        if(this.param.mobile){
+          this.canClick=true;
+        }else{
+          this.canClick=false;
+        }
+        if (!this.canClick) return;
+        this.canClick = true;
+        this.codeMsg = this.totalTime + "s";
+        //60秒倒计时
+        let clock = window.setInterval(() => {
+          this.totalTime--;
+          this.codeMsg = this.totalTime + "s";
+          if (this.totalTime < 0) {
+            window.clearInterval(clock);
+            this.codeMsg = "重新发送验证码";
+            this.totalTime = 60;
+            this.canClick = true; //这里重新开启
+          }
+        }, 1000);
+        this.$post("/userinfo/send_sms", { account: this.param.mobile }).then(
+          (res) => {
+            switch (res.code) {
+              case "200":
+                this.$message.success(res.msg);
+                break;
+              case "500":
+                this.$message.error(res.msg);
+                break;
+              default:
+                console.log(res.msg);
+                this.$toast("网络故障，发送短信失败");
+                break;
+            }
+          }
+        );
+      },
+
       submitForm() {
+
         this.$refs.login.validate(valid => {
           if (valid) {
-            this.$message.success('登录成功');
-            localStorage.setItem('ms_username', this.param.username);
+            this.$post("/userinfo/forgetVerify",this.param).then(res=>{
+              if(res.code==200){
             this.$router.push('/');
+                
+              }
+            })
+
           } else {
-            this.$message.error('请输入账号和密码');
+            this.$message.error('请输入账号、验证码和密码');
             console.log('error submit!!');
             return false;
           }

@@ -7,6 +7,7 @@ import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
 import './assets/css/icon.css';
 import {post,get} from "./utils/request.js"
 Vue.prototype.$post=post
+Vue.prototype.uploadUrl="http://47.111.244.224:81/treasurebsg/upload/pictureOrVideo"
 Vue.config.productionTip = false
 Vue.use(ElementUI);
 //使用钩子函数对路由进行权限跳转

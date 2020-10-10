@@ -18,7 +18,17 @@ const routes = [
         path: '/dashboard',
         component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue'),
         meta: { title: '系统首页' }
-      }
+      },
+      {
+        path: '/role',
+        component: () => import(/* webpackChunkName: "dashboard" */ 'views/system-settings/Role.vue'),
+        meta: { title: '角色管理' }
+      },
+      {
+        path: '/manager',
+        component: () => import(/* webpackChunkName: "dashboard" */ 'views/system-settings/Manager.vue'),
+        meta: { title: '管理员管理' }
+      },
     ]
   },
   {
