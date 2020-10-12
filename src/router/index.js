@@ -19,6 +19,19 @@ const routes = [
         component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue'),
         meta: { title: '系统首页' }
       },
+      // banner列表
+      {
+        path: '/banners',
+        component: () => import(/* webpackChunkName: "banners" */ 'views/Banners.vue'),
+        meta: { title: 'banner管理' }
+      },
+      //系统消息
+      {
+        path: '/systemMsg',
+        component: () => import(/* webpackChunkName: "banners" */ 'views/SystemMsg.vue'),
+        meta: { title: '系统消息' }
+      },
+      //系统设置
       {
         path: '/role',
         component: () => import(/* webpackChunkName: "dashboard" */ 'views/system-settings/Role.vue'),
@@ -29,6 +42,29 @@ const routes = [
         component: () => import(/* webpackChunkName: "dashboard" */ 'views/system-settings/Manager.vue'),
         meta: { title: '管理员管理' }
       },
+      
+      {
+        path: '/dictionary',
+        component: () => import(/* webpackChunkName: "dashboard" */ 'views/system-settings/Dictionary.vue'),
+        meta: { title: '数据字典' }
+      },
+      {
+        path: '/document',
+        component: () => import(/* webpackChunkName: "dashboard" */ 'views/system-settings/Document.vue'),
+        meta: { title: '文档管理' }
+      },
+
+      // 个人中心
+      {
+        path: '/personalInfo',
+        component: () => import(/* webpackChunkName: "profile" */ 'views/profile/personalInfo.vue'),
+        meta: { title: '个人信息' }
+      },
+      {
+        path: '/updatePassword',
+        component: () => import(/* webpackChunkName: "profile" */ 'views/profile/updatePassword.vue'),
+        meta: { title: '修改密码' }
+      }
     ]
   },
   {

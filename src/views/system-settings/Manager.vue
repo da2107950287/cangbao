@@ -54,7 +54,7 @@
       <el-form ref="form" :model="form" label-width="100px">
         <el-form-item label="角色：">
           <el-select v-model="form.rId" placeholder="请选择角色" class="handle-select mr10">
-            <el-option v-for="(item,index) in rolesList" :key="index" :label="item.RName" :value="item.RId"></el-option>
+            <el-option v-for="(item,index) in rolesList" :key="index" :label="item.rName" :value="item.rId"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="账号：">
@@ -322,7 +322,5 @@
       height: 100px;
       border-radius: 50%
     }
-
-
   }
 </style>

@@ -45,7 +45,37 @@
                     },
                     {
                         icon: 'el-icon-menu',
+                        index: '1',
+                        title: '藏友圈列表'
+                    },
+                    {
+                        icon: 'el-icon-menu',
                         index: '2',
+                        title: '动态列表'
+                    },
+                    {
+                        icon: 'el-icon-menu',
+                        index: '3',
+                        title: '用户管理'
+                    },
+                    {
+                        icon: 'el-icon-menu',
+                        index: 'systemMsg',
+                        title: '系统消息'
+                    },
+                    {
+                        icon: 'el-icon-menu',
+                        index: '5',
+                        title: '新闻信息'
+                    },
+                    {
+                        icon: 'el-icon-menu',
+                        index: 'banners',
+                        title: 'banner管理'
+                    },
+                    {
+                        icon: 'el-icon-menu',
+                        index: '7',
                         title: '系统设置',
                         subs: [
                             {
@@ -56,8 +86,35 @@
                                 index: 'manager',
                                 title: '管理员管理'
                             },
+                            {
+                                index: 'dictionary',
+                                title: '数据字典'
+                            },
+                            {
+                                index: 'document',
+                                title: '文档管理'
+                            },
+                            {
+                                index: 'systemUpdate',
+                                title: '系统更新'
+                            },
                         ]
                     },
+                    {
+                        icon: 'el-icon-user-solid',
+                        index: '8',
+                        title: '个人中心',
+                        subs: [
+                            {
+                                index: 'personalInfo',
+                                title: '个人信息'
+                            },
+                            {
+                                index: 'updatePassword',
+                                title: '修改密码'
+                            },
+                        ]  
+                    }
                     // {
                     //     icon: 'el-icon-lx-copy',
                     //     index: 'tabs',

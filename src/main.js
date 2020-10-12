@@ -6,6 +6,12 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
 import './assets/css/icon.css';
 import {post,get} from "./utils/request.js"
+
+import '../public/ueditor/ueditor.config.js'
+import '../public/ueditor/ueditor.all.js'
+import '../public/ueditor/lang/zh-cn/zh-cn.js'
+import '../public/ueditor/jquery-2.2.3.min.js'
+
 Vue.prototype.$post=post
 Vue.prototype.uploadUrl="http://47.111.244.224:81/treasurebsg/upload/pictureOrVideo"
 Vue.config.productionTip = false

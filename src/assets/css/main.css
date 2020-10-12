@@ -10,6 +10,7 @@ body,
   width: 100%;
   height: 100%;
   overflow: hidden;
+
 }
 
 body {
@@ -39,6 +40,7 @@ a {
   padding: 10px;
   overflow-y: scroll;
   box-sizing: border-box;
+  background-color: #fff;
 }
 
 .content-collapse {
@@ -48,7 +50,7 @@ a {
 .container {
   padding: 30px;
   background: #fff;
-  border: 1px solid #ddd;
+  /* border: 1px solid #ddd; */
   border-radius: 5px;
 }
 
@@ -62,7 +64,7 @@ a {
 
 .pagination {
   margin: 20px 0;
-  text-align: right;
+  text-align: center;
 }
 
 .plugins-tips {

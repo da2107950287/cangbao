@@ -13,7 +13,7 @@ export function post(url, params) {
 		});
 		// 配置请求和响应拦截
 		instance.interceptors.request.use(config => {
-			if (JSON.parse(localStorage.getItem("userinfo")).mtoken) {
+			if (localStorage.getItem("userinfo")) {
 				config.headers.mtoken = JSON.parse(localStorage.getItem("userinfo")).mtoken;
 			}
 			return config

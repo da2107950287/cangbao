@@ -38,6 +38,7 @@
         param: {
           account: '',
           password: '',
+          type: 1
         },
         checked: false,
         rules: {
@@ -48,19 +49,17 @@
     },
     methods: {
       submitForm() {
-    let that=this;
+        let that = this;
         this.$refs.login.validate(valid => {
           if (valid) {
-            console.log(111)
-            that.$post("/userinfo/login", this.param).then(res => {
+            this.$post("/userinfo/login", this.param).then(res => {
               if (res.code == 200) {
                 that.$message.success('登录成功');
                 localStorage.setItem('userinfo', JSON.stringify(res.data.data));
                 that.$router.push('/');
               }
             })
-
-          } else {
+           } else {
             this.$message.error('请输入账号和密码');
             console.log('error submit!!');
             return false;

@@ -35,12 +35,12 @@
       return {
         param: {
           mobile: '',
-          verify:'',
+          verify: '',
           password: '',
         },
         codeMsg: '获取验证码',
-        totalTime:60,//倒计时60s
-        canClick:false,//短信验证码开关
+        totalTime: 60,//倒计时60s
+        canClick: false,//短信验证码开关
         identifyCodes: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         identifyCode: "",
         rules: {
@@ -75,10 +75,10 @@
       },
       //点击验证码
       codeClick() {
-        if(this.param.mobile){
-          this.canClick=true;
-        }else{
-          this.canClick=false;
+        if (this.param.mobile) {
+          this.canClick = true;
+        } else {
+          this.canClick = false;
         }
         if (!this.canClick) return;
         this.canClick = true;
@@ -113,16 +113,13 @@
       },
 
       submitForm() {
-
         this.$refs.login.validate(valid => {
           if (valid) {
-            this.$post("/userinfo/forgetVerify",this.param).then(res=>{
-              if(res.code==200){
-            this.$router.push('/');
-                
+            this.$post("/userinfo/forgetVerify", this.param).then(res => {
+              if (res.code == 200) {
+                this.$router.push('/login');
               }
             })
-
           } else {
             this.$message.error('请输入账号、验证码和密码');
             console.log('error submit!!');
