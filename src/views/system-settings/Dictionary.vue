@@ -1,9 +1,9 @@
 <template>
   <div class="container">
     <div class="handle-box">
-
+<span class="text">所属类型：</span>
       <el-select v-model="dicType" placeholder="请选择类型" class="handle-select mr10">
-        <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.dicName" :value="item.order">
+        <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.name" :value="item.id">
         </el-option>
       </el-select>
       <el-button type="primary" class="handle-del mr10" @click="getData">搜索
@@ -12,8 +12,10 @@
       </el-button>
     </div>
     <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-      <el-table-column prop="orders" label="序号" align="center"></el-table-column>
+      <el-table-column type="index" label="序号"  width="100" align="center"></el-table-column>
       <el-table-column prop="dicName" label="名称" align="center"></el-table-column>
+      <el-table-column prop="orders" label="排序" align="center"></el-table-column>
+
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="updateDictionary(scope.$index, scope.row)">编辑</el-button>
@@ -31,7 +33,7 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="类型：">
           <el-select v-model="form.dicType" placeholder="请选择类型" class="handle-select mr10">
-            <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.dicName" :value="item.order">
+            <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -53,12 +55,14 @@
   export default {
     data() {
       return {
-        dicType: 1,
+        dicType: "1",
         PageNumber: 1,
         PageSize: 10,
         pageTotal: 0,
         tableData: [],
-        form: {},
+        form: {
+         
+        },
         editVisible: false,
         isAdd:0,
         title: '',
@@ -68,9 +72,9 @@
           orders: [{ required: true, message: "请输入排序", trigger: "blur" }],
         },
         dictionaryList: [
-          { order: 1, dicName: '新闻' },
-          { order: 2, dicName: '藏友圈' },
-          { order: 3, dicName: '课程' }
+          { id: "1", name: '新闻' },
+          { id: "2", name: '藏友圈' },
+          { id: "3", name: '课程' }
         ],
       };
     },
@@ -160,6 +164,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .text{
+    color: #6a6a6a;
+   
+  }
   .handle-box {
     margin-bottom: 20px;
   }

@@ -65,8 +65,8 @@
                     },
                     {
                         icon: 'el-icon-menu',
-                        index: '5',
-                        title: '新闻信息'
+                        index: 'news',
+                        title: '新闻管理'
                     },
                     {
                         icon: 'el-icon-menu',

@@ -22,7 +22,8 @@
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header"
         @selection-change="handleSelectionChange">
-        <el-table-column prop="id" label="序号" width="80" align="center"></el-table-column>
+        <el-table-column type="index" label="序号"  width="100" align="center"></el-table-column>
+
         <el-table-column prop="account" label="账号" align="center"></el-table-column>
         <el-table-column prop="username" label="姓名" align="center"> </el-table-column>
         <el-table-column prop="mobile" label="手机号" align="center"> </el-table-column>

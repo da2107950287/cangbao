@@ -1,19 +1,17 @@
 <template>
   <div class="container">
     <div class="handle-box">
-
-      <el-select v-model="state" placeholder="请选择类型" class="handle-select mr10">
+     <span>新闻公司：</span> <el-input v-model="newsName" class="handle-search mr10"></el-input>
+      <span>新闻标题：</span><el-input v-model="newsTitle" class="handle-search mr10"></el-input>
+      <span>状态：</span><el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
         <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
         </el-option>
       </el-select>
-      <el-button type="primary" class="handle-del mr10" @click="getData">搜索
-      </el-button>
-      <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addMsg">新建
-      </el-button>
+      <el-button type="primary" class="handle-del mr10" @click="getData">搜索</el-button>
+      <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addDictionarys">新建</el-button>
     </div>
     <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-      <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-
+      <el-table-column type="index" label="序号"  width="100" align="center"></el-table-column>
       <el-table-column prop="msgTitle" label="标题" align="center"></el-table-column>
       <el-table-column prop="describes" label="描述" align="center"></el-table-column>
       <el-table-column prop="msgTime" label="发布时间" align="center"></el-table-column>
@@ -39,18 +37,16 @@
         :total="pageTotal" @current-change="handlePageChange"></el-pagination>
     </div>
     <!-- 编辑弹出框 -->
-    <el-dialog :title="title" center :visible.sync="editVisible" width="800">
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-
-        <el-form-item label="标题：">
-          <el-input v-model="form.msgTitle" class="handle-input"></el-input>
-        </el-form-item>
-        <el-form-item label="描述：">
-          <el-input v-model="form.describes" class="handle-input"></el-input>
-        </el-form-item>
-        <el-form-item label="内容：">
-          <editor-bar :value="form.content" v-model="form.content"></editor-bar>
-        </el-form-item>
+    <el-dialog :title="title" center :visible.sync="editVisible" width="30%">
+      <el-form-item label="标题：">
+        <el-input v-model="form.msgTitle" class="handle-input"></el-input>
+      </el-form-item>
+      <el-form-item label="描述：">
+        <el-input v-model="form.describes" class="handle-input"></el-input>
+      </el-form-item>
+      <el-form-item label="内容：">
+        <el-input v-model="form.content" class="handle-input"></el-input>
+      </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editVisible = false">取 消</el-button>
@@ -60,8 +56,6 @@
   </div>
 </template>
 <script>
-  import EditorBar from "@/components/wangeditor/WangEditor.vue";
-
   export default {
     data() {
       return {
@@ -75,9 +69,9 @@
         isAdd: 0,
         title: '',
         rules: {
-          title: [{ required: true, message: "请选择标题", trigger: "blur" }],
-          describes: [{ required: true, message: "请输入描述", trigger: "blur" }],
-          content: [{ required: true, message: "请输入内容", trigger: "blur" }],
+          dicType: [{ required: true, message: "请选择类型", trigger: "blur" }],
+          dicName: [{ required: true, message: "请输入名称", trigger: "blur" }],
+          orders: [{ required: true, message: "请输入排序", trigger: "blur" }],
         },
         statesList: [
           { id: "all", name: "全部" },
@@ -110,12 +104,11 @@
           }
         })
       },
-      addMsg() {
+      addDictionarys() {
         this.editVisible = true;
         this.isAdd = 1;
-        this.title = "添加系统消息";
+        this.title = "添加数据字典";
       },
-      //修改状态
       updateMessageState(row) {
         let state;
         if (row.state == 1) {
@@ -126,8 +119,8 @@
         this.$post("/other/updateMessageState", {
           msgId: row.msgId,
           state
-        }).then(res => {
-          if (res.code == 200) {
+        }).then(res=>{
+          if(res.code==200){
             this.$message.success(res.msg);
             this.getData()
           }
@@ -139,14 +132,14 @@
         this.$refs.form.validate(valid => {
           if (valid) {
             if (this.isAdd == 1) {
-              this.$post("/other/insertMessage", this.form).then(res => {
+              this.$post("/other/insertDictionary", this.form).then(res => {
                 if (res.code == 200) {
                   this.getData()
                   this.$message.success(res.msg)
                 }
               })
             } else {
-              this.$post("/other/updateMessage", this.form).then(res => {
+              this.$post("/other/updateDictionary", this.form).then(res => {
                 if (res.code == 200) {
                   this.getData()
                   this.$message.success(res.msg)
@@ -185,9 +178,6 @@
         this.PageNumber = val;
         this.getData();
       }
-    },
-    components: {
-      EditorBar
     }
   };
 </script>
@@ -196,13 +186,15 @@
   .handle-box {
     margin-bottom: 20px;
   }
-
+.handle-search{
+  width: 200px;
+}
   .handle-select {
     width: 300px;
   }
 
   .handle-input {
-    width: 400px;
+    width: 300px;
     display: inline-block;
   }
 

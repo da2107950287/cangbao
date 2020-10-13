@@ -1,9 +1,14 @@
 <template>
   <div class="container">
     <div class="handle-box">
-
-      <el-select v-model="dicType" placeholder="请选择类型" class="handle-select mr10">
-        <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.dicName" :value="item.order">
+      <span>位置：</span>
+      <el-select v-model="position" placeholder="请选择位置" class="handle-select mr10">
+        <el-option v-for="(item,index) in positionList" :key="index" :label="item.name" :value="item.id">
+        </el-option>
+      </el-select>
+      <span>状态：</span>
+      <el-select v-model="state" placeholder="请选择状态" class="handle-select mr10">
+        <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
         </el-option>
       </el-select>
       <el-button type="primary" class="handle-del mr10" @click="getData">搜索
@@ -12,10 +17,26 @@
       </el-button>
     </div>
     <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-      <el-table-column prop="orders" label="序号" align="center"></el-table-column>
-      <el-table-column prop="dicName" label="名称" align="center"></el-table-column>
+      <el-table-column type="index" width="80" label="序号" align="center"></el-table-column>
+      <el-table-column prop="title" label="标题" align="center"></el-table-column>
+      <el-table-column label="图片" align="center">
+        <template slot-scope="scope">
+          <el-image :src="scope.row.purl" lazy class="img"></el-image>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column prop="positions" label="位置" align="center"></el-table-column> -->
+      <el-table-column label="状态" align="center">
+        <template slot-scope="scope">
+          <span v-if="scope.row.state==1">已推荐</span>
+          <span v-else>未推荐</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
+          <el-button type="primary" size="mini" @click="updateState(scope.row)">
+            <span v-if="scope.row.state==1">取消推荐</span>
+            <span v-else>推荐</span>
+          </el-button>
           <el-button type="primary" size="mini" @click="updateDictionary(scope.$index, scope.row)">编辑</el-button>
           <el-button type="danger" size="mini" class="red" @click="deleteDictionary(scope.$index, scope.row)">删除
           </el-button>
@@ -27,19 +48,27 @@
         :total="pageTotal" @current-change="handlePageChange"></el-pagination>
     </div>
     <!-- 编辑弹出框 -->
-    <el-dialog :title="title" center :visible.sync="editVisible" width="30%">
+    <el-dialog :title="title" center :visible.sync="editVisible" width="800">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="类型：">
-          <el-select v-model="form.dicType" placeholder="请选择类型" class="handle-select mr10">
-            <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.dicName" :value="item.order">
+        <el-form-item label="位置：">
+          <el-select v-model="form.positions" placeholder="请选择位置" class="handle-input mr10">
+            <el-option v-for="(item,index) in positionList" :key="index" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="名称：">
-          <el-input v-model="form.dicName" class="handle-input"></el-input>
+        <el-form-item label="标题：">
+          <el-input v-model="form.title" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="排序：">
-          <el-input v-model="form.orders" class="handle-input"></el-input>
+        <el-form-item label="头像：" class="personal-icon">
+          <label for="inputId" icon="el-icon-plus" >
+            <img v-if="form.purl" :src="form.purl" />
+            <img v-else src="~assets/img/headportrait.png" alt="">
+            <input style="display: none" id="inputId" ref="input" type="file"
+              accept="image/gif, image/jpeg, image/jpg, image/png, image/svg" @change="handleFileChange" />
+          </label>
+        </el-form-item>
+        <el-form-item label="内容：">
+          <editor-bar :value="form.content" v-model="form.content"></editor-bar>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -50,34 +79,47 @@
   </div>
 </template>
 <script>
+  import EditorBar from "@/components/wangeditor/WangEditor.vue";
   export default {
     data() {
       return {
-        dicType: 1,
+        position: "1",
+        state: "all",
         PageNumber: 1,
         PageSize: 10,
         pageTotal: 0,
         tableData: [],
-        form: {},
+        form: {
+          purl: ""
+        },
         editVisible: false,
-        isAdd:0,
+        isAdd: 0,
         title: '',
         rules: {
-          dicType: [{ required: true, message: "请选择类型", trigger: "blur" }],
-          dicName: [{ required: true, message: "请输入名称", trigger: "blur" }],
-          orders: [{ required: true, message: "请输入排序", trigger: "blur" }],
+          positions: [{ required: true, message: "请选择位置", trigger: "blur" }],
+          title: [{ required: true, message: "请输入标题", trigger: "blur" }],
+
+          purl: [{ required: true, message: "请上传图片", trigger: "blur" }],
+          content: [{ required: true, message: "请输入内容", trigger: "blur" }],
         },
-        dictionaryList: [
-          { order: 1, dicName: '新闻' },
-          { order: 2, dicName: '藏友圈' },
-          { order: 3, dicName: '课程' }
+        positionList: [
+          { id: "1", name: '首页' },
+          { id: "2", name: '市场' },
+          { id: "3", name: '课程' }
         ],
+        statesList: [
+          { id: "all", name: '全部' },
+          { id: "1", name: '已推荐' },
+          { id: "2", name: '未推荐' }
+        ]
       };
     },
     watch: {
       editVisible() {
+        this.getData()
         if (!this.editVisible) {
           this.form = {}
+         
         }
       }
     },
@@ -88,8 +130,8 @@
       //获取数据
       getData() {
         this.$post("/other/getBanner", {
-          positions: this.dicType,
-          state:this.state,
+          positions: this.position,
+          state: this.state,
           PageNumber: this.PageNumber,
           PageSize: this.PageSize
         }).then(res => {
@@ -99,10 +141,40 @@
           }
         })
       },
+      handleFileChange(e) {
+        let file = e.target.files[0];
+        let formdata = new FormData();
+        formdata.append("myfile", file);
+        console.log(formdata);
+        this.$uploadPost("/upload/pictureOrVideo", formdata).then((res) => {
+          if (res.code == 200) {
+            this.form.purl = res.data;
+          }
+        });
+      },
+      //修改状态
+      updateState(row) {
+        console.log(row)
+        var state;
+        if (row.state == 1) {
+          state = 2
+        } else {
+          state = 1
+        }
+        this.$post("/other/updateBannerState", {
+          banId: row.banId,
+          state: state
+        }).then(res => {
+          if (res.code == 200) {
+            this.getData()
+            this.$message.success("操作成功")
+          }
+        })
+      },
       addDictionarys() {
         this.editVisible = true;
-        this.isAdd=1;
-        this.title = "添加数据字典";
+        this.isAdd = 1;
+        this.title = "添加banner";
       },
       // 保存编辑
       saveEdit() {
@@ -110,16 +182,19 @@
         this.$refs.form.validate(valid => {
           if (valid) {
             if (this.isAdd == 1) {
-              this.$post("/other/insertDictionary", this.form).then(res => {
+              this.$post("/other/insertBanner", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getData()
+                  // this.getData()
+                  this.editVisible=false;
                   this.$message.success(res.msg)
                 }
               })
-            }else{
-              this.$post("/other/updateDictionary", this.form).then(res => {
+            } else {
+              this.$post("/other/updateBanner", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getData()
+                  // this.getData()
+                  this.editVisible=false;
+
                   this.$message.success(res.msg)
                 }
               })
@@ -131,8 +206,8 @@
       },
       updateDictionary(index, row) {
         this.editVisible = true;
-        this.title = "编辑数据字典";
-        this.isAdd=0;
+        this.title = "编辑banner信息";
+        this.isAdd = 0;
         this.form = row;
       },
       // 删除操作
@@ -155,7 +230,11 @@
       handlePageChange(val) {
         this.PageNumber = val;
         this.getData();
-      }
+      },
+
+    },
+    components: {
+      EditorBar
     }
   };
 </script>
@@ -166,11 +245,11 @@
   }
 
   .handle-select {
-    width: 300px;
+    width: 200px;
   }
 
   .handle-input {
-    width: 300px;
+    width: 400px;
     display: inline-block;
   }
 
@@ -181,5 +260,16 @@
   .table {
     width: 100%;
     font-size: 14px;
+  }
+
+
+ .img {
+    width: 100px;
+    height: 50px;
+  }
+  img{
+    width: 100px;
+height: 100px;
+border-radius: 50%;
   }
 </style>

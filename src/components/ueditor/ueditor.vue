@@ -1,42 +1,46 @@
 <template>
   <div>
-    <script id="editor" type="text/plain" ></script>
+    <script id="editor" type="text/plain"></script>
   </div>
 </template>
-
 <script>
- 
+  import'../../../public/ueditor/ueditor.config.js'
+　import'../../../public/ueditor/ueditor.all.min.js'
+　import'../../../public/ueditor/lang/zh-cn/zh-cn.js'
+　import'../../../public/ueditor/ueditor.parse.min.js'
   export default {
-    name: "UEditor",
-    props: {
-      id: {
-          type: String
-      },
-      config: {
-          type: Object
-      }
-    },
+    name: 'UE',
     data() {
       return {
-        editor: null
+        editor: null,
+        id: Math.random().toString(16).substring(2) + 'ueditorId'
+      }
+    },
+    props: {
+      defaultMsg: {
+        type: String
+      },
+      config: {
+        type: Object
       }
     },
     mounted() {
-      //初始化UE
       const _this = this;
-      this.editor = UE.delEditor("editor");
-      this.editor = UE.getEditor('editor',this.config);
+      // console.log(this.id)
+      // console.log(this.$refs.editor)
+      // this.$refs.editor.id = this.id;
+      this.editor = UE.getEditor("editor", this.config); // 初始化UE
+      this.editor.addListener("ready", function () {
+        _this.editor.setContent(_this.defaultMsg); // 确保UE加载完成后，放入内容。
+      });
     },
-    destoryed() {
-      this.editor.destory();
-    },
-    methods:{
-      getUEContent: function(){
-       return this.editor.getContent();
-      },
-      getContentTxt: function(){
-        return this.editor.getContentTxt();
+    methods: {
+      getUEContent() { // 获取内容方法
+        return this.editor.getContent()
       }
+    },
+    destroyed() {
+      this.editor.destroy();
     }
   }
 </script>

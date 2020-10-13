@@ -19,6 +19,12 @@ const routes = [
         component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue'),
         meta: { title: '系统首页' }
       },
+      //新闻管理
+      {
+        path: '/news',
+        component: () => import(/* webpackChunkName: "banners" */ 'views/News.vue'),
+        meta: { title: '新闻管理' }
+      },
       // banner列表
       {
         path: '/banners',
@@ -91,7 +97,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 })

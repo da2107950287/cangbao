@@ -22,9 +22,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="头像：" class="personal-icon">
+        <label  for="inputId" icon="el-icon-plus">
         <img v-if="form.headportrait" :src="form.headportrait" class="img" />
-        <label v-else for="inputId" icon="el-icon-plus">
-          <img src="~assets/img/headportrait.png" alt="">
+
+          <img v-else src="~assets/img/headportrait.png" alt="">
           <input style="display: none" id="inputId" ref="input" type="file"
             accept="image/gif, image/jpeg, image/jpg, image/png, image/svg" @change="handleFileChange" />
         </label>
@@ -36,33 +37,33 @@
   </div>
 </template>
 <script>
-  export default{
-    data(){
-      return{
-        rolesList:[],
-        form:{
-          rId:'',
-          account:'',
-          mobile:'',
-          username:'',
-          sex:'',
-          headportrait:''
+  export default {
+    data() {
+      return {
+        rolesList: [],
+        form: {
+          rId: '',
+          account: '',
+          mobile: '',
+          username: '',
+          sex: '',
+          headportrait: ''
         },
-        rules:{
+        rules: {
           rId: [{ required: true, message: '请选择角色', trigger: 'blur' }],
           account: [{ required: true, message: '请选择角色', trigger: 'blur' }],
           mobile: [{ required: true, message: '请选择角色', trigger: 'blur' }],
           username: [{ required: true, message: '请选择角色', trigger: 'blur' }],
           sex: [{ required: true, message: '请选择角色', trigger: 'blur' }],
           headportrait: [{ required: true, message: '请选择角色', trigger: 'blur' }],
-       
-      }
+
+        }
       }
     },
-    created(){
-this.getRoles()
+    created() {
+      this.getRoles()
     },
-    methods:{
+    methods: {
       //获取角色列表
       getRoles() {
         this.$post("/userinfo/getRole", { state: 1 }).then(res => {
@@ -76,23 +77,25 @@ this.getRoles()
         let formdata = new FormData();
         formdata.append("myfile", file);
         console.log(formdata);
-        uploadPost("/upload/pictureOrVideo", formdata).then((res) => {
+        this.$uploadPost("/upload/pictureOrVideo", formdata).then((res) => {
           if (res.code == 200) {
             this.form.headportrait = res.data;
           }
         });
       },
-      submit(){
+      submit() {
 
       }
     }
   }
 </script>
 <style scoped>
-  .handle-select,.handle-input {
+  .handle-select,
+  .handle-input {
     width: 400px;
   }
-  img{
+
+  img {
     width: 100px;
     height: 100px;
   }
