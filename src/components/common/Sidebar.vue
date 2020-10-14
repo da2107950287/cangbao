@@ -45,8 +45,25 @@
                     },
                     {
                         icon: 'el-icon-menu',
-                        index: '1',
-                        title: '藏友圈列表'
+                        index:'course',
+                        title:'课程管理'
+                    },
+                    {
+                        icon: 'el-icon-menu',
+                        title: '藏友圈管理',
+                        index:'1',
+                        subs: [
+                            {
+
+                                index: 'circle',
+                                title: '藏友圈列表'
+                            },
+                            {
+                                index:'dynamic',
+                                title:'动态管理'
+                            }
+                        ]
+
                     },
                     {
                         icon: 'el-icon-menu',
@@ -75,7 +92,7 @@
                     },
                     {
                         icon: 'el-icon-menu',
-                        index: '7',
+                      index:'7',
                         title: '系统设置',
                         subs: [
                             {
@@ -113,7 +130,7 @@
                                 index: 'updatePassword',
                                 title: '修改密码'
                             },
-                        ]  
+                        ]
                     }
                     // {
                     //     icon: 'el-icon-lx-copy',

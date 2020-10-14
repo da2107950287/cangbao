@@ -9,9 +9,18 @@
     </div>
     <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
       <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-      <el-table-column prop="msgTitle" label="标题" align="center"></el-table-column>
-      <el-table-column prop="describes" label="描述" align="center"></el-table-column>
-      <el-table-column prop="msgTime" label="发布时间" align="center"></el-table-column>
+      <el-table-column prop="andVersion" label="安卓版本号" align="center"></el-table-column>
+      <el-table-column prop="andContent" label="更新描述" align="center"></el-table-column>
+      <el-table-column prop="iosVersion" label="IOS版本号" align="center"></el-table-column>
+      <el-table-column prop="iosContent" label="更新描述" align="center"></el-table-column>
+      <el-table-column  label="是否强制更新" align="center">
+        <template slot-scope="scope">
+          <span v-if="scope.row.forceUpdate==1">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="updatetime" label="更新时间" align="center"></el-table-column>
+      
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.state==1">上架</span>
@@ -20,7 +29,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="updateMessageState(scope.row)">
+          <el-button type="primary" size="mini" @click="updateAppversionState(scope.row)">
             <span v-if="scope.row.state==1">下架</span>
             <span v-else>上架</span>
           </el-button>
@@ -28,21 +37,31 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="pagination">
-      <el-pagination background layout="total, prev, pager, next" :current-page="PageNumber" :page-size="PageSize"
-        :total="pageTotal" @current-change="handlePageChange"></el-pagination>
-    </div>
+    
     <!-- 编辑弹出框 -->
-    <el-dialog :title="title" center :visible.sync="editVisible" width="800">
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="标题：">
-          <el-input v-model="form.msgTitle" class="handle-input"></el-input>
+    <el-dialog :title="title" center :visible.sync="editVisible" width="650px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
+        <el-form-item label="Android版本号：">
+          <el-input v-model="form.andVersion" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="描述：">
-          <el-input v-model="form.describes" class="handle-input"></el-input>
+        <el-form-item label="Android更新内容：">
+          <el-input v-model="form.andContent" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="内容：">
-          <editor-bar :value="form.content" v-model="form.content"></editor-bar>
+        <el-form-item label="Android更新地址：">
+          <el-input  v-model="form.andUrl" class="handle-input"></el-input>
+        </el-form-item>
+        <el-form-item label="IOS版本号：">
+          <el-input v-model="form.iosVersion" class="handle-input"></el-input>
+        </el-form-item>
+        <el-form-item label="IOS更新内容：">
+          <el-input v-model="form.iosContent	" class="handle-input"></el-input>
+        </el-form-item>
+        <el-form-item label="IOS更新地址：">
+          <el-input  v-model="form.iosUrl" class="handle-input"></el-input>
+        </el-form-item>
+        <el-form-item label="是否强制更新：">
+          <el-radio v-model="form.forceUpdate" label="1">是</el-radio>
+          <el-radio v-model="form.forceUpdate" label="2">否</el-radio>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -59,9 +78,7 @@
     data() {
       return {
         state: "all",
-        PageNumber: 1,
-        PageSize: 10,
-        pageTotal: 0,
+       
         tableData: [],
         form: {},
         editVisible: false,
@@ -92,32 +109,30 @@
     methods: {
       //获取数据
       getData() {
-        this.$post("/other/getMessage", {
-          state: this.state,
-          PageNumber: this.PageNumber,
-          PageSize: this.PageSize
+        this.$post("/other/getAppversion",{
+          state:this.state
         }).then(res => {
           if (res.code == 200) {
-            this.tableData = res.data.list;
-            this.pageTotal = res.data.count;
+            
+            this.tableData=res.data;
           }
         })
       },
       addMsg() {
         this.editVisible = true;
-        this.isAdd = 1;
-        this.title = "添加系统消息";
+        this.isAdd = true;
+        this.title = "添加版本号";
       },
       //修改状态
-      updateMessageState(row) {
+      updateAppversionState(row) {
         let state;
         if (row.state == 1) {
-          state = 2
+          state = 2;
         } else {
-          state = 1
+          state = 1;
         }
-        this.$post("/other/updateMessageState", {
-          msgId: row.msgId,
+        this.$post("/other/updateAppversionState", {
+          id: row.id,
           state
         }).then(res => {
           if (res.code == 200) {
@@ -131,15 +146,15 @@
         this.$refs.form.validate(valid => {
           if (valid) {
             this.editVisible = false;
-            if (this.isAdd == 1) {
-              this.$post("/other/insertMessage", this.form).then(res => {
+            if (this.isAdd) {
+              this.$post("/other/insertAppversion", this.form).then(res => {
                 if (res.code == 200) {
                   this.getData()
                   this.$message.success(res.msg)
                 }
               })
             } else {
-              this.$post("/other/updateMessage", this.form).then(res => {
+              this.$post("/other/updateAppversion", this.form).then(res => {
                 if (res.code == 200) {
                   this.getData()
                   this.$message.success(res.msg)
@@ -153,7 +168,7 @@
         console.log(row)
         this.editVisible = true;
         this.title = "编辑系统消息";
-        this.isAdd = 0;
+        this.isAdd = false;
         this.$post("/other/showMessage", {
           msgId: row.msgId
         }).then(res => {

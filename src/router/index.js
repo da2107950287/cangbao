@@ -19,6 +19,23 @@ const routes = [
         component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue'),
         meta: { title: '系统首页' }
       },
+      //课程管理
+      {
+        path: '/course',
+        component: () => import(/* webpackChunkName: "dashboard" */ '../views/course/Course.vue'),
+        meta: { title: '课程管理' }
+      },
+      //藏友圈管理
+      {
+        path: '/circle',
+        component: () => import(/* webpackChunkName: "dashboard" */ '../views/tibetan-friend-circle/Circle.vue'),
+        meta: { title: '藏友圈管理' }
+      },
+      {
+        path: '/dynamic',
+        component: () => import(/* webpackChunkName: "dashboard" */ '../views/tibetan-friend-circle/Dynamic.vue'),
+        meta: { title: '动态管理' }
+      },
       //新闻管理
       {
         path: '/news',
@@ -59,7 +76,12 @@ const routes = [
         component: () => import(/* webpackChunkName: "dashboard" */ 'views/system-settings/Document.vue'),
         meta: { title: '文档管理' }
       },
-
+      
+      {
+        path: '/systemUpdate',
+        component: () => import(/* webpackChunkName: "dashboard" */ 'views/system-settings/SystemUpdate.vue'),
+        meta: { title: '系统更新' }
+      },
       // 个人中心
       {
         path: '/personalInfo',
