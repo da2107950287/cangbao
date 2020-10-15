@@ -10,12 +10,13 @@ import {post,uploadPost} from "./utils/request.js"
 　import'../public/ueditor/ueditor.all.min.js'
 　import'../public/ueditor/lang/zh-cn/zh-cn.js'
 　import'../public/ueditor/ueditor.parse.min.js'
-
+import EditorBar from "@/components/wangeditor/WangEditor.vue";
 
 Vue.prototype.$post=post
 Vue.prototype.$uploadPost=uploadPost
 Vue.config.productionTip = false
 Vue.use(ElementUI);
+Vue.component('EditorBar',EditorBar)
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} | 藏宝后台管理系统`;

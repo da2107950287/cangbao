@@ -45,13 +45,13 @@
                     },
                     {
                         icon: 'el-icon-menu',
-                        index:'course',
-                        title:'课程管理'
+                        index: 'course',
+                        title: '课程管理'
                     },
                     {
                         icon: 'el-icon-menu',
                         title: '藏友圈管理',
-                        index:'1',
+                        index: '1',
                         subs: [
                             {
 
@@ -59,8 +59,8 @@
                                 title: '藏友圈列表'
                             },
                             {
-                                index:'dynamic',
-                                title:'动态管理'
+                                index: 'dynamic',
+                                title: '动态管理'
                             }
                         ]
 
@@ -92,7 +92,7 @@
                     },
                     {
                         icon: 'el-icon-menu',
-                      index:'7',
+                        index: '7',
                         title: '系统设置',
                         subs: [
                             {

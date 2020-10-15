@@ -5,7 +5,7 @@
         <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
       </el-select>
       <el-button type="primary" class="handle-del mr10" @click="getData">搜索</el-button>
-      <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addMsg">新建</el-button>
+      <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addAppversion">新建</el-button>
     </div>
     <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
       <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
@@ -33,7 +33,7 @@
             <span v-if="scope.row.state==1">下架</span>
             <span v-else>上架</span>
           </el-button>
-          <el-button type="primary" size="mini" @click="updateSystemMsg(scope.row)">编辑</el-button>
+          <el-button type="primary" size="mini" @click="updateAppversion(scope.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,22 +72,23 @@
   </div>
 </template>
 <script>
-  import EditorBar from "@/components/wangeditor/WangEditor.vue";
-
   export default {
     data() {
       return {
         state: "all",
-       
         tableData: [],
         form: {},
         editVisible: false,
         isAdd: 0,
         title: '',
         rules: {
-          title: [{ required: true, message: "请选择标题", trigger: "blur" }],
-          describes: [{ required: true, message: "请输入描述", trigger: "blur" }],
-          content: [{ required: true, message: "请输入内容", trigger: "blur" }],
+          andVersion: [{ required: true, message: "请输入Android版本号", trigger: "blur" }],
+          andContent: [{ required: true, message: "请选择Android更新内容", trigger: "blur" }],
+          andUrl: [{ required: true, message: "请输入Android更新地址", trigger: "blur" }],
+          iosVersion: [{ required: true, message: "请输入IOS版本号", trigger: "blur" }],
+          iosContent: [{ required: true, message: "请选择IOS更新内容", trigger: "blur" }], 
+          iosUrl: [{ required: true, message: "请输入IOS更新地址", trigger: "blur" }],
+          forceUpdate: [{ required: true, message: "请选择选择是否强制更新", trigger: "blur" }],
         },
         statesList: [
           { id: "all", name: "全部" },
@@ -113,15 +114,23 @@
           state:this.state
         }).then(res => {
           if (res.code == 200) {
-            
             this.tableData=res.data;
           }
         })
       },
-      addMsg() {
+      //触发新建按钮
+      addAppversion() {
         this.editVisible = true;
         this.isAdd = true;
         this.title = "添加版本号";
+      },
+      //触发编辑按钮
+      updateAppversion(row) {
+        console.log(row)
+        this.editVisible = true;
+        this.title = "编辑版本号";
+        this.isAdd = false;
+        this.form=row;
       },
       //修改状态
       updateAppversionState(row) {
@@ -164,44 +173,7 @@
           }
         })
       },
-      updateSystemMsg(row) {
-        console.log(row)
-        this.editVisible = true;
-        this.title = "编辑系统消息";
-        this.isAdd = false;
-        this.$post("/other/showMessage", {
-          msgId: row.msgId
-        }).then(res => {
-          if(res.code==200){
-            this.form = res.data;
-          }
-        })
-      },
-      // 删除操作
-      deleteDictionary(index, row) {
-        // 二次确认删除
-        this.$confirm('确定要删除吗？', '提示', {
-          type: 'warning'
-        }).then(() => {
-          this.$post("/other/deleteDictionary", {
-            dicId: row.dicId
-          }).then(res => {
-            if (res.code == 200) {
-              this.$message.success(res.msg);
-              this.tableData.splice(index, 1);
-            }
-          })
-        }).catch(() => { });
-      },
-      // 分页导航
-      handlePageChange(val) {
-        this.PageNumber = val;
-        this.getData();
-      }
     },
-    components: {
-      EditorBar
-    }
   };
 </script>
 
