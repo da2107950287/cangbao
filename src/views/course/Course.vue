@@ -60,11 +60,11 @@
     <div v-else-if="type==2">
       <el-tabs v-model="activeName" type="card">
         <!-- 课程信息 -->
-        <el-tab-pane label="课程信息" name="first">
+        <el-tab-pane label="课程信息" name="c1">
           <course-form :form="form" :dictionarysList="dictionarysList" @saveEdit="saveEditCourse(form)"></course-form>
         </el-tab-pane>
         <!-- 课程目录 -->
-        <el-tab-pane label="课程目录" name="second">
+        <el-tab-pane label="课程目录" name="c2">
           <div class="handle-box">
             <span>状态：</span>
             <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
@@ -103,6 +103,8 @@
             <el-pagination background layout="total, prev, pager, next" :current-page="PageNumber" :page-size="PageSize"
               :total="pageTotal" @current-change="handlePageChange"></el-pagination>
           </div>
+        </el-tab-pane>
+        <el-tab-pane label="评论列表" name="c3">
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -159,7 +161,7 @@
   export default {
     data() {
       return {
-        activeName: 'first',
+        activeName: 'c1',
         type: 0,
         state: "all",
         couType: "",

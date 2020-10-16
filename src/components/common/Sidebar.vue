@@ -61,6 +61,9 @@
                             {
                                 index: 'dynamic',
                                 title: '动态管理'
+                            },{
+                                index:'rewardList',
+                                title:'打赏排行榜'
                             }
                         ]
 

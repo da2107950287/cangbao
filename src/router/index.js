@@ -36,6 +36,12 @@ const routes = [
         component: () => import(/* webpackChunkName: "dashboard" */ 'views/tibetan-friend-circle/Dynamic.vue'),
         meta: { title: '动态管理', isShow: true }
       },
+      {
+        path:'/rewardList',
+        component: () => import(/* webpackChunkName: "dashboard" */ 'views/tibetan-friend-circle/RewardList.vue'),
+        meta: { title: '打赏排行榜', isShow: true }
+      },
+
       //新闻管理
       {
         path: '/news',

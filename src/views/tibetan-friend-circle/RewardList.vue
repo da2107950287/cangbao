@@ -2,8 +2,8 @@
   <div class="container">
     <div class="handle-box">
       <span>所属类型：</span>
-      <el-select v-model="dicType" placeholder="请选择类型" class="handle-select mr10">
-        <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.name" :value="item.id">
+      <el-select v-model="cirId" placeholder="请选择藏友圈" class="handle-select mr10">
+        <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.dicName" :value="item.dicId">
         </el-option>
       </el-select>
       <el-button type="primary" class="handle-del mr10" @click="getData">搜索
@@ -13,8 +13,8 @@
     </div>
     <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
       <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-      <el-table-column prop="dicName" label="名称" align="center"></el-table-column>
-      <el-table-column prop="orders" label="排序" align="center"></el-table-column>
+      <el-table-column prop="nickname" label="名称" align="center"></el-table-column>
+      <el-table-column prop="crMoney" label="打赏金额" align="center"></el-table-column>
 
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
@@ -25,18 +25,18 @@
       </el-table-column>
     </el-table>
     <div class="pagination">
-      <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber" :page-size="PageSize"
-        :total="pageTotal" @current-change="handlePageChange(val)" @size-change="handleSizeChange(val)"></el-pagination>
+      <el-pagination background layout="total, prev, pager, next" :current-page="PageNumber" :page-size="PageSize"
+        :total="pageTotal" @current-change="handlePageChange"></el-pagination>
     </div>
     <!-- 编辑弹出框 -->
     <el-dialog :title="title" center :visible.sync="editVisible" width="30%">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <!-- <el-form-item label="类型：">
+        <el-form-item label="类型：">
           <el-select v-model="form.dicType" placeholder="请选择类型" class="handle-select mr10">
             <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
-        </el-form-item> -->
+        </el-form-item>
         <el-form-item label="名称：">
           <el-input v-model="form.dicName" class="handle-input"></el-input>
         </el-form-item>
@@ -55,7 +55,7 @@
   export default {
     data() {
       return {
-        dicType: "1",
+        cirId: "",
         PageNumber: 1,
         PageSize: 10,
         pageTotal: 0,
@@ -71,11 +71,7 @@
           dicName: [{ required: true, message: "请输入名称", trigger: "blur" }],
           orders: [{ required: true, message: "请输入排序", trigger: "blur" }],
         },
-        dictionaryList: [
-          { id: "1", name: '新闻' },
-          { id: "2", name: '藏友圈' },
-          { id: "3", name: '课程' }
-        ],
+        dictionaryList: [],
       };
     },
     watch: {
@@ -86,19 +82,29 @@
       }
     },
     created() {
+      this.getAllDictionary()
       this.getData()
     },
     methods: {
       //获取数据
       getData() {
-        this.$post("/other/getDictionary", {
-          dicType: this.dicType,
+        this.$post("/circle/getCircleUser", {
+          cirId: this.cirId,
           PageNumber: this.PageNumber,
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
+          }
+        })
+      },
+      getAllDictionary(){
+        this.$post("/other/getAllDictionary",{
+          dicType:"2"
+        }).then(res=>{
+          if(res.code==200){
+            this.dictionaryList=res.data;
           }
         })
       },
@@ -113,7 +119,6 @@
         this.$refs.form.validate(valid => {
           if (valid) {
             if (this.isAdd == 1) {
-              this.form.dicType=this.dicType
               this.$post("/other/insertDictionary", this.form).then(res => {
                 if (res.code == 200) {
                   this.getData()
@@ -159,21 +164,12 @@
       handlePageChange(val) {
         this.PageNumber = val;
         this.getData();
-      },
-      handleSizeChange(val){
-        this.PageSize = val;
-        this.getData();
       }
     }
   };
 </script>
 
 <style lang="scss" scoped>
-  .text {
-    color: #6a6a6a;
-
-  }
-
   .handle-box {
     margin-bottom: 20px;
   }
