@@ -13,10 +13,11 @@
     </el-form-item>
     <el-form-item label="课程内容：" prop="content" style="width: 1000px;">
       <label v-if="form.catType==1" for="inputId" icon="el-icon-plus">
-        <video v-if="form.content" :src="form.content" />
-        <el-button v-else type="success">上传视频</el-button>
+        <video v-if="form.content" :src="form.content" pxcontrols></video>
+        <div style="color: #fff;
+        padding:0 5px;background-color: #1296db;width: 60px;border-radius: 5px;">上传视频</div>
         <input style="display: none" id="inputId" ref="input" type="file"
-          @change="handleFileChange" />
+          accept="image/gif, image/jpeg, image/jpg, image/png, image/svg" @change="handleFileChange" />
       </label>
       <editor-bar v-if="form.catType==2" :value="form.content" v-model="form.content"></editor-bar>
     </el-form-item>
@@ -85,9 +86,10 @@
     display: inline-block;
   }
 
+  /* 
   img {
     height: 100px;
     width: 100px;
     border-radius: 50%;
-  }
+  } */
 </style>

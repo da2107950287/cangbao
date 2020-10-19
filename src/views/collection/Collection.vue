@@ -1,36 +1,46 @@
 <template>
   <div class="container">
-    <!-- 课程列表 -->
+    <!-- 藏品列表 -->
     <div v-if="type==0">
-      <h3>课程列表</h3>
+      <h3>藏品列表</h3>
       <el-divider></el-divider>
       <div class="handle-box">
-        <span>课程状态：</span>
+        <span>状态：</span>
         <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
           <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
           </el-option>
         </el-select>
-        <span>课程类型：</span>
-        <el-select v-model="couType" placeholder="请选择类型" class="handle-search mr10">
+        <span>类别：</span>
+        <el-select v-model="category" placeholder="请选择类型" class="handle-search mr10">
           <el-option label="全部" value=""> </el-option>
-          <el-option v-for="(item,index) in dictionarysList" :key="index" :label="item.dicName" :value="item.dicId">
+          <el-option v-for="(item,index) in categorys" :key="index" :label="item.ccName" :value="item.ccId">
           </el-option>
         </el-select>
-        <span>课程名称：</span>
-        <el-input v-model="couName" placeholder="请输入关键字" class="handle-search mr10"></el-input>
+        <span>年份：</span>
+        <el-select v-model="year" placeholder="请选择类型" class="handle-search mr10">
+          <el-option label="全部" value=""> </el-option>
+          <el-option v-for="(item,index) in years" :key="index" :label="item.cyName" :value="item.cyId">
+          </el-option>
+        </el-select>
+        <span>区域：</span>
+        <el-select v-model="region" placeholder="请选择类型" class="handle-search mr10">
+          <el-option label="全部" value=""> </el-option>
+          <el-option v-for="(item,index) in regions" :key="index" :label="item.crName" :value="item.crId">
+          </el-option>
+        </el-select>
+        <span>名称：</span>
+        <el-input v-model="collName" placeholder="请输入关键字" class="handle-search mr10"></el-input>
         <el-button type="primary" class="handle-del mr10" @click="getCourse">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCourses">新建</el-button>
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-        <el-table-column prop="couType" label="课程类型" align="center"></el-table-column>
-        <el-table-column prop="couName" label="课程名" align="center"></el-table-column>
-        <el-table-column label="课程封面" align="center" width="200">
-          <template slot-scope="scope">
-            <el-image :src="scope.row.cover" style="max-width: 180px;max-height: 100px;"></el-image>
-          </template>
-        </el-table-column>
-        <el-table-column prop="price" label="单价" align="center"></el-table-column>
+        <el-table-column prop="collTime" label="发布时间" align="center"></el-table-column>
+        <el-table-column prop="collName" label="藏品名称" align="center"></el-table-column>
+        <el-table-column prop="guaranteePrice" label="担保价" align="center"></el-table-column>
+        <el-table-column prop="size" label="尺寸" align="center"></el-table-column>
+        <el-table-column prop="years" label="年份" align="center"></el-table-column>
+        <el-table-column prop="region" label="区域" align="center"></el-table-column>
         <el-table-column label="状态" align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.state==1">上架</span>
@@ -117,12 +127,11 @@
         <!-- 评论列表 -->
         <el-tab-pane label="评论列表" name="c3">
           <span>评论状态：</span>
-        <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
-          <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
-          </el-option>
-        </el-select>
-        <el-button type="primary" class="handle-del mr10" @click="getCourseComment">搜索</el-button>
-
+          <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
+            <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
+            </el-option>
+          </el-select>
+          <el-button type="primary" class="handle-del mr10" @click="getCourseComment">搜索</el-button>
           <div style="display: flex;margin-top: 10px;" v-for="(el,index) in courseComment" :key="index">
             <img :src="el.headportrait" style="width: 50px;height: 50px;" class="mr10">
             <div style="width: 100%;">
@@ -149,7 +158,6 @@
             </div>
           </div>
           <el-divider></el-divider>
-
           <div class="pagination">
             <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
               :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event,3)"
@@ -166,7 +174,7 @@
       <el-divider></el-divider>
       <catalogue-form :form="form" :dictionarysList="dictionarysList" @saveEdit="saveEditCatalogue"></catalogue-form>
     </div>
-    <div v-else-if="type==4">
+    <!-- <div v-else-if="type==4">
       <div class="handle-box">
         <span>状态：</span>
         <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
@@ -205,7 +213,7 @@
           :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event,3)"
           @size-change="handleSizeChange($event,1)"></el-pagination>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -218,7 +226,7 @@
         type: 0,
         state: "all",
         couType: "",
-        couName: "",
+        collName: "",
         PageNumber: 1,
         PageSize: 10,
         pageTotal: 0,
@@ -231,13 +239,19 @@
           cover: "",
           catType: "1",
           state: "1"
-
         },
         statesList: [
           { id: "all", name: "全部" },
           { id: 1, name: "上架" },
           { id: 2, name: "下架" }
         ],
+        years: [],
+        categorys: [],
+        regions: [],
+        year: "",
+        category: "",
+        region: "",
+        collName: ""
       };
     },
     watch: {
@@ -246,10 +260,44 @@
       }
     },
     created() {
-      this.getType()
-      this.getAllDictionary();
+      // this.getType()
+      // this.getAllDictionary();
+      this.getCollType()
+      this.getCollection()
     },
     methods: {
+
+      //获取藏品区域
+      getCollType() {
+        this.$post("/circle/getCollType", {}).then(res => {
+          if (res.code == 200) {
+            console.log(res.data)
+            this.years = res.data.years
+            this.categorys = res.data.category;
+            this.regions = res.data.region;
+          }
+        })
+      },
+      //获取藏品年份
+      getCollection() {
+        this.$post("/circle/getCollection", {
+          state: this.state,
+          collName: this.collName,
+          category: this.category,
+          years: this.year,
+          region: this.region,
+          PageNumber: this.PageNumber,
+          PageSize: this.PageSize
+        }).then(res => {
+          if (res.code == 200) {
+      
+            this.tableData = res.data.list;
+            this.pageTotal=res.data.count;
+          }
+        })
+      },
+      //获取藏品类别
+
       handleClick(tab) {
         this.PageNumber = 1;
         this.PageSize = 10;
@@ -309,7 +357,7 @@
         this.$post("/course/getCourse", {
           state: this.state,
           couType: this.couType,
-          couName: this.couName,
+          collName: this.collName,
           PageNumber: this.PageNumber,
           PageSize: this.PageSize
         }).then(res => {
@@ -380,8 +428,8 @@
         }
         this.$router.push({ path: '/course', query: { type: 3, couId: this.query.couId } })
       },
-     //触发编辑目录按钮
-     updateCatalogue(row) {
+      //触发编辑目录按钮
+      updateCatalogue(row) {
         this.$router.push({ path: '/course', query: { type: 3, couId: this.query.couId, catId: row.catId } })
       },
       //修改课程状态
@@ -420,8 +468,6 @@
           }
         })
       },
-
-      
       // 修改/添加课程
       saveEditCourse(form) {
         if (this.query.couId) {

@@ -31,15 +31,26 @@ const routes = [
         component: () => import(/* webpackChunkName: "dashboard" */ 'views/tibetan-friend-circle/Circle.vue'),
         meta: { title: '藏友圈管理', isShow: true }
       },
+      //藏品管理
       {
-        path: '/dynamic',
-        component: () => import(/* webpackChunkName: "dashboard" */ 'views/tibetan-friend-circle/Dynamic.vue'),
-        meta: { title: '动态管理', isShow: true }
+        path: '/collection',
+        component: () => import(/* webpackChunkName: "dashboard" */ 'views/collection/Collection.vue'),
+        meta: { title: '藏品列表', isShow: true }
       },
       {
-        path:'/rewardList',
-        component: () => import(/* webpackChunkName: "dashboard" */ 'views/tibetan-friend-circle/RewardList.vue'),
-        meta: { title: '打赏排行榜', isShow: true }
+        path: '/collRegion',
+        component: () => import(/* webpackChunkName: "dashboard" */ 'views/collection/CollRegion.vue'),
+        meta: { title: '藏品区域管理', isShow: true }
+      },
+      {
+        path: '/collYears',
+        component: () => import(/* webpackChunkName: "dashboard" */ 'views/collection/CollYears.vue'),
+        meta: { title: '藏品年份管理', isShow: true }
+      },
+      {
+        path: '/collCategory',
+        component: () => import(/* webpackChunkName: "dashboard" */ 'views/collection/CollCategory.vue'),
+        meta: { title: '藏品类别管理', isShow: true }
       },
 
       //新闻管理
@@ -113,15 +124,6 @@ const routes = [
     component: () => import('views/ForgetPassword.vue')
 
   },
-
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ 'views/About.vue')
-  }
 ]
 
 const router = new VueRouter({

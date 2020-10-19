@@ -3,10 +3,10 @@
     <div class="container">
       <div class="handle-box">
         <span>状态：</span>
-        <el-select v-model="query.state" placeholder="状态" class=" mr10">
+        <el-select v-model="query.state" placeholder="状态" class="handle-select mr10">
           <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
-        <el-input v-model="query.content" placeholder="请输入关键词" class="handle-input mr10"></el-input>
+        <el-input v-model="query.content" placeholder="请输入关键词" class="handle-select mr10"></el-input>
         <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addManager">新建</el-button>
       </div>
@@ -39,7 +39,7 @@
     <el-dialog center :title="title" :visible.sync="editVisible" width="30%">
       <el-form ref="form" :rules="rules" :model="form" label-width="100px">
         <el-form-item label="角色：" prop="rId">
-          <el-select v-model="form.rId" placeholder="请选择角色" class="handle-select mr10">
+          <el-select v-model="form.rId" placeholder="请选择角色" class="handle-input mr10">
             <el-option v-for="(item,index) in rolesList" :key="index" :label="item.rName" :value="item.rId"></el-option>
           </el-select>
         </el-form-item>
@@ -57,7 +57,7 @@
           <el-input v-model="form.username" placeholder="请输入管理员名称" class="handle-input mr10"></el-input>
         </el-form-item>
         <el-form-item label="性别：" prop="sex">
-          <el-select size="medium" v-model="form.sex" placeholder="请选择性别" class="handle-select mr10">
+          <el-select size="medium" v-model="form.sex" placeholder="请选择性别" class="handle-input mr10">
             <el-option v-for="(item,index) in sexList" :key="index" :label="item.name" :value="item.name"></el-option>
           </el-select>
         </el-form-item>
@@ -281,7 +281,7 @@
   }
 
   .handle-select {
-    width: 400px;
+    width: 200px;
   }
 
   .handle-input {

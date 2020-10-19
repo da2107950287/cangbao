@@ -3,10 +3,11 @@
     <div class="handle-box">
       <span>所属类型：</span>
       <el-select v-model="dicType" placeholder="请选择类型" class="handle-select mr10">
+        <el-option label="全部" value=""></el-option>
         <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.name" :value="item.id">
         </el-option>
       </el-select>
-      <el-button type="primary" class="handle-del mr10" @click="getData">搜索
+      <el-button type="primary" class="handle-del mr10" @click="getDictionary">搜索
       </el-button>
       <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addDictionarys">新建
       </el-button>
@@ -18,15 +19,18 @@
 
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="updateDictionary(scope.$index, scope.row)">编辑</el-button>
-          <el-button type="danger" size="mini" class="red" @click="deleteDictionary(scope.$index, scope.row)">删除
+          <el-button type="primary" size="mini" @click="updateDictionary(scope.row)">编辑</el-button>
+          <el-button type="danger" size="mini" class="red" @click="deleteDictionary(scope.row)">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <div class="pagination">
-      <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber" :page-size="PageSize"
-        :total="pageTotal" @current-change="handlePageChange(val)" @size-change="handleSizeChange(val)"></el-pagination>
+      <div class="pagination">
+        <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
+          :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event)"
+          @size-change="handleSizeChange($event)"></el-pagination>
+      </div>
     </div>
     <!-- 编辑弹出框 -->
     <el-dialog :title="title" center :visible.sync="editVisible" width="30%">
@@ -86,11 +90,11 @@
       }
     },
     created() {
-      this.getData()
+      this.getDictionary()
     },
     methods: {
       //获取数据
-      getData() {
+      getDictionary() {
         this.$post("/other/getDictionary", {
           dicType: this.dicType,
           PageNumber: this.PageNumber,
@@ -116,14 +120,14 @@
               this.form.dicType=this.dicType
               this.$post("/other/insertDictionary", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getData()
+                  this.getDictionary()
                   this.$message.success(res.msg)
                 }
               })
             } else {
               this.$post("/other/updateDictionary", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getData()
+                  this.getDictionary()
                   this.$message.success(res.msg)
                 }
               })
@@ -133,14 +137,14 @@
 
         })
       },
-      updateDictionary(index, row) {
+      updateDictionary(row) {
         this.editVisible = true;
         this.title = "编辑数据字典";
         this.isAdd = 0;
         this.form = row;
       },
       // 删除操作
-      deleteDictionary(index, row) {
+      deleteDictionary(row) {
         // 二次确认删除
         this.$confirm('确定要删除吗？', '提示', {
           type: 'warning'
@@ -150,19 +154,20 @@
           }).then(res => {
             if (res.code == 200) {
               this.$message.success(res.msg);
-              this.tableData.splice(index, 1);
+            this.getDictionary()
             }
           })
-        }).catch(() => { });
+        })
       },
       // 分页导航
       handlePageChange(val) {
+        console.log(val)
         this.PageNumber = val;
-        this.getData();
+        this.getDictionary();
       },
       handleSizeChange(val){
         this.PageSize = val;
-        this.getData();
+        this.getDictionary();
       }
     }
   };
@@ -179,7 +184,7 @@
   }
 
   .handle-select {
-    width: 300px;
+    width: 200px;
   }
 
   .handle-input {

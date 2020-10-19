@@ -259,8 +259,8 @@
 
 
   .img {
-    width: 100px;
-    height: 50px;
+    width: 200px;
+    height: 100px;
   }
 
   img {

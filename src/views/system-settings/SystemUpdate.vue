@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <div class="handle-box">
+      <span>消息状态：</span>
       <el-select v-model="state" placeholder="请选择类型" class="handle-select mr10">
         <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
       </el-select>
@@ -20,7 +21,6 @@
         </template>
       </el-table-column>
       <el-table-column prop="updatetime" label="更新时间" align="center"></el-table-column>
-      
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.state==1">上架</span>
@@ -44,8 +44,8 @@
         <el-form-item label="Android版本号：">
           <el-input v-model="form.andVersion" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="Android更新内容：">
-          <el-input v-model="form.andContent" class="handle-input"></el-input>
+        <el-form-item  label="Android更新内容：">
+          <el-input type="textarea" v-model="form.andContent" class="handle-input"></el-input>
         </el-form-item>
         <el-form-item label="Android更新地址：">
           <el-input  v-model="form.andUrl" class="handle-input"></el-input>
@@ -54,7 +54,7 @@
           <el-input v-model="form.iosVersion" class="handle-input"></el-input>
         </el-form-item>
         <el-form-item label="IOS更新内容：">
-          <el-input v-model="form.iosContent	" class="handle-input"></el-input>
+          <el-input type="textarea" v-model="form.iosContent	" class="handle-input"></el-input>
         </el-form-item>
         <el-form-item label="IOS更新地址：">
           <el-input  v-model="form.iosUrl" class="handle-input"></el-input>
@@ -77,7 +77,9 @@
       return {
         state: "all",
         tableData: [],
-        form: {},
+        form: {
+          forceUpdate:"1"
+        },
         editVisible: false,
         isAdd: 0,
         title: '',
@@ -183,7 +185,7 @@
   }
 
   .handle-select {
-    width: 300px;
+    width: 200px;
   }
 
   .handle-input {

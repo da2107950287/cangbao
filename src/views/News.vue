@@ -2,9 +2,9 @@
   <div class="container">
     <div class="handle-box">
       <span>新闻公司：</span>
-      <el-input v-model="newsName" clearable class="handle-search mr10"></el-input>
+      <el-input v-model="newsName" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
       <span>新闻标题：</span>
-      <el-input v-model="newsTitle" clearable class="handle-search mr10"></el-input>
+      <el-input v-model="newsTitle" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
       <span>状态：</span>
       <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
         <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
@@ -280,8 +280,8 @@
   }
 
   .img {
-    width: 100px;
-    height: 50px;
+    width: 200px;
+    height: 100px;
   }
 
   img {

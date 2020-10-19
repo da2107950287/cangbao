@@ -1,7 +1,6 @@
 <template>
   <el-form ref="form" :model="form" :rules="rules" label-width="100px">
     <el-form-item label="圈子类型：" prop="cirType">
-      <div>{{form.cirType}}</div>
       <el-select v-model="form.cirType" placeholder="请选择圈子类型" class="handle-select mr10">
         <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.dicName" :value="item.dicId">
         </el-option>

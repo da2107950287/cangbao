@@ -41,7 +41,7 @@
           password: '',
           type: 1
         },
-        checked: false,
+        checked: true,
         rules: {
           account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
           password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
@@ -65,8 +65,9 @@
                 }
                 localStorage.setItem("rememberPsw", this.checked);
                 that.$message.success('登录成功');
+                localStorage.setItem("power",JSON.stringify(res.data.Power))
                 localStorage.setItem('userinfo', JSON.stringify(res.data.data));
-                that.$router.push('/');
+                that.$router.push('/dashboard');
               }
             })
           } else {
