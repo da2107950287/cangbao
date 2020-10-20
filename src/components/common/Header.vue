@@ -6,6 +6,7 @@
             <i v-else class="el-icon-s-unfold"></i>
         </div>
         <div class="logo">藏宝后台管理系统</div>
+
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->
@@ -15,14 +16,14 @@
                     </el-tooltip>
                 </div>
                 <!-- 消息中心 -->
-                <div class="btn-bell">
+                <!-- <div class="btn-bell">
                     <el-tooltip effect="dark" :content="message?`有${message}条未读消息`:`消息中心`" placement="bottom">
                         <router-link to="/tabs">
                             <i class="el-icon-bell"></i>
                         </router-link>
                     </el-tooltip>
                     <span class="btn-bell-badge" v-if="message"></span>
-                </div>
+                </div> -->
                 <!-- 用户头像 -->
                 <div class="user-avator">
                     <img :src="avator" />
@@ -71,7 +72,7 @@
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if (command == 'loginout') {
-                    localStorage.removeItem('ms_username');
+                    localStorage.removeItem('userinfo');
                     this.$router.push('/login');
                 }
             },

@@ -3,7 +3,10 @@ import VueRouter from 'vue-router'
 
 
 Vue.use(VueRouter)
-
+const originalPush = VueRouter.prototype.push
+   VueRouter.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+}
 const routes = [
   {
     path: '/',
@@ -52,7 +55,12 @@ const routes = [
         component: () => import(/* webpackChunkName: "dashboard" */ 'views/collection/CollCategory.vue'),
         meta: { title: '藏品类别管理', isShow: true }
       },
-
+      //用户管理
+      {
+        path: '/user',
+        component: () => import(/* webpackChunkName: "dashboard" */ 'views/user/User.vue'),
+        meta: { title: '用户管理', isShow: true }
+      },
       //新闻管理
       {
         path: '/news',

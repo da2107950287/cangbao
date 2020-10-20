@@ -7,30 +7,32 @@
       <div class="handle-box">
         <span>课程状态：</span>
         <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
-          <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
+          <el-option label="全部" value="all"></el-option>
+          <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id">
           </el-option>
         </el-select>
         <span>课程类型：</span>
         <el-select v-model="couType" placeholder="请选择类型" class="handle-search mr10">
-          <el-option label="全部" value=""> </el-option>
+          <el-option label="全部" value=""></el-option>
           <el-option v-for="(item,index) in dictionarysList" :key="index" :label="item.dicName" :value="item.dicId">
           </el-option>
         </el-select>
         <span>课程名称：</span>
-        <el-input v-model="couName" placeholder="请输入关键字" class="handle-search mr10"></el-input>
+        <el-input v-model="couName" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
         <el-button type="primary" class="handle-del mr10" @click="getCourse">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCourses">新建</el-button>
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-        <el-table-column prop="couType" label="课程类型" align="center"></el-table-column>
-        <el-table-column prop="couName" label="课程名" align="center"></el-table-column>
+        <el-table-column prop="couTypeName" label="课程类型" align="center"></el-table-column>
+        <el-table-column prop="couName" label="课程名称" align="center"></el-table-column>
         <el-table-column label="课程封面" align="center" width="200">
           <template slot-scope="scope">
-            <el-image :src="scope.row.cover" style="max-width: 180px;max-height: 100px;"></el-image>
+            <img :src="scope.row.cover" style="max-width: 180px;max-height: 100px;"></img>
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="单价" align="center"></el-table-column>
+        <el-table-column prop="number" label="学习人数" align="center"></el-table-column>
+
         <el-table-column label="状态" align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.state==1">上架</span>
@@ -60,7 +62,8 @@
         <h3>添加课程</h3>
       </div>
       <el-divider></el-divider>
-      <course-form :form="form" :dictionarysList="dictionarysList" @saveEdit="saveEditCourse(form)"></course-form>
+      <course-form :form="form" :stateList="stateList" :dictionarysList="dictionarysList"
+        @saveEdit="saveEditCourse(form)"></course-form>
     </div>
     <div v-else-if="type==2">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
@@ -70,14 +73,16 @@
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
         <!-- 课程信息 -->
         <el-tab-pane label="课程信息" name="c1">
-          <course-form :form="form" :dictionarysList="dictionarysList" @saveEdit="saveEditCourse(form)"></course-form>
+          <course-form :form="form" :stateList="stateList" :dictionarysList="dictionarysList"
+            @saveEdit="saveEditCourse(form)"></course-form>
         </el-tab-pane>
         <!-- 课程目录 -->
         <el-tab-pane label="课程目录" name="c2">
           <div class="handle-box">
             <span>目录状态：</span>
             <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
-              <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
+              <el-option label="全部" value="all"></el-option>
+              <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
             <el-button type="primary" class="handle-del mr10" @click="getCatalogue">搜索</el-button>
@@ -117,12 +122,12 @@
         <!-- 评论列表 -->
         <el-tab-pane label="评论列表" name="c3">
           <span>评论状态：</span>
-        <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
-          <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
-          </el-option>
-        </el-select>
-        <el-button type="primary" class="handle-del mr10" @click="getCourseComment">搜索</el-button>
-
+          <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
+            <el-option label="全部" value="all"></el-option>
+            <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id">
+            </el-option>
+          </el-select>
+          <el-button type="primary" class="handle-del mr10" @click="getCourseComment">搜索</el-button>
           <div style="display: flex;margin-top: 10px;" v-for="(el,index) in courseComment" :key="index">
             <img :src="el.headportrait" style="width: 50px;height: 50px;" class="mr10">
             <div style="width: 100%;">
@@ -137,7 +142,7 @@
                   controls></video>
               </div>
               <div v-else>
-                <el-image style="width: 200px;height: 100px;" v-for="(item,index) in el.picture" :key="index"
+                <imgstyle="width: 200px;height: 100px;" v-for="(item,index) in el.picture" :key="index"
                   :src="item"></el-image>
               </div>
               <div style="display: flex;justify-content: flex-end;margin-top: 10px;">
@@ -147,8 +152,9 @@
                 </el-button>
               </div>
             </div>
+            <el-divider></el-divider>
           </div>
-          <el-divider></el-divider>
+
 
           <div class="pagination">
             <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
@@ -161,52 +167,14 @@
     <div v-else-if="type==3">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
         <img src="../../assets/img/goback.png" @click="$router.go(-1)" class="mr10">
-        <h3>修改目录</h3>
+        <h3 v-if="query.catId">修改目录</h3>
+        <h3 v-else>添加目录</h3>
       </div>
       <el-divider></el-divider>
-      <catalogue-form :form="form" :dictionarysList="dictionarysList" @saveEdit="saveEditCatalogue"></catalogue-form>
+      <catalogue-form :form="form" :stateList="stateList" :dictionarysList="dictionarysList"
+        @saveEdit="saveEditCatalogue"></catalogue-form>
     </div>
-    <div v-else-if="type==4">
-      <div class="handle-box">
-        <span>状态：</span>
-        <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
-          <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
-          </el-option>
-        </el-select>
-        <el-button type="primary" class="handle-del mr10" @click="getCourse">搜索</el-button>
-      </div>
-      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-        <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-        <el-table-column prop="catName" label="课程目录" align="center"></el-table-column>
-        <el-table-column label="课程类型" align="center">
-          <template slot-scope="scope">
-            <span v-if="scope.row.catType==1">图文</span>
-            <span v-else>视频</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" align="center">
-          <template slot-scope="scope">
-            <span v-if="scope.row.state==1">上架</span>
-            <span v-else>下架</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" align="center">
-          <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="updateCatalogueState(scope.row)">
-              <span v-if="scope.row.state==1">下架</span>
-              <span v-else>上架</span>
-            </el-button>
-            <el-button type="primary" size="mini" @click="updateCatalogue(scope.row)">编辑</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div class="pagination">
-        <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
-          :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event,3)"
-          @size-change="handleSizeChange($event,1)"></el-pagination>
-      </div>
-    </div>
-  </div>
+ </div>
 </template>
 <script>
   import CourseForm from "components/course/CourseForm.vue"
@@ -229,14 +197,11 @@
         tabIndex: '',
         form: {
           cover: "",
-          catType: "1",
-          state: "1"
 
         },
-        statesList: [
-          { id: "all", name: "全部" },
-          { id: 1, name: "上架" },
-          { id: 2, name: "下架" }
+        stateList: [
+          { id: "1", name: "上架" },
+          { id: "2", name: "下架" }
         ],
       };
     },
@@ -261,17 +226,21 @@
         } else {
           this.getCourseComment()
         }
-
       },
       getType() {
         this.query = this.$route.query;
+        this.tableData=[]
         if (this.query.type) {
           this.type = this.query.type;
         } else {
           this.type = 0;
           this.getCourse();
         }
-        if (this.type == 2) {
+        if (this.type == 1) {
+          this.form = {
+            cover: "",
+          }
+        } else if (this.type == 2) {
           if (this.tabIndex == 0) {
             this.getCourseInfo()
           } else if (this.tabIndex == 1) {
@@ -280,6 +249,7 @@
             this.getCourseComment()
           }
         } else if (this.type == 3) {
+          console.log(99)
           this.getCatalogueInfo()
         } else if (this.type == 4) {
           this.getCourseComment();
@@ -346,7 +316,7 @@
       //获取目录详情
       getCatalogueInfo() {
         this.$post("/course/showCatalogue", {
-          catId: this.$route.query.catId,
+          catId: this.query.catId,
         }).then(res => {
           if (res.code == 200) {
             this.form = res.data;
@@ -369,19 +339,18 @@
       },
       addCourses() {
         this.$router.push({ path: '/course', query: { type: 1 } })
+       
       },
       updateCourse(row) {
         this.$router.push({ path: '/course', query: { type: 2, couId: row.couId } })
       },
       addCatalogue() {
-        this.form = {
-          catType: "1",
-          state: "1"
-        }
         this.$router.push({ path: '/course', query: { type: 3, couId: this.query.couId } })
+        this.form={}
+       this.$set(this.form,"content","")
       },
-     //触发编辑目录按钮
-     updateCatalogue(row) {
+      //触发编辑目录按钮
+      updateCatalogue(row) {
         this.$router.push({ path: '/course', query: { type: 3, couId: this.query.couId, catId: row.catId } })
       },
       //修改课程状态
@@ -420,8 +389,6 @@
           }
         })
       },
-
-      
       // 修改/添加课程
       saveEditCourse(form) {
         if (this.query.couId) {

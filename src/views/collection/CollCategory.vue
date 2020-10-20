@@ -13,7 +13,7 @@
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
         <el-table-column prop="ccName" label="类别名称" align="center"></el-table-column>
-        <el-table-column label="区域状态" align="center">
+        <el-table-column label="类别状态" align="center">
           <template slot-scope="scope">
             <div v-if="scope.row.state==1">上架</div>
             <div v-else>下架</div>
@@ -21,7 +21,7 @@
         </el-table-column>
         <el-table-column label="操作" width="400" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="editCollCategory(scope.row)">查看</el-button>
+            <el-button type="primary" size="mini" @click="editCollCategory(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -34,8 +34,8 @@
             <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="名称：" prop="ccName">
-          <el-input v-model="form.ccName" placeholder="请输入区域名称" class="handle-input mr10"></el-input>
+        <el-form-item label="类别：" prop="ccName">
+          <el-input v-model="form.ccName" placeholder="请输入类别" class="handle-input mr10"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -58,8 +58,8 @@
         title: "",
         form: {},
         rules: {
-          state: [{ required: true, message: "请上传图片", trigger: "blur" }],
-          ccName: [{ required: true, message: "请输入名称", trigger: "blur" }],
+          state: [{ required: true, message: "请选择状态", trigger: "blur" }],
+          ccName: [{ required: true, message: "请输入类别", trigger: "blur" }],
         },
         //状态选项
         statesList: [
@@ -73,7 +73,7 @@
       this.getCollCategory();
     },
     methods: {
-      // 获取藏品区域
+      // 获取藏品类别
       getCollCategory() {
         this.$post("/circle/getCollCategory", {
           state:this.state
@@ -88,13 +88,14 @@
       addCollCategory() {
         this.editVisible = true;
         this.isAdd = true;
-        this.title = "添加地区"
+        this.title = "添加类别";
+        this.form={};
       },
       //触发编辑按钮
       editCollCategory(row) {
         this.editVisible = true;
         this.isAdd = false;
-        this.title = "编辑地区信息"
+        this.title = "编辑类别信息"
         this.form = row;
       },
       // 保存编辑

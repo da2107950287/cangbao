@@ -66,7 +66,12 @@
                 localStorage.setItem("rememberPsw", this.checked);
                 that.$message.success('登录成功');
                 localStorage.setItem("power",JSON.stringify(res.data.Power))
-                localStorage.setItem('userinfo', JSON.stringify(res.data.data));
+                let userinfo={
+                  mtoken:res.data.data.mtoken,
+                  account:res.data.data.account,
+                  headportrait:res.data.data.headportrait
+                }
+                localStorage.setItem('userinfo', JSON.stringify(userinfo));
                 that.$router.push('/dashboard');
               }
             })

@@ -41,7 +41,7 @@
             }
         },
         created() {
-            console.log(this.$route)
+     
             this.setTags(this.$route);
 
             // 监听关闭当前页面的标签页

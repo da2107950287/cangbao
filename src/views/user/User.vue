@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div v-if="type==0">
-      <h3>藏友圈列表</h3>
+      <h3>用户列表</h3>
       <el-divider></el-divider>
       <div class="handle-box">
         <span>状态：</span>
@@ -10,34 +10,34 @@
           <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id">
           </el-option>
         </el-select>
-        <span>类型：</span>
-        <el-select v-model="cirType" placeholder="请选择圈子类型" class="handle-search  mr10">
-          <el-option label="全部" value=""></el-option>
-          <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.dicName" :value="item.dicId">
-          </el-option>
-        </el-select>
-        <span>藏友圈名称：</span>
-        <el-input v-model="cirName" placeholder="请输入关键字" class="handle-search mr10" clearable></el-input>
-        <el-button type="primary" class="handle-del mr10" @click="getCircle">搜索</el-button>
+        <span>注册时间：</span>
+        <el-date-picker v-model="daterange" type="daterange" value-format="yyyy-MM-dd" range-separator="至"
+          start-placeholder="开始日期" end-placeholder="结束日期" class="mr10">
+        </el-date-picker>
+        <span>手机号：</span>
+        <el-input v-model="account" placeholder="请输入手机号" class="handle-search mr10" clearable></el-input>
+        <el-button type="primary" class="handle-del mr10" @click="getUserinfo">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCircle">新建</el-button>
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-        <el-table-column prop="cirType" label="圈子类型" align="center"></el-table-column>
-        <el-table-column prop="cirName" label="圈子名称" align="center"></el-table-column>
-        <el-table-column prop="number" label="圈子人数" align="center"></el-table-column>
-        <el-table-column prop="dynamicNumber" label="动态数量" align="center"></el-table-column>
+        <el-table-column prop="uid" label="用户ID" align="center"></el-table-column>
+        <el-table-column prop="account" label="手机号" align="center"></el-table-column>
+        <el-table-column prop="nickname" label="昵称" align="center"></el-table-column>
+        <el-table-column prop="registertime" label="注册时间" align="center"></el-table-column>
         <el-table-column label="状态" align="center">
           <template slot-scope="scope">
-            <span v-if="scope.row.state==0">待审核</span>
-            <span v-else-if="scope.row.state==1">上架</span>
-            <span v-else>下架</span>
+            <span v-if="scope.row.state==1">正常</span>
+            <span v-else>异常</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="400" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="updateCircleState(scope.row)">修改状态</el-button>
-            <el-button type="primary" size="mini" @click="updateCircle(scope.row)">编辑</el-button>
+            <el-button type="primary" size="mini" @click="updateUserinfo(scope.row)">
+              <span v-if="scope.row.state==1">冻结</span>
+              <span v-else>解冻</span>
+            </el-button>
+            <el-button type="primary" size="mini" @click="updateCircle(scope.row)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -47,81 +47,42 @@
           @size-change="handleSizeChange($event,1)"></el-pagination>
       </div>
     </div>
-    <div v-if="type==1">
-      <div style="display: flex;align-items: center;">
-        <img src="../../assets/img/goback.png" @click="$router.push('/circle')" class="mr10">
-        <h3>添加圈子</h3>
-      </div>
-      <el-divider></el-divider>
-      <circle-form :form="form" :stateList="stateList" :dictionaryList="dictionaryList" @saveEdit="saveCircleEdit">
-      </circle-form>
-    </div>
-    <div v-if="type==2">
+
+    <div v-else-if="type==2">
       <div style="display: flex;align-items: center;" class="mb20">
-        <img src="../../assets/img/goback.png" @click="$router.push('/circle')" class="mr10">
-        <h3>编辑圈子</h3>
+        <img src="../../assets/img/goback.png" @click="$router.push('/user')" class="mr10">
+        <h3>编辑用户</h3>
       </div>
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-        <el-tab-pane label="圈子详情" name="first">
-          <circle-form :form="form" :stateList="stateList" :dictionaryList="dictionaryList" @saveEdit="saveCircleEdit">
-          </circle-form>
+        <el-tab-pane label="基本信息" name="first" class="info">
+          <div>用户ID：{{form.uid}}</div>
+          <div>昵称：{{form.nickname}}</div>
+          <div>手机号：{{form.account}}</div>
+          <div>注册时间：{{form.registertime}}</div>
+          <div>用户头像：<img :src="form.headportrait" alt=""></div>
         </el-tab-pane>
-        <el-tab-pane label="圈子动态" name="second">
+        <el-tab-pane label="动态" name="second">
           <div class="handle-box">
             <span>状态：</span>
             <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
               <el-option label="全部" value="all"></el-option>
-
               <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
             <span>动态类型：</span>
             <el-select v-model="dyType" placeholder="请选择圈子类型" class="handle-search  mr10">
               <el-option label="全部" value="all"></el-option>
-
               <el-option v-for="(item,index) in dyTypeList" :key="index" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
             <el-button type="primary" class="handle-del mr10" @click="getDynamic">搜索</el-button>
           </div>
-          <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+          <el-table :data="tableData" class="table" ref="multipleTable" header-cell-class-name="table-header">
             <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-            <el-table-column prop="nickname" label="动态发布者" align="center"></el-table-column>
-            <el-table-column prop="cirName" label="圈子名称" align="center"></el-table-column>
-            <el-table-column prop="" label="发布者头像" align="center">
-              <template slot-scope="scope">
-                <el-image :src="scope.row.headportrait" class="img60"></el-image>
-              </template>
-            </el-table-column>
-            <el-table-column prop="" label="发布图片/视频" align="center" width="200">
-              <template slot-scope="scope">
-                <video v-if="scope.row.dyType==1" style="width: 180px;height: 100px;" :src="scope.row.picture"
-                  controls></video>
-                <el-image v-else-if="scope.row.dyType==2" style="width: 180px;height: 100px;" :src="scope.row.picture">
-                </el-image>
-              </template>
-            </el-table-column>
             <el-table-column prop="content" label="发布内容" align="center" show-overflow-tooltip></el-table-column>
             <el-table-column prop="commentNumber" label="评论数量" align="center"></el-table-column>
             <el-table-column prop="clickNumber" label="点击数量" align="center"></el-table-column>
             <el-table-column prop="collNumber" label="收藏数量" align="center"></el-table-column>
-            <el-table-column label="状态" align="center">
-              <template slot-scope="scope">
-                <span v-if="scope.row.state==0">待审核</span>
-                <span v-else-if="scope.row.state==1">上架</span>
-                <span v-else>下架</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="250" align="center">
-              <template slot-scope="scope">
-                <el-button type="primary" size="mini" @click="updateDynamicState(scope.row)">
-                  <span v-if="scope.row.state==1">下架</span>
-                  <span v-else>上架</span>
-                </el-button>
-                <el-button type="primary" size="mini" @click="updateDynamic(scope.row)">编辑</el-button>
-                <el-button type="danger" size="mini" @click="deleteDynamic(scope.$index,scope.row)">删除</el-button>
-              </template>
-            </el-table-column>
           </el-table>
           <div class="pagination">
             <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
@@ -129,26 +90,22 @@
               @size-change="handleSizeChange($event,2)"></el-pagination>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="打赏排行榜" name="third">
-          <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+        <el-tab-pane label="圈子" name="third">
+          <el-table :data="tableData" class="table" ref="multipleTable" header-cell-class-name="table-header">
             <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-            <el-table-column prop="nickname" label="用户名" align="center"></el-table-column>
-            <el-table-column label="用户头像" align="center">
-              <template slot-scope="scope">
-                <el-image :src="scope.row.headportrait" class="img60"></el-image>
-              </template>
-            </el-table-column>
-            <el-table-column prop="crMoney" label="打赏金额" align="center"></el-table-column>
+            <el-table-column prop="cirType" label="圈子类型" width="160" align="center"></el-table-column>
+            <el-table-column prop="cirName" label="圈子名称" width="160" align="center"></el-table-column>
+            <el-table-column prop="cirTime" label="创建时间" align="center"></el-table-column>
           </el-table>
           <div class="pagination">
             <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
-              :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event,3)"
-              @size-change="handleSizeChange($event,3)"></el-pagination>
+              :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event,1)"
+              @size-change="handleSizeChange($event,1)"></el-pagination>
           </div>
         </el-tab-pane>
       </el-tabs>
     </div>
-    <div v-if="type==3">
+    <div v-else-if="type==3">
       <div style="display: flex;align-items: center;" class="mb20">
         <img src="../../assets/img/goback.png" style="width: 28px;height: 28px;" @click="$router.go(-1)" class="mr10">
         <h3>动态详情</h3>
@@ -215,7 +172,7 @@
           @size-change="handleSizeChange($event,4)"></el-pagination>
       </div>
     </div>
-    <div v-if="type==4">
+    <div v-else-if="type==4">
       <div style="display: flex;align-items: center;" class="mb20">
         <img src="../../assets/img/goback.png" style="width: 28px;height: 28px;" @click="$router.go(-1)" class="mr10">
         <h3>回复列表</h3>
@@ -254,19 +211,7 @@
           @size-change="handleSizeChange($event,5)"></el-pagination>
       </div>
     </div>
-    <el-dialog title="修改圈子状态" center :visible.sync="editVisible" width="30%">
-      <el-form ref="form" :model="form" label-width="100px">
-        <el-form-item label="圈子状态：" prop="state">
-          <el-radio v-model="form.state" label="0">待审核</el-radio>
-          <el-radio v-model="form.state" label="1">上架</el-radio>
-          <el-radio v-model="form.state" label="2">下架</el-radio>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="saveCircleEditState">确 定</el-button>
-        <el-button @click="editVisible = false">取 消</el-button>
-      </span>
-    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -275,6 +220,8 @@
   export default {
     data() {
       return {
+        daterange: [],
+        account: "",
         type: 0,
         query: {},
         tabIndex: "",
@@ -331,11 +278,11 @@
         this.tabIndex = tab.index;
         if (this.query.type == 2) {
           if (tab.index == 0) {
-            this.getCircleInfo()
+            this.getUserinfoInfo()
           } else if (tab.index == 1) {
             this.getDynamic()
           } else {
-            this.getRewardList()
+            this.getCircle()
           }
         }
       },
@@ -347,15 +294,15 @@
           this.type = this.query.type
         } else {
           this.type = 0;
-          this.getCircle()
+          this.getUserinfo()
         }
         if (this.type == 2) {//圈子列表
           if (this.tabIndex == 0) {
-            this.getCircleInfo()
+            this.getUserinfoInfo()
           } else if (this.tabIndex == 1) {
             this.getDynamic()
           } else {
-            this.getRewardList()
+            this.getCircle()
           }
         } else if (this.type == 3) {
           this.getDynamicInfo()
@@ -365,11 +312,12 @@
         }
       },
       //获取圈子列表
-      getCircle() {
-        this.$post("/circle/getCircle", {
+      getUserinfo() {
+        this.$post("/userinfo/getUserinfo", {
           state: this.state,
-          cirType: this.cirType,
-          cirName: this.cirName,
+          starttime: this.daterange[0],
+          endtime: this.daterange[1],
+          account: this.account,
           PageNumber: this.PageNumber,
           PageSize: this.PageSize
         }).then(res => {
@@ -390,9 +338,9 @@
         })
       },
       //获取圈子详情
-      getCircleInfo() {
-        this.$post("/circle/showCircle", {
-          cirId: this.query.cirId
+      getUserinfoInfo() {
+        this.$post("/userinfo/showUserinfo", {
+          uid: this.query.uid
         }).then(res => {
           if (res.code == 200) {
             this.form = res.data
@@ -413,14 +361,14 @@
       },
       //查看圈子
       updateCircle(row) {
-        this.$router.push({ path: "/circle", query: { type: 2, cirId: row.cirId } })
+        this.$router.push({ path: "/user", query: { type: 2, uid: row.uid } })
       },
       //获取动态列表
       getDynamic() {
         this.$post("/circle/getDynamic", {
           state: this.state,
           dyType: this.dyType,
-          cirId: this.query.cirId,
+          uid: this.query.uid,
           PageNumber: this.PageNumber,
           PageSize: this.PageSize
         }).then(res => {
@@ -434,9 +382,10 @@
         })
       },
       //获取打赏排行榜
-      getRewardList() {
-        this.$post("/circle/getCircleUser", {
-          cirId: this.query.cirId,
+      getCircle() {
+        this.$post("/circle/getCircle", {
+          state: "all",
+          uid: this.query.uid,
           PageNumber: this.PageNumber,
           PageSize: this.PageSize
         }).then(res => {
@@ -458,24 +407,23 @@
       },
 
       //修改藏友圈状态
-      updateCircleState(row) {
-        this.editVisible = true;
-        this.form = row;
-      },
-      //修改圈子状态
-      saveCircleEditState() {
-        this.$post("/circle/updateCircleState", {
-          cirId: this.form.cirId,
-          state: this.form.state,
+      updateUserinfo(row) {
+        let state;
+        if (row.state == 1) {
+          state = 2
+        } else if (row.state == 2) {
+          state = 1
+        }
+        this.$post("/userinfo/updateUserinfo", {
+          uid: row.uid,
+          state
         }).then(res => {
           if (res.code == 200) {
-            this.editVisible = false
-            this.$message.success(res.msg);
-            this.getCircle()
+            this.$message.success(res.msg)
+            this.getUserinfo();
           }
         })
       },
-
       //修改动态状态
       updateDynamicState(row) {
         console.log(row)
@@ -609,11 +557,11 @@
       },
       handleType(type) {
         if (type == 1) {
-          this.getCircle();
+          this.getUserinfo();
         } else if (type == 2) {
           this.getDynamic()
         } else if (type == 3) {
-          this.getRewardList()
+          this.getCircle()
         } else if (type == 4) {
           this.getOneDynamicComment()
         } else if (type == 5) {
@@ -664,5 +612,13 @@
   .table {
     width: 100%;
     font-size: 14px;
+  }
+  .info{
+    color: #606266;
+    line-height: 40px;
+   div{
+    display: flex;
+    align-items: center;
+   }
   }
 </style>

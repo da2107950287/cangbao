@@ -10,9 +10,10 @@
       <el-input v-model="form.cirName" placeholder="请输入圈子名称" class="handle-input"></el-input>
     </el-form-item>
     <el-form-item label="圈子状态：" prop="state">
-      <el-radio v-model="form.state" label="0">待审核</el-radio>
-      <el-radio v-model="form.state" label="1">上架</el-radio>
-      <el-radio v-model="form.state" label="2">下架</el-radio>
+      <el-select v-model="form.state" placeholder="请选择类型" class="handle-select mr10">
+        <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id">
+        </el-option>
+      </el-select>
     </el-form-item>
     <el-form-item label="圈子头像：" prop="cirUrl" class="personal-icon">
       <label for="cirUrl" icon="el-icon-plus">
@@ -48,6 +49,13 @@
           return {}
         }
       },
+      stateList:{
+        type: Array,
+        default() {
+          return []
+        }
+      },
+      
       dictionaryList: {
         type: Array,
         default() {

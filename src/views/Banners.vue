@@ -3,13 +3,14 @@
     <div class="handle-box">
       <span>位置：</span>
       <el-select v-model="position" placeholder="请选择位置" class="handle-select mr10">
+        <el-option label="全部" value=""></el-option>
         <el-option v-for="(item,index) in positionList" :key="index" :label="item.name" :value="item.id"></el-option>
       </el-select>
       <span>状态：</span>
       <el-select v-model="state" placeholder="请选择状态" class="handle-select mr10">
         <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
       </el-select>
-      <el-button type="primary" class="handle-del mr10" @click="getData">搜索</el-button>
+      <el-button type="primary" class="handle-del mr10" @click="getBanner">搜索</el-button>
       <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addBanners">新建</el-button>
     </div>
     <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
@@ -39,8 +40,9 @@
       </el-table-column>
     </el-table>
     <div class="pagination">
-      <el-pagination background layout="total, prev, pager, next" :current-page="PageNumber" :page-size="PageSize"
-        :total="pageTotal" @current-change="handlePageChange"></el-pagination>
+      <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
+        :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event)"
+        @size-change="handleSizeChange($event)"></el-pagination>
     </div>
     <!-- 编辑弹出框 -->
     <el-dialog :title="title" center :visible.sync="editVisible" width="800">
@@ -78,7 +80,7 @@
   export default {
     data() {
       return {
-        position: "1",
+        position: "",
         state: "all",
         PageNumber: 1,
         PageSize: 10,
@@ -118,11 +120,11 @@
       }
     },
     created() {
-      this.getData()
+      this.getBanner()
     },
     methods: {
       //获取数据
-      getData() {
+      getBanner() {
         this.$post("/other/getBanner", {
           positions: this.position,
           state: this.state,
@@ -159,7 +161,7 @@
           state: state
         }).then(res => {
           if (res.code == 200) {
-            this.getData()
+            this.getBanner()
             this.$message.success("操作成功")
           }
         })
@@ -170,7 +172,7 @@
         this.isAdd = 1;
         this.title = "添加banner";
       },
-      //出发编辑按钮
+      //触发编辑按钮
       updateBanners(row) {
         this.editVisible = true;
         this.title = "编辑banner信息";
@@ -189,14 +191,14 @@
             if (this.isAdd == 1) {
               this.$post("/other/insertBanner", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getData()
+                  this.getBanner()
                   this.$message.success(res.msg)
                 }
               })
             } else {
               this.$post("/other/updateBanner", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getData()
+                  this.getBanner()
                   this.$message.success(res.msg)
                 }
               })
@@ -205,28 +207,16 @@
         })
       },
 
-      // 删除操作
-      deleteDictionary(index, row) {
-        // 二次确认删除
-        this.$confirm('确定要删除吗？', '提示', {
-          type: 'warning'
-        }).then(() => {
-          // this.$post("/other/deleteDictionary", {
-          //   dicId: row.dicId
-          // }).then(res => {
-          //   if (res.code == 200) {
-          //     this.$message.success(res.msg);
-          //     this.tableData.splice(index, 1);
-          //   }
-          // })
-        })
-      },
+     
       // 分页导航
       handlePageChange(val) {
         this.PageNumber = val;
-        this.getData();
+        this.getBanner();
       },
-
+      handleSizeChange(val) {
+        this.PageSize = val;
+        this.getBanner()
+      },
     },
     components: {
       EditorBar
@@ -259,8 +249,8 @@
 
 
   .img {
-    width: 200px;
-    height: 100px;
+    max-width: 200px;
+    max-height: 100px;
   }
 
   img {

@@ -4,8 +4,9 @@
       <div class="handle-box">
         <span>状态：</span>
         <el-select v-model="query.state" placeholder="状态" class="handle-select mr10">
-          <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
+          <el-option v-for="(item,index) in getManger" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
+        <span>管理员名称：</span>
         <el-input v-model="query.content" placeholder="请输入关键词" class="handle-select mr10"></el-input>
         <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addManager">新建</el-button>
@@ -24,7 +25,7 @@
         </el-table-column>
         <el-table-column label="操作" width="400" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="editManager(scope.row)">查看</el-button>
+            <el-button type="primary" size="mini" @click="editManager(scope.row)">编辑</el-button>
             <el-button type="primary" size="mini" @click="updateState(scope.row)">
               <span v-if="scope.row.state==1">禁用</span>
               <span v-else>启用</span>
@@ -126,7 +127,7 @@
           rId: [{ required: true, message: "请选择角色", trigger: "blur" }]
         },
         //状态选项
-        statesList: [
+        getManger: [
           { id: "all", name: "全部" },
           { id: "1", name: "正常" },
           { id: "2", name: "禁用" },
@@ -188,8 +189,7 @@
       saveEdit() {
         this.$refs.form.validate(valid => {
           if (valid) {
-        this.editVisible = false;
-
+            this.editVisible = false;
             if (this.isAdd) {
               this.$post("/userinfo/addManger", this.form).then(res => {
                 if (res.code == 200) {

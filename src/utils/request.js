@@ -1,14 +1,14 @@
 import originAxios from 'axios'
-
-export function post(url, params) {
+import QueryString from 'qs';
+import qs from 'qs'
+export function post(url, data) {
 	let option = {
 		url,
-    params,
+    data:qs.stringify(data),
 	}
 	return new Promise((resolve, reject) => {
 		const instance = originAxios.create({
 			baseURL: '/treasurebsg',
-			timeout: 5000,
 			method: 'post'
 		});
 		// 配置请求和响应拦截
@@ -59,7 +59,7 @@ export function uploadPost(url, data) {
 		// 1.创建axios的实例
 		const instance = originAxios.create({
 			baseURL: '/treasurebsg',
-			timeout: 5000,
+
 			method: 'post',
 		});
 		// 配置请求和响应拦截

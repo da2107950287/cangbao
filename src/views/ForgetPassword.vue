@@ -14,9 +14,6 @@
         </el-form-item>
         <el-form-item prop="password">
           <el-input type="password" placeholder="请输入密码" v-model="param.password" @keyup.enter.native="submitForm()">
-            <!-- <div style="margin-right:-5px" slot="suffix" @click="refreshCode">
-              <s-identify :identifyCode="identifyCode"></s-identify>
-            </div> -->
           </el-input>
         </el-form-item>
         <div class="login-btn">
@@ -29,7 +26,7 @@
 </template>
 
 <script>
-  import SIdentify from "components/identify/Identify";
+
   export default {
     data: function () {
       return {
@@ -41,8 +38,7 @@
         codeMsg: '获取验证码',
         totalTime: 60,//倒计时60s
         canClick: false,//短信验证码开关
-        identifyCodes: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-        identifyCode: "",
+       
         rules: {
           mobile: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
           verify: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
@@ -50,29 +46,10 @@
         },
       };
     },
-    created() {
-      this.refreshCode();
-    },
+    
     methods: {
-      // 生成随机数
-      randomNum(min, max) {
-        return Math.floor(Math.random() * (max - min) + min);
-      },
-
-      // 切换验证码
-      refreshCode() {
-        this.identifyCode = "";
-        this.makeCode(this.identifyCodes, 4);
-      },
-
-      // 生成四位随机验证码
-      makeCode(o, l) {
-        for (let i = 0; i < l; i++) {
-          this.identifyCode += this.identifyCodes[
-            this.randomNum(0, this.identifyCodes.length)
-          ];
-        }
-      },
+     
+      
       //点击验证码
       codeClick() {
         if (this.param.mobile) {
@@ -128,9 +105,7 @@
         });
       },
     },
-    components: {
-      SIdentify
-    }
+    
   };
 </script>
 

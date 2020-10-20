@@ -4,7 +4,9 @@
       <div class="handle-box">
         <span>状态：</span>
         <el-select v-model="state" placeholder="状态" class=" mr10">
-          <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
+          <el-option label="全部" value="all"></el-option>
+
+          <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
         <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="editVisible=true">新建</el-button>
@@ -37,13 +39,16 @@
         <el-form-item label="角色名称：" prop="rName">
           <el-input v-model="form.rName" placeholder="请输入角色名称" class="handle-select mr10"></el-input>
         </el-form-item>
+        <el-form-item label="角色状态：" prop="state">
+          <el-select v-model="form.state" placeholder="请选择状态" class="handle-select mr10">
+  
+            <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="角色描述：" prop="describes">
           <el-input type="textarea" v-model="form.describes" placeholder="请输入描述" class="handle-select mr10"></el-input>
         </el-form-item>
-        <el-form-item label="角色状态：" prop="state">
-          <el-radio v-model="form.state" label="1">启用</el-radio>
-          <el-radio v-model="form.state" label="2">禁用</el-radio>
-        </el-form-item>
+      
         <el-form-item label="权限列表：" prop="pIds">
           <el-checkbox-group v-model="form.pIds">
             <el-checkbox v-for="item in powers" :label="item.pId" :key="item.pId">{{item.pName}}</el-checkbox>
@@ -79,8 +84,8 @@
           pIds: [{ required: true, message: "请选择角色权限", trigger: "blur" }],
         },
         //状态选项
-        statesList: [
-          { id: "all", name: "全部" },
+        stateList: [
+         
           { id: "1", name: "正常" },
           { id: "2", name: "禁用" },
         ],

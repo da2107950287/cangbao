@@ -4,20 +4,24 @@
       <el-input v-model="form.catName" placeholder="请输入课程名称" class="handle-input"></el-input>
     </el-form-item>
     <el-form-item label="目录类型：" prop="catType">
-      <el-radio v-model="form.catType" label="1">视频</el-radio>
-      <el-radio v-model="form.catType" label="2">图文</el-radio>
+      <el-select v-model="form.catType" placeholder="请选择状态" class="handle-select mr10">
+        <el-option v-for="(item,index) in catalogType" :key="index" :label="item.name" :value="item.id">
+        </el-option>
+      </el-select>
     </el-form-item>
     <el-form-item label="课程状态：" prop="state">
-      <el-radio v-model="form.state" label="1">上架</el-radio>
-      <el-radio v-model="form.state" label="2">下架</el-radio>
+      <el-select v-model="form.state" placeholder="请选择状态" class="handle-select mr10">
+        <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id">
+        </el-option>
+      </el-select>
     </el-form-item>
     <el-form-item label="课程内容：" prop="content" style="width: 1000px;">
       <label v-if="form.catType==1" for="inputId" icon="el-icon-plus">
-        <video v-if="form.content" :src="form.content" pxcontrols></video>
-        <div style="color: #fff;
+        <video v-if="form.content" :src="form.content" controls style="width: 200px;height: 100px;"></video>
+        <div v-else style="color: #fff;
         padding:0 5px;background-color: #1296db;width: 60px;border-radius: 5px;">上传视频</div>
         <input style="display: none" id="inputId" ref="input" type="file"
-          accept="image/gif, image/jpeg, image/jpg, image/png, image/svg" @change="handleFileChange" />
+           @change="handleFileChange" />
       </label>
       <editor-bar v-if="form.catType==2" :value="form.content" v-model="form.content"></editor-bar>
     </el-form-item>
@@ -36,6 +40,12 @@
           return {}
         }
       },
+      stateList:{
+        type: Array,
+        default() {
+          return []
+        },
+      },
       dictionarysList: {
         type: Array,
         default() {
@@ -46,6 +56,10 @@
 
     data() {
       return {
+        catalogType: [
+          { id: "1", name: "视频" },
+          { id: "2", name: "图文" }
+        ],
         rules: {
           catType: [{ required: true, message: "请选择课程类型", trigger: "blur" }],
           catName: [{ required: true, message: "请输入课程名称", trigger: "blur" }],

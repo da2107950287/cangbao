@@ -58,10 +58,7 @@
         this.editVisible = false;
         this.$refs.form.validate(valid => {
           if (valid) {
-            let formdata = new FormData();
-            formdata.append("type", this.form.type);
-            formdata.append("content", this.form.content)
-            this.$uploadPost("/other/setAgreement", formdata).then(res => {
+            this.$post("/other/setAgreement",this.form).then(res => {
               if (res.code == 200) {
                 this.$message.success(res.msg)
               }

@@ -45,12 +45,18 @@
                     },
                     {
                         icon: 'el-icon-menu',
-                        index: 'course',
-                        title: '课程管理'
+                        title: '课程',
+                        index:"22",
+                        subs: [
+                            {
+                                index: "course",
+                                title: "课程管理"
+                            }
+                        ]
                     },
                     {
                         icon: 'el-icon-menu',
-                        title: '藏品管理',
+                        title: '藏品',
                         index: '11',
                         subs: [
                             {
@@ -59,41 +65,48 @@
                                 title: '藏品管理'
                             },
                             {
-                                index:'collRegion',
-                                title:'藏品区域管理'
+                                index: 'collRegion',
+                                title: '藏品区域管理'
                             },
                             {
-                                index:'collYears',
-                                title:'藏品年份管理'
+                                index: 'collYears',
+                                title: '藏品年份管理'
                             },
                             {
-                                index:'collCategory',
-                                title:'藏品类别管理'
-                            }                        ]
+                                index: 'collCategory',
+                                title: '藏品类别管理'
+                            }]
 
                     },
                     {
                         icon: 'el-icon-menu',
-                        title: '藏友圈管理',
+                        title: '藏友圈',
                         index: '1',
                         subs: [
                             {
 
                                 index: 'circle',
-                                title: '藏友圈列表'
+                                title: '藏友圈管理'
                             }
                         ]
 
                     },
-                    {
-                        icon: 'el-icon-menu',
-                        index: '2',
-                        title: '动态列表'
-                    },
+                    // {
+                    //     icon: 'el-icon-menu',
+                    //     index: '2',
+                    //     title: '动态列表'
+                    // },
                     {
                         icon: 'el-icon-menu',
                         index: '3',
-                        title: '用户管理'
+                        title: '用户',
+                        subs: [
+                            {
+
+                                index: 'user',
+                                title: '用户管理'
+                            }
+                        ]
                     },
                     {
                         icon: 'el-icon-menu',
@@ -167,7 +180,7 @@
                 bus.$emit('collapse-content', msg);
             });
             let menu = JSON.parse(localStorage.getItem("power"));
-            
+
         }
     };
 </script>

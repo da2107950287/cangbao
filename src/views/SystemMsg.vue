@@ -1,10 +1,11 @@
 <template>
   <div class="container">
     <div class="handle-box">
-      <el-select v-model="state" placeholder="请选择类型" class="handle-select mr10">
+      <span>状态：</span>
+      <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
         <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
       </el-select>
-      <el-button type="primary" class="handle-del mr10" @click="getData">搜索</el-button>
+      <el-button type="primary" class="handle-del mr10" @click="getMessage">搜索</el-button>
       <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addMsg">新建</el-button>
     </div>
     <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
@@ -29,8 +30,9 @@
       </el-table-column>
     </el-table>
     <div class="pagination">
-      <el-pagination background layout="total, prev, pager, next" :current-page="PageNumber" :page-size="PageSize"
-        :total="pageTotal" @current-change="handlePageChange"></el-pagination>
+      <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
+        :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event)"
+        @size-change="handleSizeChange($event)"></el-pagination>
     </div>
     <!-- 编辑弹出框 -->
     <el-dialog :title="title" center :visible.sync="editVisible" width="800">
@@ -87,11 +89,11 @@
       }
     },
     created() {
-      this.getData()
+      this.getMessage()
     },
     methods: {
       //获取数据
-      getData() {
+      getMessage() {
         this.$post("/other/getMessage", {
           state: this.state,
           PageNumber: this.PageNumber,
@@ -122,7 +124,7 @@
         }).then(res => {
           if (res.code == 200) {
             this.$message.success(res.msg);
-            this.getData()
+            this.getMessage()
           }
         })
       },
@@ -134,14 +136,14 @@
             if (this.isAdd == 1) {
               this.$post("/other/insertMessage", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getData()
+                  this.getMessage()
                   this.$message.success(res.msg)
                 }
               })
             } else {
               this.$post("/other/updateMessage", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getData()
+                  this.getMessage()
                   this.$message.success(res.msg)
                 }
               })
@@ -150,7 +152,6 @@
         })
       },
       updateSystemMsg(row) {
-        console.log(row)
         this.editVisible = true;
         this.title = "编辑系统消息";
         this.isAdd = 0;
@@ -176,13 +177,17 @@
               this.tableData.splice(index, 1);
             }
           })
-        }).catch(() => { });
+        })
       },
       // 分页导航
       handlePageChange(val) {
         this.PageNumber = val;
-        this.getData();
-      }
+        this.getMessage();
+      },
+      handleSizeChange(val, type) {
+        this.PageSize = val;
+       this.getMessage()
+      },
     },
     components: {
       EditorBar

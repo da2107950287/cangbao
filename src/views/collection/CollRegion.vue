@@ -21,7 +21,7 @@
         </el-table-column>
         <el-table-column label="操作" width="400" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="editCollRegion(scope.row)">查看</el-button>
+            <el-button type="primary" size="mini" @click="editCollRegion(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -29,13 +29,13 @@
     <!-- 编辑弹出框 -->
     <el-dialog center :title="title" :visible.sync="editVisible" width="30%">
       <el-form ref="form" :rules="rules" :model="form" label-width="100px">
-        <el-form-item label="状态：" prop="rId">
+        <el-form-item label="状态：" prop="state">
           <el-select v-model="form.state" placeholder="请选择状态" class="handle-input mr10">
             <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="名称：" prop="account">
-          <el-input v-model="form.crName" placeholder="请输入区域名称" class="handle-input mr10"></el-input>
+        <el-form-item label="区域：" prop="crName">
+          <el-input v-model="form.crName" placeholder="请输入区域" class="handle-input mr10"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -50,23 +50,23 @@
   import { uploadPost } from "utils/request.js"
   export default {
     data() {
-     
+
       return {
-        state:"all",
-        tableData: [],  
+        state: "all",
+        tableData: [],
         editVisible: false,
         title: "",
         form: {},
         rules: {
-          state: [{ required: true, message: "请上传图片", trigger: "blur" }],
-          crName: [{ required: true, message: "请输入名称", trigger: "blur" }],
+          state: [{ required: true, message: "请选择状态", trigger: "blur" }],
+          crName: [{ required: true, message: "请输入区域", trigger: "blur" }],
         },
         //状态选项
         statesList: [
           { id: "1", name: "上架" },
           { id: "2", name: "下架" },
         ],
-        
+
       };
     },
     created() {
@@ -76,32 +76,33 @@
       // 获取藏品区域
       getCollRegion() {
         this.$post("/circle/getCollRegion", {
-          state:this.state
+          state: this.state
         }).then(res => {
           if (res.code == 200) {
             this.tableData = res.data;
           }
         })
       },
-  
+
       //触发新建按钮
       addCollRegion() {
         this.editVisible = true;
         this.isAdd = true;
-        this.title = "添加地区"
+        this.title = "添加区域";
+        this.form = {}
       },
       //触发编辑按钮
       editCollRegion(row) {
         this.editVisible = true;
         this.isAdd = false;
-        this.title = "编辑地区信息"
+        this.title = "编辑区域信息";
         this.form = row;
       },
       // 保存编辑
       saveEdit() {
         this.$refs.form.validate(valid => {
           if (valid) {
-        this.editVisible = false;
+            this.editVisible = false;
             if (this.isAdd) {
               this.$post("/circle/insertCollRegion", this.form).then(res => {
                 if (res.code == 200) {
@@ -121,7 +122,7 @@
         })
 
       },
-    
+
     }
   };
 </script>

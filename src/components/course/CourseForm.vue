@@ -13,8 +13,10 @@
       <el-input v-model="form.author" placeholder="请输入课程作者" class="handle-input"></el-input>
     </el-form-item>
     <el-form-item label="课程状态：" prop="state">
-      <el-radio v-model="form.state" label="1">上架</el-radio>
-      <el-radio v-model="form.state" label="2">下架</el-radio>
+      <el-select v-model="form.state" placeholder="请选择状态" class="handle-select mr10">
+        <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id">
+        </el-option>
+      </el-select>
     </el-form-item>
     <el-form-item label="课程封面：" prop="cover" class="personal-icon">
       <label for="inputId" icon="el-icon-plus">
@@ -47,10 +49,17 @@
         default() {
           return []
         },
+      },
+      stateList: {
+        type: Array,
+        default() {
+          return []
+        },
       }
     },
     data() {
       return {
+      
         rules: {
           couType: [{ required: true, message: "请选择课程类型", trigger: "blur" }],
           couName: [{ required: true, message: "请输入课程名称", trigger: "blur" }],
@@ -58,7 +67,6 @@
           cover: [{ required: true, message: "请选择上传封面", trigger: "blur" }],
           intro: [{ required: true, message: "请输入课程介绍", trigger: "blur" }],
           state: [{ required: true, message: "请输入选择状态", trigger: "blur" }],
-
         },
       }
     },
@@ -81,7 +89,7 @@
           }
         })
       },
-      goback(){
+      goback() {
         this.$router.go(-1);
       }
     }
