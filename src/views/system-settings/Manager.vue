@@ -165,7 +165,7 @@
       handleFileChange(e) {
         let file = e.target.files[0];
         let formdata = new FormData();
-        formdata.append("myfile", file);
+        formdata.append("file", file);
         uploadPost("/upload/pictureOrVideo", formdata).then((res) => {
           if (res.code == 200) {
             this.form.headportrait = res.data;

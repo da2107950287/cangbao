@@ -8,7 +8,8 @@ import './assets/css/icon.css';
 import { post, uploadPost } from "./utils/request.js"
 
 import EditorBar from "@/components/wangeditor/WangEditor.vue";
-
+import initRichText from './utils/initHTMLEditor.js'
+// import 'font-awesome/css/font-awesome.min.css'
 Vue.prototype.$post = post
 Vue.prototype.$uploadPost = uploadPost
 Vue.config.productionTip = false

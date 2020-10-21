@@ -8,6 +8,7 @@ module.exports = {
         'assets': '@/assets',
         'utils':'@/utils',
         'views': '@/views',
+        'vue$': 'vue/dist/vue.esm.js' 
       }
     },
 
@@ -19,6 +20,7 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: { '^/treasurebsg': '' }
       },
+      
     }
   }
 }

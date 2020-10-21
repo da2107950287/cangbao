@@ -25,46 +25,68 @@ const routes = [
       //课程管理
       {
         path: '/course',
-        component: () => import(/* webpackChunkName: "dashboard" */ 'views/course/Course.vue'),
+        component: () => import(/* webpackChunkName: "course" */ 'views/course/Course.vue'),
         meta: { title: '课程管理', isShow: true },
       },
       //藏友圈管理
       {
         path: '/circle',
-        component: () => import(/* webpackChunkName: "dashboard" */ 'views/tibetan-friend-circle/Circle.vue'),
+        component: () => import(/* webpackChunkName: "tibetan-friend-circle" */ 'views/tibetan-friend-circle/Circle.vue'),
         meta: { title: '藏友圈管理', isShow: true }
       },
       //藏品管理
       {
         path: '/collection',
-        component: () => import(/* webpackChunkName: "dashboard" */ 'views/collection/Collection.vue'),
+        component: () => import(/* webpackChunkName: "collection" */ 'views/collection/Collection.vue'),
         meta: { title: '藏品列表', isShow: true }
       },
       {
         path: '/collRegion',
-        component: () => import(/* webpackChunkName: "dashboard" */ 'views/collection/CollRegion.vue'),
+        component: () => import(/* webpackChunkName: "collection" */ 'views/collection/CollRegion.vue'),
         meta: { title: '藏品区域管理', isShow: true }
       },
       {
         path: '/collYears',
-        component: () => import(/* webpackChunkName: "dashboard" */ 'views/collection/CollYears.vue'),
+        component: () => import(/* webpackChunkName: "collection" */ 'views/collection/CollYears.vue'),
         meta: { title: '藏品年份管理', isShow: true }
       },
       {
         path: '/collCategory',
-        component: () => import(/* webpackChunkName: "dashboard" */ 'views/collection/CollCategory.vue'),
+        component: () => import(/* webpackChunkName: "collection" */ 'views/collection/CollCategory.vue'),
         meta: { title: '藏品类别管理', isShow: true }
+      },
+      //市场
+      {
+        path: '/marketType',
+        component: () => import(/* webpackChunkName: "market" */ 'views/market/MarketType.vue'),
+        meta: { title: '报告类型管理', isShow: true }
+      },
+      {
+        path: '/artAnalyst',
+        component: () => import(/* webpackChunkName: "market" */ 'views/market/ArtAnalyst.vue'),
+        meta: { title: '艺术分析师管理', isShow: true }
+      },
+      
+      {
+        path: '/auction',
+        component: () => import(/* webpackChunkName: "market" */ 'views/market/Auction.vue'),
+        meta: { title: '艺术分析师管理', isShow: true }
+      },
+      {
+        path: '/marketReport',
+        component: () => import(/* webpackChunkName: "market" */ 'views/market/MarketReport.vue'),
+        meta: { title: '市场报告管理', isShow: true }
       },
       //用户管理
       {
         path: '/user',
-        component: () => import(/* webpackChunkName: "dashboard" */ 'views/user/User.vue'),
+        component: () => import(/* webpackChunkName: "user" */ 'views/user/User.vue'),
         meta: { title: '用户管理', isShow: true }
       },
       //新闻管理
       {
         path: '/news',
-        component: () => import(/* webpackChunkName: "banners" */ 'views/News.vue'),
+        component: () => import(/* webpackChunkName: "new" */ 'views/News.vue'),
         meta: { title: '新闻管理', isShow: true }
       },
       // banner列表
@@ -130,6 +152,12 @@ const routes = [
     path: '/forgetPassword',
     name: 'ForgetPassword',
     component: () => import('views/ForgetPassword.vue')
+
+  },
+  {
+    path: '/demo',
+    name: 'demo',
+    component: () => import('views/demo.vue')
 
   },
 ]

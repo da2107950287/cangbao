@@ -46,7 +46,7 @@
                     {
                         icon: 'el-icon-menu',
                         title: '课程',
-                        index:"22",
+                        index: "22",
                         subs: [
                             {
                                 index: "course",
@@ -91,11 +91,32 @@
                         ]
 
                     },
-                    // {
-                    //     icon: 'el-icon-menu',
-                    //     index: '2',
-                    //     title: '动态列表'
-                    // },
+                    {
+                        icon: 'el-icon-menu',
+                        index: '2',
+                        title: '市场',
+                        subs: [
+                            {
+
+                                index: 'marketType',
+                                title: '报告类型管理'
+                            },
+                            {
+
+                                index: 'marketReport',
+                                title: '市场报告管理'
+                            },
+                            {
+                                index:'artAnalyst',
+                                title:'艺术分析师管理'
+                            },
+                            
+                            {
+                                index:'auction',
+                                title:'拍卖会管理'
+                            },
+                        ]
+                    },
                     {
                         icon: 'el-icon-menu',
                         index: '3',

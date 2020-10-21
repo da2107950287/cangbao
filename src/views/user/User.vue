@@ -79,10 +79,10 @@
           </div>
           <el-table :data="tableData" class="table" ref="multipleTable" header-cell-class-name="table-header">
             <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-            <el-table-column prop="content" label="发布内容" align="center" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="commentNumber" label="评论数量" align="center"></el-table-column>
-            <el-table-column prop="clickNumber" label="点击数量" align="center"></el-table-column>
-            <el-table-column prop="collNumber" label="收藏数量" align="center"></el-table-column>
+            <el-table-column prop="content" label="发布内容" align="left" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="commentNumber" label="评论数量" width="180" align="center"></el-table-column>
+            <el-table-column prop="clickNumber" label="点击数量" width="180" align="center"></el-table-column>
+            <el-table-column prop="collNumber" label="收藏数量" width="180" align="center"></el-table-column>
           </el-table>
           <div class="pagination">
             <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
