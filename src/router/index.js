@@ -4,8 +4,8 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 const originalPush = VueRouter.prototype.push
-   VueRouter.prototype.push = function push(location) {
-   return originalPush.call(this, location).catch(err => err)
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
 }
 const routes = [
   {
@@ -66,7 +66,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "market" */ 'views/market/ArtAnalyst.vue'),
         meta: { title: '艺术分析师管理', isShow: true }
       },
-      
+
       {
         path: '/auction',
         component: () => import(/* webpackChunkName: "market" */ 'views/market/Auction.vue'),
@@ -76,6 +76,30 @@ const routes = [
         path: '/marketReport',
         component: () => import(/* webpackChunkName: "market" */ 'views/market/MarketReport.vue'),
         meta: { title: '市场报告管理', isShow: true }
+      },
+      
+      {
+        path: '/auctionYear',
+        component: () => import(/* webpackChunkName: "market" */ 'views/market/AuctionYear.vue'),
+        meta: { title: '拍卖会年份管理', isShow: true }
+      },
+      
+      {
+        path: '/auctionCategory',
+        component: () => import(/* webpackChunkName: "market" */ 'views/market/AuctionCategory.vue'),
+        meta: { title: '拍卖会类别管理', isShow: true }
+      },
+      
+      {
+        path: '/specialAuction',
+        component: () => import(/* webpackChunkName: "market" */ 'views/market/SpecialAuction.vue'),
+        meta: { title: '拍卖会专场管理', isShow: true }
+      },
+      
+      {
+        path: '/auctionCompany',
+        component: () => import(/* webpackChunkName: "market" */ 'views/market/AuctionCompany.vue'),
+        meta: { title: '拍卖公司管理', isShow: true }
       },
       //用户管理
       {

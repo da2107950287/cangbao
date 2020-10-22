@@ -4,8 +4,10 @@ import qs from 'qs'
 export function post(url, data) {
 	let option = {
 		url,
-    data:qs.stringify(data),
+		data:qs.stringify(data),
+		// params
 	}
+
 	return new Promise((resolve, reject) => {
 		const instance = originAxios.create({
 			baseURL: '/treasurebsg',

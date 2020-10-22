@@ -115,6 +115,24 @@
                                 index:'auction',
                                 title:'拍卖会管理'
                             },
+                            {
+                                index:'auctionYear',
+                                title:'拍卖会年份管理'  
+                            },
+                            {
+                                index:'auctionCategory',
+                                title:'拍卖会类别管理'  
+                            },
+                            
+                            {
+                                index:'auctionCompany',
+                                title:'拍卖公司管理'  
+                            },
+                            {
+                                index:'specialAuction',
+                                title:'拍卖专场管理'  
+                                
+                            }
                         ]
                     },
                     {

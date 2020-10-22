@@ -2,9 +2,8 @@
   <div class="container">
     <div v-if="rtype==0">
       <div class="handle-box">
-
         <span>分析师名称：</span>
-        <el-input v-model="name" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
+        <el-input v-model="name" placeholder="请输入关键字" clearable class="handle-select mr10"></el-input>
         <el-button type="primary" class="handle-del mr10" @click="getTopArtists">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addTypelists">新建</el-button>
       </div>
@@ -17,13 +16,14 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="cje" label="成交额" align="center">
-
+        <el-table-column label="成交额" align="center">
+          <template slot-scope="scope">{{scope.row.cje}}{{scope.row.cjeUnit}} </template>
         </el-table-column>
-        <el-table-column prop="cjl" label="成交数量" align="center"></el-table-column>
 
-        <el-table-column prop="spl" label="上拍数量" width="120" align="center"></el-table-column>
-        <el-table-column prop="youhua" label="拍卖指数" width="120" align="center"></el-table-column>
+        <el-table-column prop="cjl" label="成交量" align="center"></el-table-column>
+
+        <el-table-column prop="spl" label="上拍量" align="center"></el-table-column>
+        <el-table-column prop="orders" label="排序" align="center"></el-table-column>
 
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
@@ -48,57 +48,32 @@
         <h3 v-else>添加分析师</h3>
       </div>
       <el-divider></el-divider>
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <!-- <el-form-item label="类型：">
-          <el-select v-model="form.type" placeholder="请选择类型" class="handle-select mr10">
-            <el-option v-for="(item,index) in typelist" :key="index" :label="item.name" :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item> -->
-        <el-form-item label="名称：" prop="name">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <h2>基本信息</h2>
+        <el-form-item label="分析师名称：" class="inline-width mr10" prop="name">
           <el-input v-model="form.name" class="handle-input"></el-input>
         </el-form-item>
-
-        <el-form-item label="综合指数：" prop="artronExponent">
-          <el-input v-model="form.artronExponent" class="handle-input"></el-input>
-        </el-form-item>
-
-        <el-form-item label="成交量：" prop="cjl">
-          <el-input v-model="form.cjl" class="handle-input"></el-input>
-        </el-form-item>
-        <el-form-item label="成交额：" prop="cje">
-          <el-input v-model="form.cje" class="handle-input"></el-input>
-        </el-form-item>
-        <el-form-item label="成交额单位：" prop="cjeUni">
-          <el-input v-model="form.cjeUni" class="handle-input"></el-input>
-        </el-form-item>
-        <el-form-item label="排序：" prop="orders">
-          <el-input v-model="form.orders" class="handle-input"></el-input>
-        </el-form-item>
-        <el-form-item label="上拍数量：" prop="spl">
-          <el-input v-model="form.spl" class="handle-input"></el-input>
-        </el-form-item>
-      
-        <el-form-item label="拍卖指数："  style="margin-bottom: 20px;"prop="youhua">
-
-          <el-form ref="form" :rules="rules" :model="youhua" label-width="100px" style="height: auto;">
-            <el-form-item label="比上季：" prop="change">
-              <el-input v-model="youhua.change" placeholder="请输入类型名称" class="handle-input mr10"></el-input>
-            </el-form-item>
-            <el-form-item label="上季" prop="orders">
-              <el-input v-model="youhua.prev" placeholder="请输入类型排序" class="handle-input mr10"></el-input>
-            </el-form-item>
-            <el-form-item label="当季：" prop="orders">
-              <el-input v-model="youhua.curr" placeholder="请输入类型排序" class="handle-input mr10"></el-input>
-            </el-form-item>
-          </el-form>
-        </el-form-item>
-        <el-form-item label="生日：" prop="thedDeath">
+        <el-form-item label="生日：" class="inline-width mr10" prop="thedDeath">
           <el-date-picker v-model="form.thedDeath" value-format="yyyy-MM-dd" class="handle-input" type="date"
             placeholder="选择日期">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="图片：" prop="headPortrait">
+        <el-form-item label="上拍量：" class="inline-width mr10" prop="spl">
+          <el-input v-model="form.spl" class="handle-input"></el-input>
+        </el-form-item>
+        <el-form-item label="成交量：" size="small" class="inline-width mr10" prop="cjl">
+          <el-input v-model="form.cjl" class="handle-input"></el-input>
+        </el-form-item>
+        <el-form-item label="成交额：" class="inline-width mr10" prop="cje">
+          <el-input v-model="form.cje" class="handle-input"></el-input>
+        </el-form-item>
+        <el-form-item label="成交额单位：" class="inline-width mr10" prop="cjeUni">
+          <el-input v-model="form.cjeUnit" class="handle-input"></el-input>
+        </el-form-item>
+        <el-form-item label="排序：" prop="orders">
+          <el-input v-model="form.orders" class="handle-input"></el-input>
+        </el-form-item>
+        <el-form-item label="图片：" class="inline-width " prop="headPortrait">
           <label for="inputId" icon="el-icon-plus">
             <img v-if="form.headPortrait" :src="form.headPortrait" class="img">
             <img v-else src="~assets/img/headportrait.png" alt="" class="img">
@@ -106,6 +81,91 @@
               accept="image/gif, image/jpeg, image/jpg, image/png, image/svg" @change="handleFileChange" />
           </label>
         </el-form-item>
+
+        <h2>拍卖指数</h2>
+        <!-- <el-form-item label="拍卖指数：" style="margin-bottom: 20px;" class="inline-width" prop="youhua"> -->
+        <el-form ref="form" :rules="rules" :model="form.youhua" label-width="120px">
+          <el-form-item label="当季：" class="inline-width mr10" prop="orders">
+            <el-input v-model="form.youhua.curr" placeholder="请输入类型排序" class="handle-input mr10"></el-input>
+          </el-form-item>
+          <el-form-item label="上季" class="inline-width mr10" prop="orders">
+            <el-input v-model="form.youhua.prev" placeholder="请输入类型排序" class="handle-input mr10"></el-input>
+          </el-form-item>
+          <el-form-item label="比上季：" class="inline-width mr10" prop="change">
+            <el-input v-model="form.youhua.change" placeholder="请输入类型名称" class="handle-input mr10"></el-input>
+          </el-form-item>
+          <el-form-item label="变化类型：" class="inline-width mr10" prop="changeType">
+            <el-select v-model="form.youhua.changeType" placeholder="请选择类型" class="handle-select mr10">
+
+              <el-option v-for="(item,index) in changeTypeList" :key="index" :label="item.name" :value="item.id">
+              </el-option>
+            </el-select>
+
+          </el-form-item>
+          <el-form-item label="变化类型：" class="" prop="changeType">
+            <el-table :data="form.youhua.xData" border style="width: 500px">
+              <el-table-column prop="name" label="名称" align="center">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.name"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column prop="value" label="数量" align="center">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.value"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column prop="value" label="操作" align="center">
+                <template slot-scope="scope">
+                  <el-button type="primary" size="mini" @click="delYouhuaLine(scope.$index,scope.row)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-button type="primary" size="mini" @click="addYouhuaLine()">添加</el-button>
+
+          </el-form-item>
+        </el-form>
+        <!-- </el-form-item> -->
+        <h2>艺+综合指数</h2>
+        <el-form ref="form" :rules="rules" :model="form.artronExponent" label-width="120px" style="height: auto;">
+          <el-form-item label="当季：" class="inline-width mr10" prop="orders">
+            <el-input v-model="form.artronExponent.curr" placeholder="请输入类型排序" class="handle-input mr10"></el-input>
+          </el-form-item>
+          <el-form-item label="上季" class="inline-width mr10" prop="orders">
+            <el-input v-model="form.artronExponent.prev" placeholder="请输入类型排序" class="handle-input mr10"></el-input>
+          </el-form-item>
+          <el-form-item label="比上季：" class="inline-width mr10" prop="change">
+            <el-input v-model="form.artronExponent.change" placeholder="请输入类型名称" class="handle-input mr10"></el-input>
+          </el-form-item>
+          <el-form-item label="变化类型：" class="inline-width mr10" prop="changeType">
+            <el-select v-model="form.artronExponent.changeType" placeholder="请选择类型" class="handle-select mr10">
+
+              <el-option v-for="(item,index) in changeTypeList" :key="index" :label="item.name" :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="变化类型：" class="">
+            <el-table :data="form.artronExponent.xData" border style="width: 500px">
+              <el-table-column prop="name" label="名称" align="center">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.name"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column prop="value" label="数量" align="center">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.value"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column prop="value" label="操作" align="center">
+                <template slot-scope="scope">
+                  <el-button type="primary" size="mini" @click="delartronExponentLine(scope.$index,scope.row)">删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-button type="primary" size="mini" @click="addartronExponentLine()">添加</el-button>
+
+          </el-form-item>
+        </el-form>
 
 
         <el-form-item>
@@ -115,22 +175,6 @@
       </el-form>
 
     </div>
-    <!-- 编辑弹出框 -->
-    <el-dialog :title="title" center :visible.sync="editVisible" width="30%">
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-
-        <el-form-item label="名称：">
-          <el-input v-model="form.dicName" class="handle-input"></el-input>
-        </el-form-item>
-        <el-form-item label="排序：">
-          <el-input v-model="form.orders" class="handle-input"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveEdit">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -138,23 +182,46 @@
     data() {
       return {
         type: "all",
+        rtype: "",
         query: {},
         name: "",
         PageNumber: 1,
         PageSize: 10,
         pageTotal: 0,
         tableData: [],
-        youhua:{},
+        // youhua: {},
         form: {
-          headPortrait: ""
+          headPortrait: "",
+          youhua: {
+            // xData: [{ name: "", value: "" }]
+            xData: []
+
+          },
+          artronExponent: {
+            xData: []
+          }
         },
         editVisible: false,
         isAdd: 0,
         title: '',
+        changeTypeList: [
+          { id: 1, name: "增加" },
+          { id: 2, name: "减少" },
+          { id: 3, name: "不变" },
+        ],
         rules: {
-          type: [{ required: true, message: "请选择类型", trigger: "blur" }],
-          dicName: [{ required: true, message: "请输入名称", trigger: "blur" }],
-          orders: [{ required: true, message: "请输入排序", trigger: "blur" }],
+          // name: [{ required: true, message: "请选择类型", trigger: "blur" }],
+          // // artronExponent: [{ required: true, message: "请输入名称", trigger: "blur" }],
+          // cje: [{ required: true, message: "请输入排序", trigger: "blur" }],
+          // cjeUnit: [{ required: true, message: "请输入排序", trigger: "blur" }],
+          // cjl: [{ required: true, message: "请输入排序", trigger: "blur" }],
+          // headPortrait: [{ required: true, message: "请输入排序", trigger: "blur" }],
+          // orders: [{ required: true, message: "请输入排序", trigger: "blur" }],
+          // spl: [{ required: true, message: "请输入排序", trigger: "blur" }],
+          // thedDeath: [{ required: true, message: "请输入排序", trigger: "blur" }],
+          // cje: [{ required: true, message: "请输入排序", trigger: "blur" }],
+          // cje: [{ required: true, message: "请输入排序", trigger: "blur" }],
+
         },
 
       };
@@ -168,6 +235,20 @@
       this.getType()
     },
     methods: {
+      addYouhuaLine() {
+        var newLine = { name: "", value: "" };
+        this.form.youhua.xData.push(newLine)
+      },
+      delYouhuaLine(index, row) {
+        this.form.youhua.xData.splice(index, 1)
+      },
+      addartronExponentLine() {
+        var newLine = { name: "", value: "" };
+        this.form.artronExponent.xData.push(newLine)
+      },
+      delartronExponentLine(index, row) {
+        this.form.artronExponent.xData.splice(index, 1)
+      },
       //上传图片
       handleFileChange(e) {
         let file = e.target.files[0];
@@ -180,7 +261,6 @@
         });
       },
       getType() {
-
         this.query = this.$route.query;
         if (this.query.rtype) {
           this.rtype = this.query.rtype;
@@ -188,6 +268,7 @@
           this.rtype = 0;
           this.getTopArtists();
         }
+        console.log(this.rtype)
         if (this.query.id) {
           this.getTopArtistsInfo()
         }
@@ -195,7 +276,7 @@
 
       getTopArtistsInfo() {
         this.$post("/market/showTopArtists", {
-          id: this.query.id
+          artCode: this.query.id,
         }).then(res => {
           if (res.code == 200) {
             this.form = res.data;
@@ -217,37 +298,52 @@
       },
       addTypelists() {
         this.$router.push({ path: "/artAnalyst", query: { rtype: 1 } })
-
+        this.form = {
+          headPortrait: "",
+          headPortrait: "",
+          youhua: {
+            // xData: [{ name: "", value: "" }]
+            xData: []
+          },
+          artronExponent: {
+            xData: []
+          }
+        }
       },
       // 保存编辑
       saveEdit() {
-        this.editVisible = false;
-        this.$refs.form.validate(valid => {
-          if (valid) {
-            if (this.query.id) {
-              this.$post("/market/updateTopArtists", this.form).then(res => {
-                if (res.code == 200) {
-                  this.$router.push("/marketRepost")
-                  this.$message.success(res.msg)
-                }
-              })
-            } else {
-              this.$post("/market/insertTopArtists", this.form).then(res => {
-                if (res.code == 200) {
-                  this.$router.push("/marketRepost")
-
-                  this.$message.success(res.msg)
-                }
-              })
+        console.log(this.form)
+        console.log(JSON.stringify(this.form))
+        // this.$refs.form.validate(valid => {
+        //   if (valid) {
+        // console.log(this.form.youhua.xData.join(","))
+        this.form.youhua=JSON.stringify(this.form.youhua)
+        this.form.artronExponent=JSON.stringify(this.form.artronExponent)
+        if (this.query.id) {
+          this.$post("/market/updateTopArtists", this.form).then(res => {
+            if (res.code == 200) {
+              this.$router.push("/artAnalyst")
+              this.$message.success(res.msg)
             }
+          })
+        } else {
+          this.$post("/market/insertTopArtists", this.form).then(res => {
+            if (res.code == 200) {
+              this.$router.push("/artAnalyst")
 
-          }
+              this.$message.success(res.msg)
+            }
+          })
+        }
 
-        })
+        //   }
+
+        // })
+
       },
       updateTypelist(row) {
-        this.$router.push({ path: "/artAnalyst", query: { rtype: 1, id: row.id } })
-        // this.editVisible = true;
+        console.log(row)
+        this.$router.push({ path: "/artAnalyst", query: { rtype: 1, id: row.artCode } })
 
       },
       // 删除操作
@@ -291,7 +387,7 @@
   }
 
   .handle-select {
-    width: 200px;
+    width: 400px;
   }
 
   .handle-input {
@@ -299,9 +395,7 @@
     display: inline-block;
   }
 
-  .handle-search {
-    width: 300px;
-  }
+
 
   .mr10 {
     margin-right: 10px;
@@ -317,7 +411,15 @@
     height: 100px;
     border-radius: 50%;
   }
-  .el-form-item .el-form-item{
-    margin-bottom: 20px;
+
+  .inline-width {
+    display: inline-block;
+  }
+
+  .el-form h2 {
+
+    font-weight: 400;
+    font-size: 18px;
+    padding: 5px 0 15px;
   }
 </style>

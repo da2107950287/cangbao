@@ -2,40 +2,44 @@
   <div>
     <div class="container">
       <div class="handle-box">
-        <span>状态：</span>
-        <el-select v-model="state" placeholder="状态" class="handle-select mr10">
-          <el-option label="全部" value="all"></el-option>
-          <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id"></el-option>
-        </el-select>
-        <el-button type="primary" icon="el-icon-search" @click="getCollYears">搜索</el-button>
-        <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCollYears">新建</el-button>
+
+        <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addYearList">新建</el-button>
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-        <el-table-column prop="cyName" label="年份名称" align="center"></el-table-column>
-        <el-table-column label="年份状态" align="center">
-          <template slot-scope="scope">
-            <div v-if="scope.row.state==1">上架</div>
-            <div v-else>下架</div>
-          </template>
-        </el-table-column>
+        <el-table-column prop="name" label="年份名称" align="center"></el-table-column>
+        <el-table-column prop="startdate" label="开始时间" align="center"></el-table-column>
+        <el-table-column prop="enddate" label="结束时间" align="center"></el-table-column>
         <el-table-column label="操作" width="400" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="editCollYears(scope.row)">编辑</el-button>
+            <el-button type="primary" size="mini" @click="editYearList(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <div class="pagination">
+        <div class="pagination">
+          <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
+            :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event)"
+            @size-change="handleSizeChange($event)"></el-pagination>
+        </div>
+      </div>
     </div>
     <!-- 编辑弹出框 -->
     <el-dialog center :title="title" :visible.sync="editVisible" width="30%">
       <el-form ref="form" :rules="rules" :model="form" label-width="100px">
-        <el-form-item label="状态：" prop="state">
-          <el-select v-model="form.state" placeholder="请选择状态" class="handle-input mr10">
-            <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id"></el-option>
-          </el-select>
+        <el-form-item label="年份名称：" prop="name">
+          <el-input v-model="form.name" placeholder="请输入年份名称" class="handle-input mr10"></el-input>
         </el-form-item>
-        <el-form-item label="年份：" prop="cyName">
-          <el-input v-model="form.cyName" placeholder="请输入年份" class="handle-input mr10"></el-input>
+        <el-form-item label="开始时间：" prop="startdate">
+          <el-date-picker v-model="form.startdate" value-format="yyyy-MM-dd" class="handle-input" type="date"
+            placeholder="请选择开始时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="结束时间：" prop="enddate">
+          <el-date-picker v-model="form.enddate" value-format="yyyy-MM-dd" class="handle-input" type="date"
+            placeholder="请选择结束时间">
+          </el-date-picker>
+
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -49,8 +53,11 @@
   export default {
     data() {
       return {
-        state:"all",
-        tableData: [],  
+        PageNumber: 1,
+        PageSize: 10,
+        pageTotal: 0,
+        state: "all",
+        tableData: [],
         editVisible: false,
         title: "",
         form: {},
@@ -58,65 +65,73 @@
           state: [{ required: true, message: "请选择状态", trigger: "blur" }],
           cyName: [{ required: true, message: "请输入年份", trigger: "blur" }],
         },
-        //状态选项
-        stateList: [
-          { id: "1", name: "上架" },
-          { id: "2", name: "下架" },
-        ],
-        
+
+
       };
     },
     created() {
-      this.getCollYears();
+      this.getYearList();
     },
     methods: {
       // 获取藏品年份
-      getCollYears() {
-        this.$post("/circle/getCollYears", {
-          state:this.state
+      getYearList() {
+        this.$post("/market/getYearList", {
+          PageNumber: this.PageNumber,
+          PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
-            this.tableData = res.data;
+            this.tableData = res.data.list;
+            this.pageTotal = res.data.count;
           }
         })
       },
-  
+
       //触发新建按钮
-      addCollYears() {
+      addYearList() {
         this.editVisible = true;
-        this.form={}
+        this.form = {}
         this.isAdd = true;
-        this.title = "添加年份"
+        this.title = "添加拍卖会年份"
       },
       //触发编辑按钮
-      editCollYears(row) {
+      editYearList(row) {
         this.editVisible = true;
         this.isAdd = false;
-        this.title = "编辑年份信息"
+        this.title = "编辑拍卖会年份信息"
         this.form = row;
       },
       // 保存编辑
       saveEdit() {
         this.$refs.form.validate(valid => {
           if (valid) {
-        this.editVisible = false;
+            this.editVisible = false;
             if (this.isAdd) {
-              this.$post("/circle/insertCollYears", this.form).then(res => {
+              this.$post("/market/insertYearList", this.form).then(res => {
                 if (res.code == 200) {
                   this.$message.success(res.msg)
-                  this.getCollYears()
+                  this.getYearList()
                 }
               })
             } else {
-              this.$post("/circle/updateCollYears", this.form).then(res => {
+              this.$post("/market/updateYearList", this.form).then(res => {
                 if (res.code == 200) {
                   this.$message.success(res.msg)
-                  this.getCollYears()
+                  this.getYearList()
                 }
               })
             }
           }
         })
+      },
+      // 分页导航
+      handlePageChange(val) {
+        console.log(val)
+        this.PageNumber = val;
+        this.getYearList();
+      },
+      handleSizeChange(val) {
+        this.PageSize = val;
+        this.getYearList();
       }
     }
   };
