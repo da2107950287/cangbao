@@ -70,7 +70,7 @@ const routes = [
       {
         path: '/auction',
         component: () => import(/* webpackChunkName: "market" */ 'views/market/Auction.vue'),
-        meta: { title: '艺术分析师管理', isShow: true }
+        meta: { title: '拍卖会管理', isShow: true }
       },
       {
         path: '/marketReport',

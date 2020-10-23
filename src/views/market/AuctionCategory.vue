@@ -105,7 +105,7 @@
         })
       },
       getTwoLevel(row) {
-        this.$router.push({ path: "/auctionCategory", query: { type: 2, id: row.classCode } })
+        this.$router.push({ path: "/auctionCategory", query: { type: 2, superior: row.classCode } })
       },
       // getType(){
       //   if(this.$router.query.type){

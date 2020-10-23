@@ -2,9 +2,23 @@ import originAxios from 'axios'
 import QueryString from 'qs';
 import qs from 'qs'
 export function post(url, data) {
+
+	function transformRequest(data) {
+		for (const key in data) {
+			if (data.hasOwnProperty(key)) {
+				if (typeof data[key] == "object") {
+					data[key] = JSON.stringify(data[key])
+				}
+			}
+		}
+		// 对 data 进行任意转换处理
+		return qs.stringify(data)
+	}
+
 	let option = {
 		url,
-		data:qs.stringify(data),
+		data,
+		transformRequest
 		// params
 	}
 

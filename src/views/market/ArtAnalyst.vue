@@ -3,7 +3,7 @@
     <div v-if="rtype==0">
       <div class="handle-box">
         <span>分析师名称：</span>
-        <el-input v-model="name" placeholder="请输入关键字" clearable class="handle-select mr10"></el-input>
+        <el-input v-model="name" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
         <el-button type="primary" class="handle-del mr10" @click="getTopArtists">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addTypelists">新建</el-button>
       </div>
@@ -15,31 +15,27 @@
             <img :src="scope.row.headPortrait" style="max-width: 180px;max-height: 100px;"></img>
           </template>
         </el-table-column>
-
-        <el-table-column label="成交额" align="center">
+        <el-table-column label="成交额" width="120" align="center">
           <template slot-scope="scope">{{scope.row.cje}}{{scope.row.cjeUnit}} </template>
         </el-table-column>
-
-        <el-table-column prop="cjl" label="成交量" align="center"></el-table-column>
-
-        <el-table-column prop="spl" label="上拍量" align="center"></el-table-column>
-        <el-table-column prop="orders" label="排序" align="center"></el-table-column>
+        <el-table-column prop="cjl" label="成交量" width="120" align="center"></el-table-column>
+        <el-table-column prop="spl" label="上拍量" width="120" align="center"></el-table-column>
+        <el-table-column prop="orders" label="排序" width="120" align="center"></el-table-column>
+        <el-table-column prop="thedDeath" label="生日" width="120" align="center"></el-table-column>
 
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" @click="updateTypelist(scope.row)">编辑</el-button>
-            <el-button type="danger" size="mini" class="red" @click="deleteTypelist(scope.row)">删除
-            </el-button>
           </template>
         </el-table-column>
       </el-table>
-      <div class="pagination">
+
         <div class="pagination">
           <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
             :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event)"
             @size-change="handleSizeChange($event)"></el-pagination>
         </div>
-      </div>
+     
     </div>
     <div v-else-if="rtype==1">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
@@ -81,9 +77,7 @@
               accept="image/gif, image/jpeg, image/jpg, image/png, image/svg" @change="handleFileChange" />
           </label>
         </el-form-item>
-
         <h2>拍卖指数</h2>
-        <!-- <el-form-item label="拍卖指数：" style="margin-bottom: 20px;" class="inline-width" prop="youhua"> -->
         <el-form ref="form" :rules="rules" :model="form.youhua" label-width="120px">
           <el-form-item label="当季：" class="inline-width mr10" prop="orders">
             <el-input v-model="form.youhua.curr" placeholder="请输入类型排序" class="handle-input mr10"></el-input>
@@ -96,11 +90,9 @@
           </el-form-item>
           <el-form-item label="变化类型：" class="inline-width mr10" prop="changeType">
             <el-select v-model="form.youhua.changeType" placeholder="请选择类型" class="handle-select mr10">
-
               <el-option v-for="(item,index) in changeTypeList" :key="index" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
-
           </el-form-item>
           <el-form-item label="变化类型：" class="" prop="changeType">
             <el-table :data="form.youhua.xData" border style="width: 500px">
@@ -124,7 +116,6 @@
 
           </el-form-item>
         </el-form>
-        <!-- </el-form-item> -->
         <h2>艺+综合指数</h2>
         <el-form ref="form" :rules="rules" :model="form.artronExponent" label-width="120px" style="height: auto;">
           <el-form-item label="当季：" class="inline-width mr10" prop="orders">
@@ -138,7 +129,6 @@
           </el-form-item>
           <el-form-item label="变化类型：" class="inline-width mr10" prop="changeType">
             <el-select v-model="form.artronExponent.changeType" placeholder="请选择类型" class="handle-select mr10">
-
               <el-option v-for="(item,index) in changeTypeList" :key="index" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
@@ -163,11 +153,8 @@
               </el-table-column>
             </el-table>
             <el-button type="primary" size="mini" @click="addartronExponentLine()">添加</el-button>
-
           </el-form-item>
         </el-form>
-
-
         <el-form-item>
           <el-button @click="$router.push('/artAnalyst')">返回</el-button>
           <el-button type="primary" @click="saveEdit">确 定</el-button>
@@ -189,13 +176,10 @@
         PageSize: 10,
         pageTotal: 0,
         tableData: [],
-        // youhua: {},
         form: {
           headPortrait: "",
           youhua: {
-            // xData: [{ name: "", value: "" }]
             xData: []
-
           },
           artronExponent: {
             xData: []
@@ -205,9 +189,9 @@
         isAdd: 0,
         title: '',
         changeTypeList: [
-          { id: 1, name: "增加" },
-          { id: 2, name: "减少" },
-          { id: 3, name: "不变" },
+          { id: "1", name: "增加" },
+          { id: "2", name: "减少" },
+          { id: "3", name: "不变" },
         ],
         rules: {
           // name: [{ required: true, message: "请选择类型", trigger: "blur" }],
@@ -312,13 +296,6 @@
       },
       // 保存编辑
       saveEdit() {
-        console.log(this.form)
-        console.log(JSON.stringify(this.form))
-        // this.$refs.form.validate(valid => {
-        //   if (valid) {
-        // console.log(this.form.youhua.xData.join(","))
-        this.form.youhua=JSON.stringify(this.form.youhua)
-        this.form.artronExponent=JSON.stringify(this.form.artronExponent)
         if (this.query.id) {
           this.$post("/market/updateTopArtists", this.form).then(res => {
             if (res.code == 200) {
@@ -385,7 +362,9 @@
   .handle-box {
     margin-bottom: 20px;
   }
-
+  .handle-search{
+    width: 300px;
+  }
   .handle-select {
     width: 400px;
   }
