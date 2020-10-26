@@ -2808,6 +2808,7 @@
     
             // 添加其他字段
             append: function( key, value ) {
+            
                 if ( typeof key === 'object' ) {
                     $.extend( this._formData, key );
                 } else {

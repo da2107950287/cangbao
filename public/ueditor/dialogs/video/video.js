@@ -385,7 +385,7 @@
                 $('#filePickerReady').after($('<div>').html(lang.errorLoadConfig)).hide();
                 return;
             }
-
+console.log( editor.getOpt('videoFieldName'),"upfile")
             uploader = _this.uploader = WebUploader.create({
                 pick: {
                     id: '#filePickerReady',
@@ -393,7 +393,7 @@
                 },
                 swf: '../../third-party/webuploader/Uploader.swf',
                 server: actionUrl,
-                fileVal: editor.getOpt('videoFieldName'),
+                fileVal: "file",
                 duplicate: true,
                 fileSingleSizeLimit: fileMaxSize,
                 compress: false

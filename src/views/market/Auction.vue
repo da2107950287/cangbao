@@ -1,13 +1,11 @@
 <template>
   <div class="container">
-    {{tabIndex}}
     <!-- 拍卖会列表 -->
     <div v-if="rtype==0">
       <h3>拍卖会列表</h3>
       <el-divider></el-divider>
-
       <div class="handle-box">
-        <span>所属类型：</span>
+        <span>拍卖会状态：</span>
         <el-select v-model="status" placeholder="请选择类型" class="handle-select mr10">
           <el-option label="全部" value="all"></el-option>
           <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id">
@@ -18,7 +16,8 @@
         <el-button type="primary" class="handle-del mr10" @click="getAuction">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addAuction">新建</el-button>
       </div>
-      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+      <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
+        header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
         <el-table-column prop="name" label="拍卖会标题" align="center"></el-table-column>
         <el-table-column prop="simpleName" label="排名公司名称" align="center"></el-table-column>
@@ -36,7 +35,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="updateAuction(scope.row)">查看</el-button>
+            <el-button type="primary" size="mini" key="updateAuction" @click="updateAuction(scope.row)">查看</el-button>
 
           </template>
         </el-table-column>
@@ -54,7 +53,7 @@
         <h3>添加拍卖会</h3>
       </div>
       <el-divider></el-divider>
-      <auction-form :form="form" :companyList="companyList" :stateList="stateList"></auction-form>
+      <auction-form :form="auctionForm" :companyList="companyList" :stateList="stateList"></auction-form>
     </div>
     <!-- 查看拍卖会 -->
     <div v-else-if="rtype==2">
@@ -62,10 +61,10 @@
         <img src="~assets/img/goback.png" @click="$router.push('/auction')" class="mr10">
         <h3>编辑拍卖会</h3>
       </div>
-      <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+      <el-tabs v-model="activeAuction" type="card" @tab-click="handleClick">
         <!-- 拍卖会信息 -->
         <el-tab-pane label="拍卖会信息" name="a1">
-          <auction-form :form="form" :companyList="companyList" :stateList="stateList"></auction-form>
+          <auction-form :form="auctionForm" :companyList="companyList" :stateList="stateList"></auction-form>
         </el-tab-pane>
         <!-- 拍卖会专场列表 -->
         <el-tab-pane label="专场列表" name="a2">
@@ -73,7 +72,8 @@
             <span>拍卖会专场状态：</span>
             <el-select v-model="status" placeholder="请选择类型" class="handle-search mr10">
               <el-option label="全部" value="all"></el-option>
-              <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id">
+
+              <el-option v-for="(item,index) in statusList" :key="index" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
             <span>拍卖会专场名称：</span>
@@ -81,7 +81,8 @@
             <el-button type="primary" class="handle-del mr10" @click="getSpecials">搜索</el-button>
             <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addSpecials">新建</el-button>
           </div>
-          <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+          <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
+            header-cell-class-name="table-header">
             <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
             <el-table-column prop="name" label="拍卖会专场名称" align="center"></el-table-column>
             <el-table-column prop="total" label="拍卖会专场封面" align="center">
@@ -98,9 +99,8 @@
                 <span v-else-if="scope.row.status==5">已结拍</span>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="300" align="center">
+            <el-table-column label="操作" key="updateSpecials" align="center">
               <template slot-scope="scope">
-
                 <el-button type="primary" size="mini" @click="updateSpecials(scope.row)">查看</el-button>
               </template>
             </el-table-column>
@@ -108,7 +108,7 @@
           <div class="pagination">
             <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
               :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event,2)"
-              @size-change="handleSizeChange($event,1)"></el-pagination>
+              @size-change="handleSizeChange($event,2)"></el-pagination>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -116,30 +116,30 @@
     <!-- 添加拍卖会专场 -->
     <div v-else-if="rtype==3">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
-        <img src="~assets/img/goback.png" @click="$router.go(-1)" class="mr10">
+        <img src="~assets/img/goback.png" @click="$router.push({ path: '/auction', query: { rtype: 2, sessionCode: $route.query.sessionCode } })" class="mr10">
         <h3>添加拍卖会专场</h3>
       </div>
       <el-divider></el-divider>
-      <specials-form :form="specialsForm" :companyList="companyList" :stateList="stateList"></specials-form>
+      <specials-form :form="specialsForm" :companyList="companyList" :stateList="statusList"></specials-form>
     </div>
     <!-- 查看拍卖会专场 -->
     <div v-else-if="rtype==4">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
-        <img src="~assets/img/goback.png" @click="$router.push('/auction')" class="mr10">
+        <img src="~assets/img/goback.png" @click="$router.push({ path: '/auction', query: { rtype: 2, sessionCode: $route.query.sessionCode } })" class="mr10">
         <h3>编辑拍卖会专场</h3>
       </div>
-      <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+      <el-tabs v-model="activeSpecials" type="card" @tab-click="handleClick">
         <!-- 拍卖会专场 信息 -->
-        <el-tab-pane label="拍卖会专场信息" name="a1">
-          <specials-form :form="form" :companyList="companyList" :stateList="stateList"></specials-form>
+        <el-tab-pane label="拍卖会专场信息" name="s1">
+          <specials-form :form="specialsForm" :companyList="companyList" :stateList="statusList"></specials-form>
         </el-tab-pane>
         <!-- 拍品列表 -->
-        <el-tab-pane label="拍品列表" name="a2">
+        <el-tab-pane label="拍品列表" name="s2">
           <div class="handle-box">
             <span>拍品状态：</span>
             <el-select v-model="lotStatus" placeholder="请选择类型" class="handle-select mr10">
               <el-option label="全部" value="all"></el-option>
-              <el-option v-for="(item,index) in stateList" :key="index" :label="item.name" :value="item.id">
+              <el-option v-for="(item,index) in statusList" :key="index" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
             <span>拍品分类：</span>
@@ -159,19 +159,19 @@
             <br>
             <span class="mt20">拍品名称：</span>
             <el-input v-model="lotName" placeholder="请输入关键字" clearable class="handle-search mr10 mt20"></el-input>
-            <el-button type="primary" class="handle-del mr10 mt20" @click="getSpecials">搜索</el-button>
+            <el-button type="primary" class="handle-del mr10 mt20" @click="getLot">搜索</el-button>
             <el-button type="primary" icon="el-icon-plus" class="handle-del mr10 mt20" @click="addLot">新建</el-button>
           </div>
-          <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+          <el-table v-loading="loading" :data="tableData" border class="table" header-cell-class-name="table-header">
             <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-            <el-table-column prop="name" label="拍卖会专场名称" align="center"></el-table-column>
-            <el-table-column prop="total" label="拍卖会专场封面" align="center">
+            <el-table-column prop="name" label="拍品名称" align="center"></el-table-column>
+            <el-table-column prop="total" label="拍品列表封面" align="center">
               <template slot-scope="scope">
                 <img :src="scope.row.coverPic" alt="">
               </template>
             </el-table-column>
-            <el-table-column prop="total" label="拍卖数量" width="120" align="center"></el-table-column>
-            <el-table-column prop="orders" label="排序" width="120" align="center"></el-table-column>
+            <el-table-column prop="listiconPrice" label="成交价" width="120" align="center"></el-table-column>
+            <el-table-column prop="listiconDate" label="拍卖时间" width="120" align="center"></el-table-column>
             <el-table-column label="状态" width="120" align="center">
               <template slot-scope="scope">
                 <span v-if="scope.row.status==3">待拍卖</span>
@@ -179,28 +179,28 @@
                 <span v-else-if="scope.row.status==5">已结拍</span>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="300" align="center">
+            <el-table-column label="操作" key="updateLot" align="center">
               <template slot-scope="scope">
-
                 <el-button type="primary" size="mini" @click="updateLot(scope.row)">查看</el-button>
               </template>
             </el-table-column>
           </el-table>
           <div class="pagination">
             <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
-              :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event,2)"
-              @size-change="handleSizeChange($event,1)"></el-pagination>
+              :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event,3)"
+              @size-change="handleSizeChange($event,3)"></el-pagination>
           </div>
         </el-tab-pane>
       </el-tabs>
     </div>
     <div v-else-if="rtype==5">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
-        <img src="~assets/img/goback.png" @click="$router.push('/auction')" class="mr10">
-        <h3>添加拍品</h3>
+        <img src="~assets/img/goback.png" @click="$router.push({ path: '/auction', query: { rtype: 2, sessionCode: $route.query.sessionCode,specialCode:$route.query.specialCode } })" class="mr10">
+        <h3 v-if="$route.query.id">修改拍品</h3>
+        <h3 v-else>添加拍品</h3>
       </div>
       <el-divider></el-divider>
-      <lot-form :form="form" :propClassList="prop" :companyList="companyList" :stateList="stateList"></lot-form>
+      <lot-form :form="lotForm" :propClassList="prop" :companyList="companyList" :stateList="statusList"></lot-form>
     </div>
 
   </div>
@@ -218,9 +218,10 @@
         date: [],
         classCode: [],
         organCode: "",
-        lotStatus: "3",
+        lotStatus: "all",
         lotName: "",
-
+        activeAuction: "a1",
+        activeSpecials: "s1",
         value: [],
         type: "all",
         query: {},
@@ -231,22 +232,25 @@
         pageTotal: 0,
         rtype: "",
         tableData: [],
-        form: {
+
+        //拍卖会表单
+        auctionForm: {
           picUrl: "",
-          detailExtraInfo: [],
+          detailExtraInfo: [{ type: "text", label: "", text: "" }]
         },
+        //拍卖会专场表单
         specialsForm: {
           coverPic: "",
-          extraInfo: [],
-          detailExtraInfo: [],
+          extraInfo: [{ type: "text", label: "", text: "" }],
+          detailExtraInfo: [{ type: "text", label: "", text: "" }],
         },
-        editVisible: false,
-        isAdd: 0,
-        title: '',
-        rules: {
-          type: [{ required: true, message: "请选择类型", trigger: "blur" }],
-          dicName: [{ required: true, message: "请输入名称", trigger: "blur" }],
-          orders: [{ required: true, message: "请输入排序", trigger: "blur" }],
+        //拍品表单
+        lotForm: {
+          coverPic: "",
+          logoUrl: "",
+          attribute: [],
+          extraInfo: [],
+          extraInfo2: []
         },
         companyList: [],
         stateList: [
@@ -256,15 +260,20 @@
           { id: "4", name: "拍卖中" },
           { id: "5", name: "已结拍" },
         ],
-        activeName: "a1",
+        statusList: [
+          { id: "3", name: "待拍卖" },
+          { id: "4", name: "拍卖中" },
+          { id: "5", name: "已结拍" },
+        ],
+
         options: [],
         prop: {
           label: 'name',
           value: 'classCode',
           children: 'children'
         },
-        tabIndex: "0"
 
+        loading: false
       };
     },
     watch: {
@@ -276,6 +285,7 @@
       this.getType()
     },
     methods: {
+      
       getType() {
         this.getOneClassList()
         if (this.$route.query.rtype) {
@@ -286,43 +296,48 @@
           this.getAuction();
         }
         if (this.rtype == 2) {
-          if (this.tabIndex == 0) {
+          if(this.$route.query.activeAuction){
+            this.activeAuction=this.$route.query.activeAuction
+
+          }
+          if (this.activeAuction == "a1") {
             this.getAuctionInfo()
           } else {
             this.getSpecials()
           }
         }
-
         if (this.rtype == 4) {
           this.getOneClassList()
           this.getCompanyList()
-          if (this.tabIndex == 0) {
+          if(this.$route.query.activeSpecials){
+            this.activeSpecials=this.$route.query.activeSpecials;
+
+          }
+          if (this.activeSpecials == "s1") {
             this.getSpecialsInfo()
           } else {
             this.getLot()
           }
-
         }
         if (this.rtype == 5) {
           if (this.$route.query.id) {
             this.getLotInfo()
           }
         }
-
-
       },
+      //获取拍品详情
       getLotInfo() {
         this.$post("/market/showLot", { id: this.$route.query.id }).then(res => {
           if (res.code == 200) {
-
-            this.form = res.data;
+            this.lotForm = res.data;
           }
         })
       },
       handleClick(tab) {
         this.PageNumber = 1;
         this.PageSize = 10;
-        this.tabIndex = tab.index;
+
+
         if (this.rtype == 2) {
           if (tab.index == 0) {
             this.getAuctionInfo()
@@ -333,18 +348,22 @@
           if (tab.index == 0) {
             this.getSpecialsInfo()
           } else if (tab.index == 1) {
-
             this.getLot()
           }
         }
 
       },
+      updateAuction(row) {
+        console.log("updateAuction")
+        this.$router.push({ path: "/auction", query: { rtype: 2, sessionCode: row.sessionCode } })
+      },
       updateSpecials(row) {
+        console.log("updateSpecials")
         this.$router.push({ path: "auction", query: { rtype: 4, specialCode: row.specialCode, sessionCode: this.$route.query.sessionCode } })
       },
       updateLot(row) {
-        this.$router.push({ path: "auction", query: { rtype: 5, specialCode: row.specialCode, sessionCode: this.$route.query.sessionCode, id: row.id } })
-
+        console.log("updateLot")
+        this.$router.push({ path: "auction", query: { rtype: 5, specialCode: this.$route.query.specialCode, sessionCode: this.$route.query.sessionCode, id: row.id } })
       },
       //获取公司列表
       getCompanyList() {
@@ -387,6 +406,7 @@
       },
       //获取拍卖会列表
       getAuction() {
+        this.loading = true;
         this.$post("/market/getAuction", {
           status: this.status,
           name: this.name,
@@ -394,6 +414,7 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
+            this.loading = false
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }
@@ -401,6 +422,7 @@
       },
       //获取专场列表
       getSpecials() {
+        this.loading = true;
         this.$post("/market/getSpecials", {
           name: this.name,
           sessionCode: this.$route.query.sessionCode,
@@ -409,6 +431,7 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
+            this.loading = false;
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }
@@ -416,6 +439,7 @@
       },
       //获取拍品
       getLot() {
+        this.loading = true
         this.$post("/market/getLot", {
           name: this.lotName,
           specialCode: this.$route.query.specialCode,
@@ -429,6 +453,7 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
+            this.loading = false
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }
@@ -440,7 +465,7 @@
           sessionCode: this.$route.query.sessionCode
         }).then(res => {
           if (res.code == 200) {
-            this.form = res.data;
+            this.auctionForm = res.data;
 
           }
         })
@@ -452,48 +477,63 @@
           specialCode: this.$route.query.specialCode
         }).then(res => {
           if (res.code == 200) {
-            this.form = res.data
+            this.specialsForm = res.data
           }
         })
       },
 
       //添加拍卖会
       addAuction() {
-        this.$router.push({ path: "/auction", query: { rtype: 1 } })
-        this.form = {
+        this.auctionForm = {
           picUrl: "",
-          detailExtraInfo: [],
+          detailExtraInfo: [{ type: "text", label: "", text: "" }]
         }
+        this.$router.push({ path: "/auction", query: { rtype: 1 } })
+
       },
       //添加专场
       addSpecials() {
+        this.specialsForm = {
+
+          coverPic: "",
+          extraInfo: [{ type: "text", label: "", text: "" }],
+          detailExtraInfo: [{ type: "text", label: "", text: "" }],
+        }
         this.$router.push({ path: "auction", query: { rtype: 3, sessionCode: this.$route.query.sessionCode } })
       },
       //添加拍品
       addLot(row) {
-
-        this.$router.push({ path: "auction", query: { rtype: 5, sessionCode: this.$route.query.sessionCode, specialCode: this.$route.query.specialCode } })
-        this.form = {
+        this.lotForm = {
           coverPic: "",
           logoUrl: "",
-          attribute: [],
-          extraInfo: [],
-          extraInfo2: []
+          attribute: [{ type: "text", label: "", text: "" }],
+          extraInfo: [{ type: "text", label: "", text: "" }],
+          extraInfo2: [{ type: "text", label: "", text: "" }]
         }
+        this.$router.push({ path: "auction", query: { rtype: 5, sessionCode: this.$route.query.sessionCode, specialCode: this.$route.query.specialCode } })
+
       },
 
-      updateAuction(row) {
-        this.$router.push({ path: "/auction", query: { rtype: 2, sessionCode: row.sessionCode } })
+      getInd(ind) {
+        if (ind == 1) {
+          this.getAuction();
+
+        } else if (ind == 2) {
+          this.getSpecials
+        } else if (ind == 3) {
+          this.getLot()
+        }
       },
       // 分页导航
-      handlePageChange(val) {
-        console.log(val)
+      handlePageChange(val, ind) {
+
         this.PageNumber = val;
-        this.getAuction();
+        this.getInd(ind)
+
       },
       handleSizeChange(val) {
         this.PageSize = val;
-        this.getAuction();
+        this.getInd(ind)
       }
 
     },

@@ -22,7 +22,7 @@
         <el-button type="primary" class="handle-del mr10" @click="getCourse">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCourses">新建</el-button>
       </div>
-      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+      <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
         <el-table-column prop="couTypeName" label="课程类型" align="center"></el-table-column>
         <el-table-column prop="couName" label="课程名称" align="center"></el-table-column>
@@ -88,7 +88,7 @@
             <el-button type="primary" class="handle-del mr10" @click="getCatalogue">搜索</el-button>
             <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCatalogue">新建</el-button>
           </div>
-          <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+          <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
             <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
             <el-table-column prop="catName" label="课程目录" align="center"></el-table-column>
             <el-table-column label="课程类型" align="center">
@@ -195,6 +195,7 @@
         courseComment: [],
         query: {},
         tabIndex: '',
+        loading:false,
         form: {
           cover: "",
 
@@ -276,6 +277,7 @@
       },
       //获取课程列表
       getCourse() {
+        this.loading=true;
         this.$post("/course/getCourse", {
           state: this.state,
           couType: this.couType,
@@ -284,6 +286,7 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
+            this.loading=false;
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }
@@ -301,6 +304,7 @@
       },
       //获取目录
       getCatalogue() {
+        this.loading=true;
         this.$post("/course/getCatalogue", {
           state: this.state,
           couId: this.$route.query.couId,
@@ -308,6 +312,7 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
+            this.loading=false;
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }

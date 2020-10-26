@@ -23833,7 +23833,7 @@ UE.plugin.register('autoupload', function (){
             fd = new FormData(),
             params = utils.serializeParam(me.queryCommandValue('serverparam')) || '',
             url = utils.formatUrl(actionUrl + (actionUrl.indexOf('?') == -1 ? '?':'&') + params);
-
+console.l(fieldName, file, file.name )
         fd.append(fieldName, file, file.name || ('blob.' + file.type.substr('image/'.length)));
         fd.append('type', 'ajax');
         xhr.open("post", url, true);
@@ -24547,7 +24547,7 @@ UE.plugin.register('simpleupload', function (){
               var params = utils.serializeParam(me.queryCommandValue('serverparam')) || '';
               var action = utils.formatUrl(imageActionUrl + (imageActionUrl.indexOf('?') == -1 ? '?' : '&') + params);
               var formData = new FormData();
-              formData.append("file", form[0].files[0] );
+              formData.append("upfile", form[0].files[0] );
               console.log(999999999999)
               $.ajax({
                 url: action,
