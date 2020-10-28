@@ -32,15 +32,19 @@
       </label>
     </el-form-item>
     <el-form-item label="圈子介绍：" prop="cirIntro" style="width: 1000px;">
-      <editor-bar :value="form.cirIntro" v-model="form.cirIntro"></editor-bar>
+ 
+      <UEditor ref="ueditor"></UEditor>
+
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="saveEdit">确 定</el-button>
       <el-button @click="goback">返 回</el-button>
+      <el-button type="primary" @click="saveEdit">确 定</el-button>
     </el-form-item>
   </el-form>
 </template>
 <script>
+  import UEditor from '@/components/ueditor.vue'
+
   export default {
     props: {
       form: {
@@ -49,13 +53,13 @@
           return {}
         }
       },
-      stateList:{
+      stateList: {
         type: Array,
         default() {
           return []
         }
       },
-      
+
       dictionaryList: {
         type: Array,
         default() {
@@ -75,6 +79,11 @@
         },
       }
     },
+    watch: {
+      form() {
+        this.$refs.ueditor.setUEContent(this.form.cirIntro)
+      }
+    },
     methods: {
       //上传图片
       handleFileChange(e, ind) {
@@ -91,16 +100,36 @@
           }
         });
       },
+      //增加/修改圈子
       saveEdit() {
         this.$refs.form.validate(valid => {
           if (valid) {
-            this.$emit("saveEdit", this.form)
+            this.form.cirIntro = this.$refs.ueditor.getUEContent();
+
+            if (this.$route.query.cirId) {
+              this.$post("/circle/updateCircle", this.form).then(res => {
+                if (res.code == 200) {
+                  this.$message.success(res.msg)
+                  this.$router.go(-1)
+                }
+              })
+            } else {
+              this.$post("/circle/insertCircle", this.form).then(res => {
+                if (res.code == 200) {
+                  this.$message.success(res.msg)
+                  this.$router.go(-1)
+                }
+              })
+            }
           }
         })
       },
       goback() {
         this.$router.go(-1)
       }
+    },
+    components: {
+      UEditor
     }
   }
 </script>

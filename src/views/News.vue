@@ -1,50 +1,52 @@
 <template>
   <div class="container">
-    <div class="handle-box">
-      <span>状态：</span>
-      <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
-        <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
-        </el-option>
-      </el-select>
-      <span>新闻公司：</span>
-      <el-input v-model="newsName" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
-      <span>新闻标题：</span>
-      <el-input v-model="newsTitle" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
-      <el-button type="primary" class="handle-del mr10" @click="getData">搜索</el-button>
-      <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addNews">新建</el-button>
-    </div>
-    <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-      <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-      <el-table-column prop="newsTitle" label="新闻标题" align="center"></el-table-column>
-      <el-table-column label="图片" align="center">
-        <template slot-scope="scope">
-          <el-image :src="scope.row.newsPurl" lazy class="img"></el-image>
-        </template>
-      </el-table-column>
-      <el-table-column prop="newsName" label="新闻公司" align="center"></el-table-column>
-      <el-table-column prop="newsTime" label="发布时间" align="center"></el-table-column>
-      <el-table-column label="状态" align="center">
-        <template slot-scope="scope">
-          <span v-if="scope.row.state==1">上架</span>
-          <span v-else>下架</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center">
-        <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="updateNewsState(scope.row)">
-            <span v-if="scope.row.state==1">下架</span>
-            <span v-else>上架</span>
-          </el-button>
-          <el-button type="primary" size="mini" @click="updateNews(scope.row)">编辑</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <div class="pagination">
-      <el-pagination background layout="total, prev, pager, next" :current-page="PageNumber" :page-size="PageSize"
-        :total="pageTotal" @current-change="handlePageChange"></el-pagination>
+    <div v-if="!$route.query.isAdd">
+      <div class="handle-box">
+        <span>状态：</span>
+        <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
+          <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id">
+          </el-option>
+        </el-select>
+        <span>新闻公司：</span>
+        <el-input v-model="newsName" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
+        <span>新闻标题：</span>
+        <el-input v-model="newsTitle" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
+        <el-button type="primary" class="handle-del mr10" @click="getNews">搜索</el-button>
+        <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addNews">新建</el-button>
+      </div>
+      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+        <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
+        <el-table-column prop="newsTitle" label="新闻标题" align="center"></el-table-column>
+        <el-table-column label="图片" align="center">
+          <template slot-scope="scope">
+            <el-image :src="scope.row.newsPurl" lazy class="img"></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column prop="newsName" label="新闻公司" align="center"></el-table-column>
+        <el-table-column prop="newsTime" label="发布时间" align="center"></el-table-column>
+        <el-table-column label="状态" align="center">
+          <template slot-scope="scope">
+            <span v-if="scope.row.state==1">上架</span>
+            <span v-else>下架</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" @click="updateNewsState(scope.row)">
+              <span v-if="scope.row.state==1">下架</span>
+              <span v-else>上架</span>
+            </el-button>
+            <el-button type="primary" size="mini" @click="updateNews(scope.row)">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination background layout="total, prev, pager, next" :current-page="PageNumber" :page-size="PageSize"
+          :total="pageTotal" @current-change="handlePageChange"></el-pagination>
+      </div>
     </div>
     <!-- 编辑弹出框 -->
-    <el-dialog :title="title" center :visible.sync="editVisible" width="800">
+    <div v-if="$route.query.isAdd">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="新闻公司：">
           <el-input v-model="form.newsName" class="handle-input"></el-input>
@@ -72,18 +74,19 @@
           </label>
         </el-form-item>
         <el-form-item label="新闻内容：" prop="content">
-          <editor-bar :value="form.content" v-model="form.content"></editor-bar>
+          <UEditor ref="ueditor"></UEditor>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="$router.push('/news')">取 消</el-button>
+          <el-button type="primary" @click="saveEdit">确 定</el-button>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveEdit">确 定</el-button>
-      </span>
-    </el-dialog>
+    </div>
   </div>
 </template>
 <script>
-  import EditorBar from "@/components/wangeditor/WangEditor.vue";
+  import UEditor from '@/components/ueditor.vue'
+
   export default {
     data() {
       return {
@@ -115,23 +118,23 @@
       };
     },
     watch: {
-      editVisible() {
-        if (!this.editVisible) {
-          this.form = {
-            newsPurl: "",
-            label: [],
-          }
-        } else {
+      $route(to, from) {
+        this.getNewInfo()
+        if (this.$route.query.isAdd) {
           this.getAllDictionary()
         }
+      },
+    },
+    mounted() {
+      this.getNews();
+      this.getNewInfo()
+      if (this.$route.query.isAdd) {
+        this.getAllDictionary()
       }
     },
-    created() {
-      this.getData()
-    },
     methods: {
-      //获取数据
-      getData() {
+      //消息列表
+      getNews() {
         this.$post("/other/getNews", {
           newsName: this.newsName,
           newsTitle: this.newsTitle,
@@ -145,7 +148,7 @@
           }
         })
       },
-      //获取标签
+      //获取标签列表
       getAllDictionary() {
         this.$post("/other/getAllDictionary", {
           dicType: "1"
@@ -156,27 +159,30 @@
         })
       },
       addNews() {
-        this.editVisible = true;
-        this.isAdd = true;
-        this.title = "添加新闻";
+        this.$router.push({ path: "/news", query: { isAdd: true } })
       },
       updateNews(row) {
-        this.editVisible = true;
-        this.title = "编辑新闻";
-        this.isAdd = false;
-        this.$post("/other/showNews", {
-          newsId: row.newsId
-        }).then(res => {
-          if (res.code == 200) {
-            this.form = res.data;
-            let labelArr= this.form.label.split(" ")
-            for (let i = 0; i < labelArr.length; i++) {
-              console.log(labelArr[i])
-              labelArr[i] = labelArr[i].replace(/#/,"")
+        this.$router.push({ path: "/news", query: { newsId: row.newsId, isAdd: false } })
+      },
+      getNewInfo() {
+        if (this.$route.query.newsId) {
+          this.$post("/other/showNews", {
+            newsId: this.$route.query.newsId
+          }).then(res => {
+            if (res.code == 200) {
+         
+              this.form = res.data;
+              let labelArr = this.form.label.split(" ")
+              for (let i = 0; i < labelArr.length; i++) {
+                console.log(labelArr[i])
+                labelArr[i] = labelArr[i].replace(/#/, "")
+              }
+              this.form.label = labelArr;
+              this.$refs.ueditor.setUEContent(res.data.content)
             }
-            this.form.label=labelArr
-          }
-        })
+          })
+        }
+
       },
       //上传图片
       handleFileChange(e) {
@@ -203,36 +209,33 @@
         }).then(res => {
           if (res.code == 200) {
             this.$message.success(res.msg);
-            this.getData()
+            this.getNews()
           }
         })
       },
       // 保存编辑
       saveEdit() {
-
+        this.form.content = this.$refs.ueditor.getUEContent();
         this.$refs.form.validate(valid => {
           if (valid) {
-            this.editVisible = false;
             let labelArr = this.form.label;
             for (let i = 0; i < labelArr.length; i++) {
               labelArr[i] = "#" + labelArr[i]
             }
-            this.form.label=labelArr.join(" ")
-            console.log(this.form)
-
+            this.form.label = labelArr.join(" ")
             if (this.isAdd) {
               this.$post("/other/insertNews", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getData()
                   this.$message.success(res.msg)
+                  this.$router.push("/news")
                 }
               })
             } else {
-              console.log(this.form)
               this.$post("/other/updateNews", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getData()
                   this.$message.success(res.msg)
+                  this.$router.push("/news")
+
                 }
               })
             }
@@ -243,11 +246,11 @@
       // 分页导航
       handlePageChange(val) {
         this.PageNumber = val;
-        this.getData();
+        this.getNews();
       }
     },
     components: {
-      EditorBar
+      UEditor
     }
   };
 </script>

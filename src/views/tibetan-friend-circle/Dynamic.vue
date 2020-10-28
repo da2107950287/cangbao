@@ -77,7 +77,9 @@
           </label>
         </el-form-item>
         <el-form-item label="圈子介绍：" prop="cirIntro" style="width: 1000px;">
-          <editor-bar :value="form.cirIntro" v-model="form.cirIntro"></editor-bar>
+          <!-- <editor-bar :value="form.cirIntro" v-model="form.cirIntro"></editor-bar> -->
+      <UEditor v-else ref="ueditor"></UEditor>
+
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="saveEdit">确 定</el-button>
@@ -121,6 +123,8 @@
   </div>
 </template>
 <script>
+  import UEditor from '@/components/ueditor.vue'
+
   export default {
     data() {
       return {
@@ -217,7 +221,9 @@
           cirId: this.query.cirId
         }).then(res => {
           if (res.code == 200) {
-            this.form = res.data
+            this.form = res.data;
+        this.$refs.ueditor.setUEContent(this.form.cirIntro)
+
           }
         })
       },
@@ -266,6 +272,8 @@
 
       },
       saveEditState() {
+        this.form.cirIntro = this.$refs.ueditor.getUEContent();
+
         this.$post("/circle/updateCircleState", {
           cirId: this.form.cirId,
           state: this.form.state,
@@ -332,6 +340,9 @@
         this.PageNumber = val;
         this.getData();
       }
+    },
+    components:{
+      UEditor
     }
   };
 </script>

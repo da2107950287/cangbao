@@ -27,15 +27,16 @@
       </label>
     </el-form-item>
     <el-form-item label="课程介绍：" prop="intro" style="width: 1000px;">
-      <editor-bar :value="form.intro" v-model="form.intro"></editor-bar>
+      <UEditor ref="ueditor"></UEditor>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="saveEdit">确 定</el-button>
       <el-button @click="goback">返 回</el-button>
+      <el-button type="primary" @click="saveEdit">确 定</el-button>
     </el-form-item>
   </el-form>
 </template>
 <script>
+  import UEditor from '@/components/ueditor.vue'
   export default {
     props: {
       form: {
@@ -59,7 +60,6 @@
     },
     data() {
       return {
-      
         rules: {
           couType: [{ required: true, message: "请选择课程类型", trigger: "blur" }],
           couName: [{ required: true, message: "请输入课程名称", trigger: "blur" }],
@@ -68,6 +68,11 @@
           intro: [{ required: true, message: "请输入课程介绍", trigger: "blur" }],
           state: [{ required: true, message: "请输入选择状态", trigger: "blur" }],
         },
+      }
+    },
+    watch: {
+      form() {
+        this.$refs.ueditor.setUEContent(this.form.intro)
       }
     },
     methods: {
@@ -82,16 +87,35 @@
           }
         });
       },
+      // 修改/添加课程
       saveEdit() {
         this.$refs.form.validate(valid => {
           if (valid) {
-            this.$emit("saveEdit", this.form)
+            this.form.intro = this.$refs.ueditor.getUEContent();
+            if (this.$route.query.couId) {
+              this.$post("/course/updateCourse", this.form).then(res => {
+                if (res.code == 200) {
+                  this.$message.success(res.msg)
+                  this.$router.go(-1)
+                }
+              })
+            } else {
+              this.$post("/course/insertCourse", form).then(res => {
+                if (res.code == 200) {
+                  this.$message.success(res.msg)
+                  this.$router.go(-1)
+                }
+              })
+            }
           }
         })
       },
       goback() {
         this.$router.go(-1);
       }
+    },
+    components: {
+      UEditor
     }
   }
 </script>

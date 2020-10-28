@@ -1,38 +1,40 @@
 <template>
   <div class="container">
-    <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-      <el-table-column type="index" width="200" label="序号" align="center"></el-table-column>
-      <el-table-column prop="name" label="文档类型" align="center"></el-table-column>
-      <el-table-column label="操作" align="center">
-        <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div v-if="!$route.query.id">
+      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+        <el-table-column type="index" width="200" label="序号" align="center"></el-table-column>
+        <el-table-column prop="name" label="文档类型" align="center"></el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" @click="view(scope.$index, scope.row)">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
     <!-- 编辑弹出框 -->
-    <el-dialog title="修改文档" center :visible.sync="editVisible" width="800">
+    <div v-else-if="$route.query.id">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="内容：">
-          <editor-bar :value="form.content" v-model="form.content"></editor-bar>
+        <el-form-item label="文档内容：">
+          <UEditor ref="ueditor"></UEditor>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="$router.push('/document')">返 回</el-button>
+          <el-button type="primary" @click="saveEdit">确 定</el-button>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveEdit">确 定</el-button>
-      </span>
-    </el-dialog>
+    </div>
   </div>
 </template>
 <script>
-  import EditorBar from "@/components/wangeditor/WangEditor.vue";
-
+  import UEditor from '@/components/ueditor.vue'
   export default {
     data() {
       return {
-        type: 'A',
+        type: "",
         tableData: [],
-        form: {},
-        editVisible: false,
+        form: {
+        
+        },
         rules: {
           content: [{ required: true, message: "请输入文档内容", trigger: "blur" }],
         },
@@ -43,39 +45,48 @@
         ],
       };
     },
-
+    watch: {
+      $route(to, from) {
+        this.getAgreement()
+      }
+    },
+    mounted(){
+      this.getAgreement()
+    },
     methods: {
-      handleEdit(index, row) {
-        this.editVisible = true;
-        this.$post("/other/getAgreement", { type: row.id }).then(res => {
-          if (res.code) {
-            this.form = res.data;
-          }
-        })
+      view(index, row) {
+        this.$router.push({ path: "/document", query: { id: row.id } })
+      },
+      //获取协议
+      getAgreement() {
+        if (this.$route.query.id) {
+          this.$post("/other/getAgreement", { type: this.$route.query.id }).then(res => {
+            if (res.code==200) {
+            
+              this.form = res.data;
+              this.$refs.ueditor.setUEContent(this.form.content)
+              
+            }
+          })
+        }
       },
       // 保存编辑
       saveEdit() {
-        this.editVisible = false;
+        this.form.content = this.$refs.ueditor.getUEContent();
         this.$refs.form.validate(valid => {
           if (valid) {
-            this.$post("/other/setAgreement",this.form).then(res => {
+            this.$post("/other/setAgreement", this.form).then(res => {
               if (res.code == 200) {
-                this.$message.success(res.msg)
+                this.$message.success(res.msg);
+                this.$router.push("/document")
               }
             })
           }
         })
       },
-      updateDictionary(index, row) {
-        this.editVisible = true;
-        this.title = "编辑数据字典";
-        this.isAdd = 0;
-        this.form = row;
-      },
-
     },
     components: {
-      EditorBar
+      UEditor
     }
   };
 </script>

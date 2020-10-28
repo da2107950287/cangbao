@@ -128,11 +128,11 @@
                                 index:'auctionCompany',
                                 title:'拍卖公司管理'  
                             },
-                            {
-                                index:'specialAuction',
-                                title:'拍卖专场管理'  
+                            // {
+                            //     index:'specialAuction',
+                            //     title:'拍卖专场管理'  
                                 
-                            }
+                            // }
                         ]
                     },
                     {

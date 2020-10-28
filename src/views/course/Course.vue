@@ -22,7 +22,8 @@
         <el-button type="primary" class="handle-del mr10" @click="getCourse">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCourses">新建</el-button>
       </div>
-      <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+      <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
+        header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
         <el-table-column prop="couTypeName" label="课程类型" align="center"></el-table-column>
         <el-table-column prop="couName" label="课程名称" align="center"></el-table-column>
@@ -62,19 +63,17 @@
         <h3>添加课程</h3>
       </div>
       <el-divider></el-divider>
-      <course-form :form="form" :stateList="stateList" :dictionarysList="dictionarysList"
-        @saveEdit="saveEditCourse(form)"></course-form>
+      <course-form :form="form" :stateList="stateList" :dictionarysList="dictionarysList"></course-form>
     </div>
     <div v-else-if="type==2">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
         <img src="../../assets/img/goback.png" @click="$router.push('/course')" class="mr10">
-        <h3>编辑课程</h3>
+        <h3>查看课程</h3>
       </div>
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
         <!-- 课程信息 -->
         <el-tab-pane label="课程信息" name="c1">
-          <course-form :form="form" :stateList="stateList" :dictionarysList="dictionarysList"
-            @saveEdit="saveEditCourse(form)"></course-form>
+          <course-form :form="form" :stateList="stateList" :dictionarysList="dictionarysList"></course-form>
         </el-tab-pane>
         <!-- 课程目录 -->
         <el-tab-pane label="课程目录" name="c2">
@@ -88,7 +87,8 @@
             <el-button type="primary" class="handle-del mr10" @click="getCatalogue">搜索</el-button>
             <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCatalogue">新建</el-button>
           </div>
-          <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+          <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
+            header-cell-class-name="table-header">
             <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
             <el-table-column prop="catName" label="课程目录" align="center"></el-table-column>
             <el-table-column label="课程类型" align="center">
@@ -142,8 +142,8 @@
                   controls></video>
               </div>
               <div v-else>
-                <imgstyle="width: 200px;height: 100px;" v-for="(item,index) in el.picture" :key="index"
-                  :src="item"></el-image>
+                <imgstyle="width: 200px;height: 100px;" v-for="(item,index) in el.picture" :key="index" :src="item">
+                  </el-image>
               </div>
               <div style="display: flex;justify-content: flex-end;margin-top: 10px;">
                 <el-button type="primary" class="handle-del mr10" @click="updateCourseCommentState(el)">
@@ -165,16 +165,10 @@
       </el-tabs>
     </div>
     <div v-else-if="type==3">
-      <div style="display: flex;align-items: center;margin-bottom: 20px;">
-        <img src="../../assets/img/goback.png" @click="$router.go(-1)" class="mr10">
-        <h3 v-if="query.catId">修改目录</h3>
-        <h3 v-else>添加目录</h3>
-      </div>
-      <el-divider></el-divider>
-      <catalogue-form :form="form" :stateList="stateList" :dictionarysList="dictionarysList"
-        @saveEdit="saveEditCatalogue"></catalogue-form>
+     
+      <catalogue-form :form="form" :stateList="stateList" :dictionarysList="dictionarysList"></catalogue-form>
     </div>
- </div>
+  </div>
 </template>
 <script>
   import CourseForm from "components/course/CourseForm.vue"
@@ -195,7 +189,7 @@
         courseComment: [],
         query: {},
         tabIndex: '',
-        loading:false,
+        loading: false,
         form: {
           cover: "",
 
@@ -230,7 +224,7 @@
       },
       getType() {
         this.query = this.$route.query;
-        this.tableData=[]
+        this.tableData = []
         if (this.query.type) {
           this.type = this.query.type;
         } else {
@@ -277,7 +271,7 @@
       },
       //获取课程列表
       getCourse() {
-        this.loading=true;
+        this.loading = true;
         this.$post("/course/getCourse", {
           state: this.state,
           couType: this.couType,
@@ -286,7 +280,7 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
-            this.loading=false;
+            this.loading = false;
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }
@@ -299,12 +293,14 @@
         }).then(res => {
           if (res.code == 200) {
             this.form = res.data;
+    
+
           }
         })
       },
       //获取目录
       getCatalogue() {
-        this.loading=true;
+        this.loading = true;
         this.$post("/course/getCatalogue", {
           state: this.state,
           couId: this.$route.query.couId,
@@ -312,7 +308,7 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
-            this.loading=false;
+            this.loading = false;
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }
@@ -344,15 +340,15 @@
       },
       addCourses() {
         this.$router.push({ path: '/course', query: { type: 1 } })
-       
+
       },
       updateCourse(row) {
         this.$router.push({ path: '/course', query: { type: 2, couId: row.couId } })
       },
       addCatalogue() {
         this.$router.push({ path: '/course', query: { type: 3, couId: this.query.couId } })
-        this.form={}
-       this.$set(this.form,"content","")
+        this.form = {}
+        this.$set(this.form, "content", "")
       },
       //触发编辑目录按钮
       updateCatalogue(row) {
@@ -394,42 +390,7 @@
           }
         })
       },
-      // 修改/添加课程
-      saveEditCourse(form) {
-        if (this.query.couId) {
-          this.$post("/course/updateCourse", this.form).then(res => {
-            if (res.code == 200) {
-              this.$message.success(res.msg)
-              this.$router.go(-1)
-            }
-          })
-        } else {
-          this.$post("/course/insertCourse", form).then(res => {
-            if (res.code == 200) {
-              this.$message.success(res.msg)
-              this.$router.go(-1)
-            }
-          })
-        }
-      },
-      //修改/添加目录
-      saveEditCatalogue(form) {
-        if (this.query.catId) {
-          this.$post("/course/updateCatalogue", this.form).then(res => {
-            if (res.code == 200) {
-              this.$message.success(res.msg)
-              this.$router.go(-1)
-            }
-          })
-        } else {
-          this.$post("/course/insertCatalogue", form).then(res => {
-            if (res.code == 200) {
-              this.$message.success(res.msg)
-              this.$router.go(-1)
-            }
-          })
-        }
-      },
+
       // 分页导航
       handlePageChange(val, type) {
         this.PageNumber = val;

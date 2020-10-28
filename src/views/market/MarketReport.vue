@@ -22,9 +22,8 @@
         <el-table-column prop="times" label="时间" width="120" align="center"></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="updateTypelist(scope.row)">编辑</el-button>
-            <el-button type="danger" size="mini" class="red" @click="deleteTypelist(scope.row)">删除
-            </el-button>
+            <el-button type="primary" size="mini" @click="updateMarketReport(scope.row)">查看</el-button>
+
           </template>
         </el-table-column>
       </el-table>
@@ -39,21 +38,15 @@
     <div v-else-if="rtype==1">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
         <img src="~assets/img/goback.png" @click="$router.push('/marketReport')" class="mr10">
-        <h3 v-if="query.id">修改报告</h3>
+        <h3 v-if="query.id">查看报告</h3>
         <h3 v-else>添加报告</h3>
       </div>
       <el-divider></el-divider>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <!-- <el-form-item label="类型：">
-          <el-select v-model="form.type" placeholder="请选择类型" class="handle-select mr10">
-            <el-option v-for="(item,index) in typelist" :key="index" :label="item.name" :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item> -->
         <el-form-item label="标题：" prop="title">
           <el-input v-model="form.title" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="类型：">
+        <el-form-item label="类型："  prop="type">
           <el-select v-model="form.type" placeholder="请选择类型" class="handle-input mr10">
             <el-option v-for="(item,index) in typelist" :key="index" :label="item.name" :value="item.id.toString()">
             </el-option>
@@ -72,7 +65,7 @@
         </el-form-item>
         <el-form-item label="图片：" prop="coverPicture">
           <label for="inputId" icon="el-icon-plus">
-            <img v-if="form.coverPicture" :src="form.coverPicture" class="img"/>
+            <img v-if="form.coverPicture" :src="form.coverPicture" class="img" />
             <img v-else src="~assets/img/headportrait.png" alt="" class="img">
             <input style="display: none" id="inputId" ref="input" type="file"
               accept="image/gif, image/jpeg, image/jpg, image/png, image/svg" @change="handleFileChange" />
@@ -82,8 +75,8 @@
           <el-input v-model="form.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea"></el-input>
         </el-form-item>
         <el-form-item label="内容：" prop="reporturl">
+          <UEditor ref="ueditor"></UEditor>
 
-          <editor-bar :value="form.reporturl" v-model="form.reporturl"></editor-bar>
         </el-form-item>
 
         <el-form-item>
@@ -93,25 +86,12 @@
       </el-form>
 
     </div>
-    <!-- 编辑弹出框 -->
-    <el-dialog :title="title" center :visible.sync="editVisible" width="30%">
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-
-        <el-form-item label="名称：">
-          <el-input v-model="form.dicName" class="handle-input"></el-input>
-        </el-form-item>
-        <el-form-item label="排序：">
-          <el-input v-model="form.orders" class="handle-input"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveEdit">确 定</el-button>
-      </span>
-    </el-dialog>
+ 
   </div>
 </template>
 <script>
+  import UEditor from '@/components/ueditor.vue'
+
   export default {
     data() {
       return {
@@ -130,8 +110,13 @@
         title: '',
         rules: {
           type: [{ required: true, message: "请选择类型", trigger: "blur" }],
-          dicName: [{ required: true, message: "请输入名称", trigger: "blur" }],
-          orders: [{ required: true, message: "请输入排序", trigger: "blur" }],
+          title: [{ required: true, message: "请输入标题", trigger: "blur" }],
+          team: [{ required: true, message: "请输入团队", trigger: "blur" }],
+          label: [{ required: true, message: "请输入标签", trigger: "blur" }],
+          reporturl:[{ required: true, message: "请输入内容", trigger: "blur" }],
+          coverPicture:[{ required: true, message: "请上传时间", trigger: "blur" }],
+          times:[{ required: true, message: "请输入时间", trigger: "blur" }],
+          introduction:[{ required: true, message: "请输入简介", trigger: "blur" }],
         },
         typelist: [],
       };
@@ -157,7 +142,6 @@
         });
       },
       getType() {
-
         this.query = this.$route.query;
         this.getTypelist()
         if (this.query.rtype) {
@@ -183,6 +167,8 @@
         }).then(res => {
           if (res.code == 200) {
             this.form = res.data;
+            this.$refs.ueditor.setUEContent(this.form.reporturl)
+
           }
         })
       },
@@ -202,54 +188,32 @@
       },
       addTypelists() {
         this.$router.push({ path: "/marketReport", query: { rtype: 1 } })
-
       },
       // 保存编辑
       saveEdit() {
-        this.editVisible = false;
+        this.form.reporturl = this.$refs.ueditor.getUEContent();
         this.$refs.form.validate(valid => {
           if (valid) {
             if (this.query.id) {
               this.$post("/market/updateMarketReport", this.form).then(res => {
                 if (res.code == 200) {
-                  this.$router.push("/marketRepost")
+                  this.$router.push("/marketReport")
                   this.$message.success(res.msg)
                 }
               })
             } else {
               this.$post("/market/insertMarketReport", this.form).then(res => {
                 if (res.code == 200) {
-                  this.$router.push("/marketRepost")
-
+                  this.$router.push("/marketReport")
                   this.$message.success(res.msg)
                 }
               })
             }
-
           }
-
         })
       },
-      updateTypelist(row) {
+      updateMarketReport(row) {
         this.$router.push({ path: "/marketReport", query: { rtype: 1, id: row.id } })
-        // this.editVisible = true;
-
-      },
-      // 删除操作
-      deleteTypelist(row) {
-        // 二次确认删除
-        this.$confirm('确定要删除吗？', '提示', {
-          type: 'warning'
-        }).then(() => {
-          this.$post("/other/deleteTypelist", {
-            dicId: row.dicId
-          }).then(res => {
-            if (res.code == 200) {
-              this.$message.success(res.msg);
-              this.getMarketReport()
-            }
-          })
-        })
       },
       // 分页导航
       handlePageChange(val) {
@@ -261,6 +225,9 @@
         this.PageSize = val;
         this.getMarketReport();
       }
+    },
+    components: {
+      UEditor
     }
   };
 </script>

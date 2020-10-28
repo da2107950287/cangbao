@@ -33,7 +33,7 @@
         <el-button type="primary" class="handle-del mr10" @click="getCollection">搜索</el-button>
         <!-- <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCollections">新建</el-button> -->
       </div>
-      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+      <el-table v-loading="loading"  :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
         <el-table-column prop="collTime" label="发布时间" align="center"></el-table-column>
         <el-table-column prop="collName" label="藏品名称" align="center"></el-table-column>
@@ -63,20 +63,10 @@
           @size-change="handleSizeChange($event,1)"></el-pagination>
       </div>
     </div>
-    <!-- 添加藏品 -->
-    <div v-else-if="type==1">
-      <div style="display: flex;align-items: center;">
-        <img src="../../assets/img/goback.png" @click="$router.push('/collection')" class="mr10">
-        <h3>添加藏品</h3>
-      </div>
-      <el-divider></el-divider>
-      <collection-form :form="form" @saveEdit="saveEditCollection(form)">
-      </collection-form>
-    </div>
     <div v-else-if="type==2">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
         <img src="../../assets/img/goback.png" @click="$router.push('/collection')" class="mr10">
-        <h3>编辑藏品</h3>
+        <h3>查看藏品</h3>
       </div>
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
         <!-- 藏品信息 -->
@@ -176,6 +166,7 @@
   export default {
     data() {
       return {
+        loading:false,
         activeName: 'c1',
         type: 0,
         state: "all",
@@ -225,6 +216,7 @@
       },
       //获取藏品列表
       getCollection() {
+        this.loading=true;
         this.$post("/circle/getCollection", {
           state: this.state,
           collName: this.collName,
@@ -235,6 +227,7 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
+            this.loading=false;
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }

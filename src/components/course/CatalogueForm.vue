@@ -1,4 +1,11 @@
 <template>
+<div>
+  <div style="display: flex;align-items: center;margin-bottom: 20px;">
+    <img src="~assets/img/goback.png" @click="goback" class="mr10">
+    <h3 v-if="$route.query.catId">查看目录</h3>
+    <h3 v-else>添加目录</h3>
+  </div>
+  <el-divider></el-divider>
   <el-form ref="form" :model="form" :rules="rules" label-width="100px">
     <el-form-item label="目录名称：" prop="catName">
       <el-input v-model="form.catName" placeholder="请输入课程名称" class="handle-input"></el-input>
@@ -20,18 +27,19 @@
         <video v-if="form.content" :src="form.content" controls style="width: 200px;height: 100px;"></video>
         <div v-else style="color: #fff;
         padding:0 5px;background-color: #1296db;width: 60px;border-radius: 5px;">上传视频</div>
-        <input style="display: none" id="inputId" ref="input" type="file"
-           @change="handleFileChange" />
+        <input style="display: none" id="inputId" ref="input" type="file" @change="handleFileChange" />
       </label>
-      <editor-bar v-if="form.catType==2" :value="form.content" v-model="form.content"></editor-bar>
+      <UEditor v-else ref="ueditor"></UEditor>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="saveEdit">确 定</el-button>
       <el-button @click="goback">返 回</el-button>
+      <el-button type="primary" @click="saveEdit">确 定</el-button>
     </el-form-item>
   </el-form>
+</div>
 </template>
 <script>
+  import UEditor from '@/components/ueditor.vue'
   export default {
     props: {
       form: {
@@ -40,7 +48,7 @@
           return {}
         }
       },
-      stateList:{
+      stateList: {
         type: Array,
         default() {
           return []
@@ -68,6 +76,11 @@
         },
       }
     },
+    watch: {
+      form() {
+        this.$refs.ueditor.setUEContent(this.form.content)
+      }
+    },
     methods: {
       //上传图片
       handleFileChange(e) {
@@ -80,13 +93,35 @@
           }
         });
       },
+      //修改/添加目录
       saveEdit() {
+        if(this.form.catType==2){
+          this.form.content = this.$refs.ueditor.getUEContent();
+        }
         this.form.couId = this.$route.query.couId;
-        this.$emit("saveEdit", this.form)
+        if (this.$route.query.catId) {
+          this.$post("/course/updateCatalogue", this.form).then(res => {
+            if (res.code == 200) {
+              this.$message.success(res.msg)
+              this.goback()
+            }
+          })
+        } else {
+          this.$post("/course/insertCatalogue", form).then(res => {
+            if (res.code == 200) {
+              this.$message.success(res.msg)
+              this.goback()
+
+            }
+          })
+        }
       },
       goback() {
-        this.$router.go(-1)
+        this.$router.push({path:'/course',query:{couId:this.$route.query.couId,type:2}})
       }
+    },
+    components: {
+      UEditor
     }
   }
 </script>
@@ -100,10 +135,7 @@
     display: inline-block;
   }
 
-  /* 
-  img {
-    height: 100px;
-    width: 100px;
-    border-radius: 50%;
-  } */
+  .mr10{
+    margin-right: 10px;
+  }
 </style>

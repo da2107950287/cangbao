@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+   <div v-if="!$route.query.isAdd">
     <div class="handle-box">
       <span>状态：</span>
       <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
@@ -34,8 +35,9 @@
         :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event)"
         @size-change="handleSizeChange($event)"></el-pagination>
     </div>
+   </div>
     <!-- 编辑弹出框 -->
-    <el-dialog :title="title" center :visible.sync="editVisible" width="800">
+    <div v-if="$route.query.isAdd">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="标题：">
           <el-input v-model="form.msgTitle" class="handle-input"></el-input>
@@ -44,18 +46,19 @@
           <el-input v-model="form.describes" class="handle-input"></el-input>
         </el-form-item>
         <el-form-item label="内容：">
-          <editor-bar :value="form.content" v-model="form.content"></editor-bar>
+          <UEditor ref="ueditor"></UEditor>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="$router.push('/systemMsg')">返 回</el-button>
+          <el-button type="primary" @click="saveEdit">确 定</el-button>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveEdit">确 定</el-button>
-      </span>
-    </el-dialog>
+    </div>
   </div>
 </template>
 <script>
-  import EditorBar from "@/components/wangeditor/WangEditor.vue";
+  import UEditor from '@/components/ueditor.vue'
+
 
   export default {
     data() {
@@ -66,9 +69,6 @@
         pageTotal: 0,
         tableData: [],
         form: {},
-        editVisible: false,
-        isAdd: 0,
-        title: '',
         rules: {
           title: [{ required: true, message: "请选择标题", trigger: "blur" }],
           describes: [{ required: true, message: "请输入描述", trigger: "blur" }],
@@ -82,14 +82,13 @@
       };
     },
     watch: {
-      editVisible() {
-        if (!this.editVisible) {
-          this.form = {}
-        }
-      }
+      $route(to, from) {
+      this.getMessageInfo()
+    }
     },
-    created() {
-      this.getMessage()
+    mounted() {
+      this.getMessage();
+      this.getMessageInfo()
     },
     methods: {
       //获取数据
@@ -106,9 +105,8 @@
         })
       },
       addMsg() {
-        this.editVisible = true;
-        this.isAdd = 1;
-        this.title = "添加系统消息";
+        this.$router.push({path:"/systemMsg",query:{isAdd:true}})
+      
       },
       //修改状态
       updateMessageState(row) {
@@ -130,21 +128,26 @@
       },
       // 保存编辑
       saveEdit() {
+        this.form.content = this.$refs.ueditor.getUEContent();
+
         this.$refs.form.validate(valid => {
           if (valid) {
             this.editVisible = false;
-            if (this.isAdd == 1) {
+            if (this.isAdd) {
               this.$post("/other/insertMessage", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getMessage()
-                  this.$message.success(res.msg)
+                  
+                  this.$message.success(res.msg);
+                  this.$router.push("/systemMsg")
                 }
               })
             } else {
               this.$post("/other/updateMessage", this.form).then(res => {
                 if (res.code == 200) {
-                  this.getMessage()
+                  
                   this.$message.success(res.msg)
+                  this.$router.push("/systemMsg")
+
                 }
               })
             }
@@ -152,16 +155,19 @@
         })
       },
       updateSystemMsg(row) {
-        this.editVisible = true;
-        this.title = "编辑系统消息";
-        this.isAdd = 0;
-        this.$post("/other/showMessage", {
-          msgId: row.msgId
-        }).then(res => {
-          if(res.code==200){
-            this.form = res.data;
-          }
-        })
+       this.$router.push({path:"/systemMsg",query:{msgId:row.msgId,isAdd:false}})
+      },
+      getMessageInfo() {
+        if (this.$route.query.msgId) {
+          this.$post("/other/showMessage", {
+            msgId: this.$route.query.msgId
+          }).then(res => {
+            if (res.code == 200) {
+              this.form = res.data;
+              this.$refs.ueditor.setUEContent(res.data.content)
+            }
+          })
+        }
       },
       // 删除操作
       deleteDictionary(index, row) {
@@ -186,11 +192,11 @@
       },
       handleSizeChange(val, type) {
         this.PageSize = val;
-       this.getMessage()
+        this.getMessage()
       },
     },
     components: {
-      EditorBar
+      UEditor
     }
   };
 </script>

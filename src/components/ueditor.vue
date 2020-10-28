@@ -1,6 +1,6 @@
 <template>
   <div>
-    <script id="editor" type="text/plain" ></script>
+    <script id="editor" type="text/plain"></script>
   </div>
 </template>
 
@@ -12,35 +12,45 @@
 
   export default {
     name: "UEditor",
-    props: {
-      id: {
-          type: String
-      },
-      config: {
-          type: Object
-      }
-    },
+
     data() {
       return {
-        editor: null
+        editor: null,
+        config: {
+          autoHeightEnabled: false,
+          autoFloatEnabled: true,
+          initialContent: '',   //初始化编辑器的内容,也可以通过textarea/script给值，看官网例子
+          autoClearinitialContent: true, //是否自动清除编辑器初始内容，注意：如果focus属性设置为true,这个也为真，那么编辑器一上来就会触发导致初始化的内容看不到了
+          initialFrameWidth: 1000,
+          initialFrameHeight: 450,
+          BaseUrl: '',
+          UEDITOR_HOME_URL: '/ueditor/',
+          //启用自动保存
+          enableAutoSave: false,
+          autosave: false
+        },
       }
     },
     mounted() {
       //初始化UE
       const _this = this;
       this.editor = UE.delEditor("editor");
-      this.editor = UE.getEditor('editor',this.config);
+      this.editor = UE.getEditor('editor', this.config);
     },
     destoryed() {
       this.editor.destory();
     },
-    methods:{
-      getUEContent(){
-       return this.editor.getContent();
+    methods: {
+      setUEContent(defaultMsg) {
+        this.editor.ready( ()=> {
+          console.log(defaultMsg)
+          this.editor.setContent(defaultMsg)
+        })
       },
-      getContentTxt(){
-        return this.editor.getContentTxt();
+      getUEContent() {
+        return this.editor.getContent();
       }
+
     }
   }
 </script>

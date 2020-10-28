@@ -21,7 +21,7 @@
         <el-button type="primary" class="handle-del mr10" @click="getCircle">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCircle">新建</el-button>
       </div>
-      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+      <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
         <el-table-column prop="cirType" label="圈子类型" align="center"></el-table-column>
         <el-table-column prop="cirName" label="圈子名称" align="center"></el-table-column>
@@ -53,7 +53,7 @@
         <h3>添加圈子</h3>
       </div>
       <el-divider></el-divider>
-      <circle-form :form="form" :stateList="stateList" :dictionaryList="dictionaryList" @saveEdit="saveCircleEdit">
+      <circle-form :form="form" :stateList="stateList" :dictionaryList="dictionaryList">
       </circle-form>
     </div>
     <div v-if="type==2">
@@ -63,7 +63,7 @@
       </div>
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
         <el-tab-pane label="圈子详情" name="first">
-          <circle-form :form="form" :stateList="stateList" :dictionaryList="dictionaryList" @saveEdit="saveCircleEdit">
+          <circle-form :form="form" :stateList="stateList" :dictionaryList="dictionaryList">
           </circle-form>
         </el-tab-pane>
         <el-tab-pane label="圈子动态" name="second">
@@ -84,7 +84,7 @@
             </el-select>
             <el-button type="primary" class="handle-del mr10" @click="getDynamic">搜索</el-button>
           </div>
-          <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+          <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
             <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
             <el-table-column prop="nickname" label="动态发布者" align="center"></el-table-column>
             <el-table-column prop="cirName" label="圈子名称" align="center"></el-table-column>
@@ -130,7 +130,7 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="打赏排行榜" name="third">
-          <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+          <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
             <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
             <el-table-column prop="nickname" label="用户名" align="center"></el-table-column>
             <el-table-column label="用户头像" align="center">
@@ -275,6 +275,7 @@
   export default {
     data() {
       return {
+        loading:false,
         type: 0,
         query: {},
         tabIndex: "",
@@ -366,6 +367,7 @@
       },
       //获取圈子列表
       getCircle() {
+        this.loading=true;
         this.$post("/circle/getCircle", {
           state: this.state,
           cirType: this.cirType,
@@ -374,6 +376,7 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
+            this.loading=false;
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }
@@ -417,6 +420,7 @@
       },
       //获取动态列表
       getDynamic() {
+        this.loading=true;
         this.$post("/circle/getDynamic", {
           state: this.state,
           dyType: this.dyType,
@@ -425,6 +429,7 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
+            this.loading=false;
             this.tableData = res.data.list;
             this.tableData.forEach((el, ind) => {
               el.picture = el.picture.split(",")[0]
@@ -435,12 +440,14 @@
       },
       //获取打赏排行榜
       getRewardList() {
+        this.loading=true;
         this.$post("/circle/getCircleUser", {
           cirId: this.query.cirId,
           PageNumber: this.PageNumber,
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
+            this.loading=false;
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }
@@ -534,25 +541,7 @@
           })
         })
       },
-      //增加/修改圈子
-      saveCircleEdit() {
-        if (this.query.cirId) {
-          this.$post("/circle/updateCircle", this.form).then(res => {
-            if (res.code == 200) {
-              this.$message.success(res.msg)
-              this.$router.go(-1)
-            }
-          })
-        } else {
-          this.$post("/circle/insertCircle", this.form).then(res => {
-            if (res.code == 200) {
-              this.$message.success(res.msg)
-              this.$router.go(-1)
-            }
-          })
-        }
-
-      },
+      
       //获取动态详情
       getDynamicInfo() {
         this.$post("/circle/showDynamic", {
