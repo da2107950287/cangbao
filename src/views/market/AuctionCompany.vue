@@ -6,12 +6,13 @@
         <el-select v-model="orders" placeholder="请选择排序" class="handle-search mr10">
           <el-option label="全部" value="all"></el-option>
           <el-option label="推荐" value="rec"></el-option>
+          <el-option v-for="(item,index) in arr" :key="index" :label="item" :value="item"></el-option>
 
         </el-select>
         <span>拍卖公司名称：</span>
         <el-input v-model="simpleName" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
 
-        <el-button type="primary" class="handle-del mr10" @click="getOrganList">搜索</el-button>
+        <el-button type="primary" class="handle-del mr10" @click="searchOrganList">搜索</el-button>
 
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addYearList">新建</el-button>
       </div>
@@ -34,13 +35,15 @@
       </div>
     </div>
     <!-- 编辑弹出框 -->
-    <el-dialog center :title="title" :visible.sync="editVisible" width="40%">
+    <el-dialog center :title="title" :visible.sync="editVisible" width="600px">
       <el-form ref="form" :rules="rules" :model="form" label-width="140px">
         <el-form-item label="拍卖公司名称：" prop="simpleName">
           <el-input v-model="form.simpleName" placeholder="请输入拍卖公司名称" class="handle-input mr10"></el-input>
         </el-form-item>
         <el-form-item label="排序：" prop="orders">
           <el-select v-model="form.orders" placeholder="请选择排序" class="handle-select mr10">
+          <el-option label="推荐" value="rec"></el-option>
+            
             <el-option v-for="(item,index) in arr" :key="index" :label="item" :value="item"></el-option>
           </el-select>
         </el-form-item>
@@ -64,7 +67,7 @@
         title: "",
         tableData: [],
         editVisible: false,
-        arr: ['rec', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+        arr: [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
         form: {},
         rules: {
           simpleName: [{ required: true, message: "请输入拍卖公司名称", trigger: "blur" }],
@@ -76,6 +79,11 @@
       this.getOrganList();
     },
     methods: {
+      searchOrganList(){
+        this.PageNumber=1;
+        this.PageSize=10;
+        this.getOrganList()
+      },
       // 获取藏品年份
       getOrganList() {
         this.$post("/market/getOrganList", {

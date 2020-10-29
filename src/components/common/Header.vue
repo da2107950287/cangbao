@@ -59,20 +59,20 @@
         },
         computed: {
             username() {
-                let username = JSON.parse(localStorage.getItem('userinfo')).account;
-                console.log(JSON.parse(localStorage.getItem('userinfo')).account)
+                let username = this.$cookies.get('userinfo').account;
+                console.log(this.$cookies.get('userinfo').account)
                 return username ? username : this.name;
             }
         },
         created() {
-            this.avator = JSON.parse(localStorage.getItem('userinfo')).headportrait;
-            console.log(JSON.parse(localStorage.getItem('userinfo')).headportrait)
+            this.avator = this.$cookies.get('userinfo').headportrait;
+            console.log(this.$cookies.get('userinfo').headportrait)
         },
         methods: {
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if (command == 'loginout') {
-                    localStorage.removeItem('userinfo');
+                    this.$cookies.remove('userinfo');
                     this.$router.push('/login');
                 }
             },

@@ -41,12 +41,19 @@
         </el-table-column>
       </el-table>
       <div class="pagination">
-        <el-pagination background layout="total, prev, pager, next" :current-page="PageNumber" :page-size="PageSize"
-          :total="pageTotal" @current-change="handlePageChange"></el-pagination>
+        <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
+          :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event)"
+          @size-change="handleSizeChange($event)"></el-pagination>
       </div>
     </div>
     <!-- 编辑弹出框 -->
     <div v-if="$route.query.isAdd">
+      <div style="display: flex;align-items: center;margin-bottom: 20px;">
+        <img src="~assets/img/goback.png" @click="$router.push('/news')" class="mr10" style="width: 25px;height: 25px;">
+        <h3 v-if="$route.query.newsId">编辑新闻信息</h3>
+        <h3 v-else>添加新闻</h3>
+      </div>
+      <el-divider></el-divider>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="新闻公司：">
           <el-input v-model="form.newsName" class="handle-input"></el-input>
@@ -160,6 +167,10 @@
       },
       addNews() {
         this.$router.push({ path: "/news", query: { isAdd: true } })
+        this.form={
+          newsPurl: "",
+          label: []
+        }
       },
       updateNews(row) {
         this.$router.push({ path: "/news", query: { newsId: row.newsId, isAdd: false } })
@@ -170,7 +181,7 @@
             newsId: this.$route.query.newsId
           }).then(res => {
             if (res.code == 200) {
-         
+
               this.form = res.data;
               let labelArr = this.form.label.split(" ")
               for (let i = 0; i < labelArr.length; i++) {
@@ -197,12 +208,7 @@
       },
       //修改新闻状态
       updateNewsState(row) {
-        let state;
-        if (row.state == 1) {
-          state = 2
-        } else {
-          state = 1
-        }
+        let state = row.state ^ 3
         this.$post("/other/updateNewsState", {
           newsId: row.newsId,
           state
@@ -247,7 +253,11 @@
       handlePageChange(val) {
         this.PageNumber = val;
         this.getNews();
-      }
+      },
+      handleSizeChange(val) {
+        this.PageSize = val;
+        this.getNews();
+      },
     },
     components: {
       UEditor

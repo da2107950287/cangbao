@@ -4,11 +4,11 @@
       <div class="handle-box">
         <span>状态：</span>
         <el-select v-model="query.state" placeholder="状态" class="handle-select mr10">
-          <el-option v-for="(item,index) in getManger" :key="index" :label="item.name" :value="item.id"></el-option>
+          <el-option v-for="(item,index) in manger" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
         <span>管理员名称：</span>
         <el-input v-model="query.content" placeholder="请输入关键词" class="handle-select mr10"></el-input>
-        <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="getManger">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addManager">新建</el-button>
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
@@ -127,7 +127,7 @@
           rId: [{ required: true, message: "请选择角色", trigger: "blur" }]
         },
         //状态选项
-        getManger: [
+        manger: [
           { id: "all", name: "全部" },
           { id: "1", name: "正常" },
           { id: "2", name: "禁用" },
@@ -143,18 +143,19 @@
         if (this.editVisible) {
           this.getRoles()
         } else {
-          this.form = {
-            headportrait: ""
-          }
+          this.$nextTick(() => {
+            this.$refs.form.clearValidate();
+          })
+
         }
       }
     },
     created() {
-      this.getData();
+      this.getManger();
     },
     methods: {
       // 获取数据
-      getData() {
+      getManger() {
         this.$post("/userinfo/getManger", this.query).then(res => {
           if (res.code == 200) {
             this.tableData = res.data;
@@ -176,7 +177,10 @@
       addManager() {
         this.editVisible = true;
         this.isAdd = true;
-        this.title = "添加管理员"
+        this.title = "添加管理员";
+        this.form = {
+          headportrait: ""
+        }
       },
       //触发编辑按钮
       editManager(row) {
@@ -194,14 +198,14 @@
               this.$post("/userinfo/addManger", this.form).then(res => {
                 if (res.code == 200) {
                   this.$message.success(res.msg)
-                  this.getData()
+                  this.getManger()
                 }
               })
             } else {
               this.$post("/userinfo/updateManger", this.form).then(res => {
                 if (res.code == 200) {
                   this.$message.success(res.msg)
-                  this.getData()
+                  this.getManger()
                 }
               })
             }
@@ -229,33 +233,28 @@
             state: row.state
           }).then(res => {
             if (res.code == 200) {
-              this.getData()
+              this.getManger()
               this.$message.success(res.msg)
             }
           })
-        }).catch(() => { });
+        })
 
       },
       //修改状态
       updateState(row) {
-        var state;
-        if (row.state == 1) {
-          state = 2
-        } else {
-          state = 1
-        }
+        let state = row.state ^ 3
         this.$post("/userinfo/updatePassWord", {
           mid: row.mid,
           password: row.password,
-          state: state
+          state
         }).then(res => {
           if (res.code == 200) {
-            this.getData()
+            this.getManger()
             this.$message.success(res.msg)
           }
         })
       },
-      // 删除操作
+      // 删除管理员
       deleteManager(index, row) {
         // 二次确认删除
         this.$confirm("确定要删除该管理员吗？", "提示", {

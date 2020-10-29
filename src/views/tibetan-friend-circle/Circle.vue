@@ -18,10 +18,11 @@
         </el-select>
         <span>藏友圈名称：</span>
         <el-input v-model="cirName" placeholder="请输入关键字" class="handle-search mr10" clearable></el-input>
-        <el-button type="primary" class="handle-del mr10" @click="getCircle">搜索</el-button>
+        <el-button type="primary" class="handle-del mr10" @click="searchCircle">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCircle">新建</el-button>
       </div>
-      <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+      <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
+        header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
         <el-table-column prop="cirType" label="圈子类型" align="center"></el-table-column>
         <el-table-column prop="cirName" label="圈子名称" align="center"></el-table-column>
@@ -37,7 +38,7 @@
         <el-table-column label="操作" width="400" align="center">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" @click="updateCircleState(scope.row)">修改状态</el-button>
-            <el-button type="primary" size="mini" @click="updateCircle(scope.row)">编辑</el-button>
+            <el-button type="primary" size="mini" @click="updateCircle(scope.row)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -49,7 +50,7 @@
     </div>
     <div v-if="type==1">
       <div style="display: flex;align-items: center;">
-        <img src="../../assets/img/goback.png" @click="$router.push('/circle')" class="mr10">
+        <img src="~assets/img/goback.png" style="width: 25px;height: 25px;" @click="$router.push('/circle')" class="mr10">
         <h3>添加圈子</h3>
       </div>
       <el-divider></el-divider>
@@ -58,8 +59,8 @@
     </div>
     <div v-if="type==2">
       <div style="display: flex;align-items: center;" class="mb20">
-        <img src="../../assets/img/goback.png" @click="$router.push('/circle')" class="mr10">
-        <h3>编辑圈子</h3>
+        <img src="~assets/img/goback.png" style="width: 25px;height: 25px;" @click="$router.push('/circle')" class="mr10">
+        <h3>查看圈子</h3>
       </div>
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
         <el-tab-pane label="圈子详情" name="first">
@@ -82,9 +83,10 @@
               <el-option v-for="(item,index) in dyTypeList" :key="index" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
-            <el-button type="primary" class="handle-del mr10" @click="getDynamic">搜索</el-button>
+            <el-button type="primary" class="handle-del mr10" @click="searchDynamic">搜索</el-button>
           </div>
-          <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+          <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
+            header-cell-class-name="table-header">
             <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
             <el-table-column prop="nickname" label="动态发布者" align="center"></el-table-column>
             <el-table-column prop="cirName" label="圈子名称" align="center"></el-table-column>
@@ -119,7 +121,7 @@
                   <span v-else>上架</span>
                 </el-button>
                 <el-button type="primary" size="mini" @click="updateDynamic(scope.row)">编辑</el-button>
-                <el-button type="danger" size="mini" @click="deleteDynamic(scope.$index,scope.row)">删除</el-button>
+                <!-- <el-button type="danger" size="mini" @click="deleteDynamic(scope.$index,scope.row)">删除</el-button> -->
               </template>
             </el-table-column>
           </el-table>
@@ -130,7 +132,8 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="打赏排行榜" name="third">
-          <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+          <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
+            header-cell-class-name="table-header">
             <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
             <el-table-column prop="nickname" label="用户名" align="center"></el-table-column>
             <el-table-column label="用户头像" align="center">
@@ -150,7 +153,7 @@
     </div>
     <div v-if="type==3">
       <div style="display: flex;align-items: center;" class="mb20">
-        <img src="../../assets/img/goback.png" style="width: 28px;height: 28px;" @click="$router.go(-1)" class="mr10">
+        <img src="~assets/img/goback.png" style="width: 25px;height: 25px;" @click="$router.go(-1)" class="mr10">
         <h3>动态详情</h3>
       </div>
       <el-divider></el-divider>
@@ -165,11 +168,11 @@
             <div v-html="dynamicInfo.content"></div>
             <div v-if="dynamicInfo.dyType==1">
               <video v-for="(item,index) in dynamicInfo.picture" style="width: 200px;height: 100px;" :key="index"
-                :src="item" controls></video>
+                :src="item" class="mr10" controls></video>
             </div>
             <div v-else>
               <el-image style="width: 200px;height: 100px;" v-for="(item,index) in dynamicInfo.picture" :key="index"
-                :src="item"></el-image>
+                :src="item" class="mr10"></el-image>
             </div>
           </div>
         </div>
@@ -181,7 +184,7 @@
 
         <el-option v-for="(item,index) in stateselect" :key="index" :label="item.name" :value="item.id"></el-option>
       </el-select>
-      <el-button type="primary" class="handle-del mr10" @click="getOneDynamicComment">搜索</el-button>
+      <el-button type="primary" class="handle-del mr10" @click="searchOneDynamicComment">搜索</el-button>
       <div style="display: flex;margin-top: 10px;" v-for="(el,index) in oneComment" :key="index">
         <img :src="el.headportrait" style="width: 50px;height: 50px;" class="mr10">
         <div style="width: 100%;">
@@ -217,14 +220,15 @@
     </div>
     <div v-if="type==4">
       <div style="display: flex;align-items: center;" class="mb20">
-        <img src="../../assets/img/goback.png" style="width: 28px;height: 28px;" @click="$router.go(-1)" class="mr10">
+        <img src="~assets/img/goback.png" style="width: 25px;height: 25px;" @click="$router.go(-1)" class="mr10">
         <h3>回复列表</h3>
       </div>
       <el-divider></el-divider>
       <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
+        <el-option label="全部" value="all"></el-option>
         <el-option v-for="(item,index) in stateselect" :key="index" :label="item.name" :value="item.id"></el-option>
       </el-select>
-      <el-button type="primary" class="handle-del mr10" @click="getTwoDynamicComment">搜索</el-button>
+      <el-button type="primary" class="handle-del mr10" @click="searchTwoDynamicComment">搜索</el-button>
       <div style="display: flex;margin-top: 10px;" v-for="(el,index) in twoComment" :key="index">
         <img :src="el.headportrait" style="width: 50px;height: 50px;" class="mr10">
         <div style="width: 100%;">
@@ -254,7 +258,7 @@
           @size-change="handleSizeChange($event,5)"></el-pagination>
       </div>
     </div>
-    <el-dialog title="修改圈子状态" center :visible.sync="editVisible" width="30%">
+    <el-dialog title="修改圈子状态" center :visible.sync="editVisible" width="450px">
       <el-form ref="form" :model="form" label-width="100px">
         <el-form-item label="圈子状态：" prop="state">
           <el-radio v-model="form.state" label="0">待审核</el-radio>
@@ -275,7 +279,7 @@
   export default {
     data() {
       return {
-        loading:false,
+        loading: false,
         type: 0,
         query: {},
         tabIndex: "",
@@ -340,7 +344,7 @@
           }
         }
       },
-      //
+    
       getType() {
         this.tableData = [];
         this.query = this.$route.query;
@@ -365,9 +369,14 @@
           this.getTwoDynamicComment()
         }
       },
+      searchCircle() {
+        this.PageNumber = 1;
+        this.PageSize = 10;
+        this.getCircle()
+      },
       //获取圈子列表
       getCircle() {
-        this.loading=true;
+        this.loading = true;
         this.$post("/circle/getCircle", {
           state: this.state,
           cirType: this.cirType,
@@ -376,12 +385,13 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
-            this.loading=false;
+            this.loading = false;
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }
         })
       },
+     
       //获取圈子类型
       getAllDictionary() {
         this.$post("/other/getAllDictionary", {
@@ -418,9 +428,15 @@
       updateCircle(row) {
         this.$router.push({ path: "/circle", query: { type: 2, cirId: row.cirId } })
       },
+      //搜索条件搜索动态列表
+      searchDynamic() {
+        this.PageNumber = 1;
+        this.PageSize = 10;
+        this.getDynamic()
+      },
       //获取动态列表
       getDynamic() {
-        this.loading=true;
+        this.loading = true;
         this.$post("/circle/getDynamic", {
           state: this.state,
           dyType: this.dyType,
@@ -429,7 +445,7 @@
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
-            this.loading=false;
+            this.loading = false;
             this.tableData = res.data.list;
             this.tableData.forEach((el, ind) => {
               el.picture = el.picture.split(",")[0]
@@ -440,14 +456,14 @@
       },
       //获取打赏排行榜
       getRewardList() {
-        this.loading=true;
+        this.loading = true;
         this.$post("/circle/getCircleUser", {
           cirId: this.query.cirId,
           PageNumber: this.PageNumber,
           PageSize: this.PageSize
         }).then(res => {
           if (res.code == 200) {
-            this.loading=false;
+            this.loading = false;
             this.tableData = res.data.list;
             this.pageTotal = res.data.count;
           }
@@ -485,13 +501,7 @@
 
       //修改动态状态
       updateDynamicState(row) {
-        console.log(row)
-        let state;
-        if (row.state == 1) {
-          state = 2
-        } else if (row.state == 2) {
-          state = 1
-        }
+        let state = row.state ^ 3
         this.$post("/circle/updateDynamicState", {
           dyId: row.dyId,
           state
@@ -504,12 +514,7 @@
       },
       //修改动态评论状态
       updateDynamicCommentState(row, ind) {
-        let state;
-        if (row.state == 1) {
-          state = 2
-        } else if (row.state == 2) {
-          state = 1
-        }
+        let state = row.state ^ 3
         this.$post("/circle/updateDynamicCommentState", {
           dc2Id: row.dc2Id,
           state
@@ -525,23 +530,8 @@
         })
       },
 
-      //删除动态
-      deleteDynamic(index, row) {
-        this.$confirm('确定要删除吗？', '提示', {
-          type: 'warning'
-        }).then(() => {
-          this.$post("/circle/updateDynamicState", {
-            dyId: this.dyId,
-            state: 3
-          }).then(res => {
-            if (res.code == 200) {
-              this.$message.success(res.msg)
-              this.getDynamic()
-            }
-          })
-        })
-      },
-      
+     
+
       //获取动态详情
       getDynamicInfo() {
         this.$post("/circle/showDynamic", {
@@ -552,6 +542,11 @@
             this.dynamicInfo.picture = this.dynamicInfo.picture.split(",")
           }
         })
+      },
+      searchOneDynamicComment() {
+        this.PageNumber = 1;
+        this.PageSize = 10;
+        this.getOneDynamicComment()
       },
       //获取动态一级评论
       getOneDynamicComment() {
@@ -566,6 +561,11 @@
             this.pageTotal = res.data.count;
           }
         })
+      },
+      searchTwoDynamicComment() {
+        this.PageNumber = 1;
+        this.PageSize = 10;
+        this.getTwoDynamicComment()
       },
       //获取动态二级评论
       getTwoDynamicComment() {

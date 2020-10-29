@@ -1,43 +1,50 @@
 <template>
   <div class="container">
-   <div v-if="!$route.query.isAdd">
-    <div class="handle-box">
-      <span>状态：</span>
-      <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
-        <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
-      </el-select>
-      <el-button type="primary" class="handle-del mr10" @click="getMessage">搜索</el-button>
-      <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addMsg">新建</el-button>
+    <div v-if="!$route.query.isAdd">
+      <div class="handle-box">
+        <span>状态：</span>
+        <el-select v-model="state" placeholder="请选择类型" class="handle-search mr10">
+          <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
+        </el-select>
+        <el-button type="primary" class="handle-del mr10" @click="searchMessage">搜索</el-button>
+        <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addMsg">新建</el-button>
+      </div>
+      <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+        <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
+        <el-table-column prop="msgTitle" label="标题" align="center"></el-table-column>
+        <el-table-column prop="describes" label="描述" align="center"></el-table-column>
+        <el-table-column prop="msgTime" label="发布时间" align="center"></el-table-column>
+        <el-table-column label="状态" align="center">
+          <template slot-scope="scope">
+            <span v-if="scope.row.state==1">上架</span>
+            <span v-else>下架</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" @click="updateMessageState(scope.row)">
+              <span v-if="scope.row.state==1">下架</span>
+              <span v-else>上架</span>
+            </el-button>
+            <el-button type="primary" size="mini" @click="updateSystemMsg(scope.row)">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
+          :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event)"
+          @size-change="handleSizeChange($event)"></el-pagination>
+      </div>
     </div>
-    <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-      <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
-      <el-table-column prop="msgTitle" label="标题" align="center"></el-table-column>
-      <el-table-column prop="describes" label="描述" align="center"></el-table-column>
-      <el-table-column prop="msgTime" label="发布时间" align="center"></el-table-column>
-      <el-table-column label="状态" align="center">
-        <template slot-scope="scope">
-          <span v-if="scope.row.state==1">上架</span>
-          <span v-else>下架</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center">
-        <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="updateMessageState(scope.row)">
-            <span v-if="scope.row.state==1">下架</span>
-            <span v-else>上架</span>
-          </el-button>
-          <el-button type="primary" size="mini" @click="updateSystemMsg(scope.row)">编辑</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <div class="pagination">
-      <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
-        :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event)"
-        @size-change="handleSizeChange($event)"></el-pagination>
-    </div>
-   </div>
     <!-- 编辑弹出框 -->
     <div v-if="$route.query.isAdd">
+      <div style="display: flex;align-items: center;margin-bottom: 20px;">
+        <img src="~assets/img/goback.png" @click="$router.push('/systemMsg')" class="mr10"
+          style="width: 25px;height: 25px;">
+        <h3 v-if="$route.query.msgId">编辑系统信息信息</h3>
+        <h3 v-else>添加系统信息</h3>
+      </div>
+      <el-divider></el-divider>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="标题：">
           <el-input v-model="form.msgTitle" class="handle-input"></el-input>
@@ -58,8 +65,6 @@
 </template>
 <script>
   import UEditor from '@/components/ueditor.vue'
-
-
   export default {
     data() {
       return {
@@ -83,14 +88,19 @@
     },
     watch: {
       $route(to, from) {
-      this.getMessageInfo()
-    }
+        this.getMessageInfo()
+      }
     },
     mounted() {
       this.getMessage();
       this.getMessageInfo()
     },
     methods: {
+      searchMessage() {
+        this.PageNumber = 1;
+        this.PageSize = 10;
+        this.getMessage()
+      },
       //获取数据
       getMessage() {
         this.$post("/other/getMessage", {
@@ -105,17 +115,12 @@
         })
       },
       addMsg() {
-        this.$router.push({path:"/systemMsg",query:{isAdd:true}})
-      
+        this.$router.push({ path: "/systemMsg", query: { isAdd: true } })
+        this.form = {}
       },
       //修改状态
       updateMessageState(row) {
-        let state;
-        if (row.state == 1) {
-          state = 2
-        } else {
-          state = 1
-        }
+        let state = row.state ^ 3
         this.$post("/other/updateMessageState", {
           msgId: row.msgId,
           state
@@ -136,7 +141,7 @@
             if (this.isAdd) {
               this.$post("/other/insertMessage", this.form).then(res => {
                 if (res.code == 200) {
-                  
+
                   this.$message.success(res.msg);
                   this.$router.push("/systemMsg")
                 }
@@ -144,7 +149,7 @@
             } else {
               this.$post("/other/updateMessage", this.form).then(res => {
                 if (res.code == 200) {
-                  
+
                   this.$message.success(res.msg)
                   this.$router.push("/systemMsg")
 
@@ -155,7 +160,7 @@
         })
       },
       updateSystemMsg(row) {
-       this.$router.push({path:"/systemMsg",query:{msgId:row.msgId,isAdd:false}})
+        this.$router.push({ path: "/systemMsg", query: { msgId: row.msgId, isAdd: false } })
       },
       getMessageInfo() {
         if (this.$route.query.msgId) {

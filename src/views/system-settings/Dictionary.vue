@@ -3,12 +3,10 @@
     <div class="handle-box">
       <span>所属类型：</span>
       <el-select v-model="dicType" placeholder="请选择类型" class="handle-select mr10">
-        <el-option label="全部" value=""></el-option>
         <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.name" :value="item.id">
         </el-option>
       </el-select>
-      <el-button type="primary" class="handle-del mr10" @click="getDictionary">搜索
-      </el-button>
+      <el-button type="primary" class="handle-del mr10" @click="searchDictionary">搜索</el-button>
       <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addDictionarys">新建
       </el-button>
     </div>
@@ -16,7 +14,6 @@
       <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
       <el-table-column prop="dicName" label="名称" align="center"></el-table-column>
       <el-table-column prop="orders" label="排序" align="center"></el-table-column>
-
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="updateDictionary(scope.row)">编辑</el-button>
@@ -35,16 +32,10 @@
     <!-- 编辑弹出框 -->
     <el-dialog :title="title" center :visible.sync="editVisible" width="30%">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <!-- <el-form-item label="类型：">
-          <el-select v-model="form.dicType" placeholder="请选择类型" class="handle-select mr10">
-            <el-option v-for="(item,index) in dictionaryList" :key="index" :label="item.name" :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item> -->
-        <el-form-item label="名称：">
+        <el-form-item label="名称：" prop="dicName"> 
           <el-input v-model="form.dicName" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="排序：">
+        <el-form-item label="排序：" prop="orders">
           <el-input v-model="form.orders" class="handle-input"></el-input>
         </el-form-item>
       </el-form>
@@ -64,14 +55,11 @@
         PageSize: 10,
         pageTotal: 0,
         tableData: [],
-        form: {
-
-        },
+        form: {},
         editVisible: false,
         isAdd: 0,
         title: '',
         rules: {
-          dicType: [{ required: true, message: "请选择类型", trigger: "blur" }],
           dicName: [{ required: true, message: "请输入名称", trigger: "blur" }],
           orders: [{ required: true, message: "请输入排序", trigger: "blur" }],
         },
@@ -85,7 +73,10 @@
     watch: {
       editVisible() {
         if (!this.editVisible) {
-          this.form = {}
+          this.form = {};
+          this.$nextTick(()=>{
+            this.$refs.form.clearValidate()
+          })
         }
       }
     },
@@ -93,6 +84,12 @@
       this.getDictionary()
     },
     methods: {
+      //搜索数据字典
+      searchDictionary(){
+        this.PageNumber=1;
+        this.PageSize=10;
+        this.getDictionary()
+      },
       //获取数据
       getDictionary() {
         this.$post("/other/getDictionary", {
@@ -113,11 +110,11 @@
       },
       // 保存编辑
       saveEdit() {
-        this.editVisible = false;
         this.$refs.form.validate(valid => {
           if (valid) {
+            this.editVisible = false;
             if (this.isAdd == 1) {
-              this.form.dicType=this.dicType
+              this.form.dicType = this.dicType
               this.$post("/other/insertDictionary", this.form).then(res => {
                 if (res.code == 200) {
                   this.getDictionary()
@@ -154,7 +151,7 @@
           }).then(res => {
             if (res.code == 200) {
               this.$message.success(res.msg);
-            this.getDictionary()
+              this.getDictionary()
             }
           })
         })
@@ -165,7 +162,7 @@
         this.PageNumber = val;
         this.getDictionary();
       },
-      handleSizeChange(val){
+      handleSizeChange(val) {
         this.PageSize = val;
         this.getDictionary();
       }

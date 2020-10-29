@@ -93,6 +93,31 @@
                     },
                     {
                         icon: 'el-icon-menu',
+                        index: '33',
+                        title: '拍卖会',
+                        subs: [
+                        {
+                                index:'auction',
+                                title:'拍卖会管理'
+                            },
+                            {
+                                index:'auctionYear',
+                                title:'拍卖会年份管理'  
+                            },
+                            {
+                                index:'auctionCategory',
+                                title:'拍卖会类别管理'  
+                            },
+                            
+                            {
+                                index:'auctionCompany',
+                                title:'拍卖公司管理'  
+                            },
+                        ]
+                    },
+
+                    {
+                        icon: 'el-icon-menu',
                         index: '2',
                         title: '市场',
                         subs: [
@@ -111,23 +136,7 @@
                                 title:'艺术分析师管理'
                             },
                             
-                            {
-                                index:'auction',
-                                title:'拍卖会管理'
-                            },
-                            {
-                                index:'auctionYear',
-                                title:'拍卖会年份管理'  
-                            },
-                            {
-                                index:'auctionCategory',
-                                title:'拍卖会类别管理'  
-                            },
-                            
-                            {
-                                index:'auctionCompany',
-                                title:'拍卖公司管理'  
-                            },
+                      
                             // {
                             //     index:'specialAuction',
                             //     title:'拍卖专场管理'  
@@ -135,6 +144,7 @@
                             // }
                         ]
                     },
+                   
                     {
                         icon: 'el-icon-menu',
                         index: '3',

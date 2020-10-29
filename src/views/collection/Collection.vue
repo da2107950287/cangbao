@@ -263,15 +263,7 @@
           this.getTwoCollComment()
         }
       },
-      updateState(row) {
-        let state;
-        if (row.state == 1) {
-          state = 2
-        } else {
-          state = 1
-        }
-        return state;
-      },
+     
 
       //获取藏品信息
       getCollectionInfo() {
@@ -334,9 +326,11 @@
       },
       //修改藏品状态
       updateCollectionState(row) {
+       let state = row.state ^ 3
+
         this.$post("/collection/updateCollectionState", {
           couId: row.couId,
-          state: this.updateState(row)
+          state
         }).then(res => {
           if (res.code == 200) {
             this.$message.success(res.msg);
@@ -347,8 +341,10 @@
 
       //修改评论状态
       updateCollectionCommentState(row) {
+       let state = row.state ^ 3
+
         this.$post("/collection/updateCollectionState", {
-          state: this.updateState(row),
+          state,
           ccId: row.ccId
         }).then(res => {
           if (res.code == 200) {

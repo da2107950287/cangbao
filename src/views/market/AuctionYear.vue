@@ -39,7 +39,6 @@
           <el-date-picker v-model="form.enddate" value-format="yyyy-MM-dd" class="handle-input" type="date"
             placeholder="请选择结束时间">
           </el-date-picker>
-
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -62,8 +61,9 @@
         title: "",
         form: {},
         rules: {
-          state: [{ required: true, message: "请选择状态", trigger: "blur" }],
-          cyName: [{ required: true, message: "请输入年份", trigger: "blur" }],
+          name: [{ required: true, message: "请输入年份名称", trigger: "blur" }],
+          startdate: [{ required: true, message: "请输入开始时间", trigger: "blur" }],
+          enddate:[{ required: true, message: "请输入结束时间", trigger: "blur" }],
         },
 
 

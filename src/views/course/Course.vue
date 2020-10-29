@@ -165,7 +165,7 @@
       </el-tabs>
     </div>
     <div v-else-if="type==3">
-     
+
       <catalogue-form :form="form" :stateList="stateList" :dictionarysList="dictionarysList"></catalogue-form>
     </div>
   </div>
@@ -250,15 +250,7 @@
           this.getCourseComment();
         }
       },
-      updateState(row) {
-        let state;
-        if (row.state == 1) {
-          state = 2
-        } else {
-          state = 1
-        }
-        return state;
-      },
+
       //获取课程类型
       getAllDictionary() {
         this.$post("/other/getAllDictionary", {
@@ -293,7 +285,7 @@
         }).then(res => {
           if (res.code == 200) {
             this.form = res.data;
-    
+
 
           }
         })
@@ -356,9 +348,11 @@
       },
       //修改课程状态
       updateCourseState(row) {
+        let state = row.state ^ 3
+
         this.$post("/course/updateCourseState", {
           couId: row.couId,
-          state: this.updateState(row)
+          state
         }).then(res => {
           if (res.code == 200) {
             this.$message.success(res.msg);
@@ -368,9 +362,11 @@
       },
       //修改目录状态
       updateCatalogueState(row) {
+        let state = row.state ^ 3
+
         this.$post("/course/updateCatalogueState", {
           catId: row.catId,
-          state: this.updateState(row)
+          state
         }).then(res => {
           if (res.code == 200) {
             this.$message.success(res.msg);
@@ -380,8 +376,9 @@
       },
       //修改评论状态
       updateCourseCommentState(row) {
+        let state = row.state ^ 3
         this.$post("/course/updateCourseState", {
-          state: this.updateState(row),
+          state,
           ccId: row.ccId
         }).then(res => {
           if (res.code == 200) {

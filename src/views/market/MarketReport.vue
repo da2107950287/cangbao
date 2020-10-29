@@ -10,7 +10,7 @@
         </el-select>
         <span>标题：</span>
         <el-input v-model="title" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
-        <el-button type="primary" class="handle-del mr10" @click="getMarketReport">搜索</el-button>
+        <el-button type="primary" class="handle-del mr10" @click="searchMarketReport">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addTypelists">新建</el-button>
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
@@ -37,7 +37,8 @@
     </div>
     <div v-else-if="rtype==1">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
-        <img src="~assets/img/goback.png" @click="$router.push('/marketReport')" class="mr10">
+        <img src="~assets/img/goback.png" @click="$router.push('/marketReport')" style="width: 25px;height: 25px;"
+          class="mr10">
         <h3 v-if="query.id">查看报告</h3>
         <h3 v-else>添加报告</h3>
       </div>
@@ -46,7 +47,7 @@
         <el-form-item label="标题：" prop="title">
           <el-input v-model="form.title" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="类型："  prop="type">
+        <el-form-item label="类型：" prop="type">
           <el-select v-model="form.type" placeholder="请选择类型" class="handle-input mr10">
             <el-option v-for="(item,index) in typelist" :key="index" :label="item.name" :value="item.id.toString()">
             </el-option>
@@ -72,13 +73,12 @@
           </label>
         </el-form-item>
         <el-form-item label="简介：" prop="introduction">
-          <el-input v-model="form.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea"></el-input>
+          <el-input v-model="form.introduction" :autosize="{ minRows: 4, maxRows: 6}" type="textarea"
+            style="width: 1000px;"></el-input>
         </el-form-item>
         <el-form-item label="内容：" prop="reporturl">
           <UEditor ref="ueditor"></UEditor>
-
         </el-form-item>
-
         <el-form-item>
           <el-button @click="$router.push('/marketReport')">返回</el-button>
           <el-button type="primary" @click="saveEdit">确 定</el-button>
@@ -86,7 +86,7 @@
       </el-form>
 
     </div>
- 
+
   </div>
 </template>
 <script>
@@ -113,10 +113,10 @@
           title: [{ required: true, message: "请输入标题", trigger: "blur" }],
           team: [{ required: true, message: "请输入团队", trigger: "blur" }],
           label: [{ required: true, message: "请输入标签", trigger: "blur" }],
-          reporturl:[{ required: true, message: "请输入内容", trigger: "blur" }],
-          coverPicture:[{ required: true, message: "请上传时间", trigger: "blur" }],
-          times:[{ required: true, message: "请输入时间", trigger: "blur" }],
-          introduction:[{ required: true, message: "请输入简介", trigger: "blur" }],
+          reporturl: [{ required: true, message: "请输入内容", trigger: "blur" }],
+          coverPicture: [{ required: true, message: "请上传时间", trigger: "blur" }],
+          times: [{ required: true, message: "请输入时间", trigger: "blur" }],
+          introduction: [{ required: true, message: "请输入简介", trigger: "blur" }],
         },
         typelist: [],
       };
@@ -172,6 +172,11 @@
           }
         })
       },
+      searchMarketReport() {
+        this.PageNumber = 1;
+        this.PageSize = 10;
+        this.getMarketReport()
+      },
       //获取数据
       getMarketReport() {
         this.$post("/market/getMarketReport", {
@@ -187,7 +192,10 @@
         })
       },
       addTypelists() {
-        this.$router.push({ path: "/marketReport", query: { rtype: 1 } })
+        this.$router.push({ path: "/marketReport", query: { rtype: 1 } });
+        this.form={
+          coverPicture: ""
+        }
       },
       // 保存编辑
       saveEdit() {

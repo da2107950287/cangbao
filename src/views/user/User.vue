@@ -17,7 +17,7 @@
         </el-date-picker>
         <span>手机号：</span>
         <el-input v-model="account" placeholder="请输入手机号" class="handle-search mr10" clearable></el-input>
-        <el-button type="primary" class="handle-del mr10" @click="getUser">搜索</el-button>
+        <el-button type="primary" class="handle-del mr10" @click="searchUser">搜索</el-button>
         <!-- <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addCircle">新建</el-button> -->
       </div>
       <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
@@ -52,29 +52,31 @@
 
     <div v-else-if="type==2">
       <div style="display: flex;align-items: center;" class="mb20">
-        <img src="../../assets/img/goback.png" @click="$router.push('/user')" class="mr10">
-        <h3>编辑用户</h3>
+        <img src="../../assets/img/goback.png" @click="$router.push('/user')" style="width: 25px;height: 25px;"
+          class="mr10">
+        <h3>查看相关用户</h3>
       </div>
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
         <el-tab-pane label="基本信息" name="1" class="info">
-          <el-form :model="form" style="padding-left: 30px;">
+
+          <el-form ref="form" :model="form" label-width="100px">
+
             <el-form-item label="用户ID：">
-              <div>{{form.uid}}</div>
+              <el-input v-model="form.uid" :disabled="true" class="handle-input mr10"></el-input>
             </el-form-item>
             <el-form-item label="昵称：">
-              <div>{{form.nickname}}</div>
+              <el-input v-model="form.nickname" :disabled="true" class="handle-input mr10"></el-input>
             </el-form-item>
             <el-form-item label="手机号：">
-              <div>{{form.account}}</div>
+              <el-input v-model="form.account" :disabled="true" class="handle-input mr10"></el-input>
             </el-form-item>
             <el-form-item label="注册时间：">
-              <div>{{form.registertime}}</div>
+              <el-input v-model="form.registertime" :disabled="true" class="handle-input mr10"></el-input>
             </el-form-item>
-            <el-form-item label="状态：">
+            <el-form-item label="用户状态：">
               <div v-if="form.state==1">有效</div>
               <div v-else>无效</div>
             </el-form-item>
-
             <el-form-item label="用户头像：">
               <img :src="form.headportrait" class="img60">
             </el-form-item>
@@ -247,17 +249,16 @@
           }
         }
       },
+      searchUser() {
+        this.PageNumber = 1;
+        this.PageSize = 10;
+        this.getUser()
+      },
       viewUser(row) {
         this.$router.push({ path: "/user", query: { type: 2, uid: row.uid } })
       },
       updateUserState(row) {
-        let state="";
-        if(row.state==1){
-          state=2
-        }else{
-          state=1
-        }
-
+        let state = row.state ^ 3;
         this.$post("/userinfo/updateUserinfo", {
           uid: row.uid,
           state
@@ -426,13 +427,4 @@
     font-size: 14px;
   }
 
-  .info {
-    color: #606266;
-    line-height: 40px;
-
-    div {
-      display: flex;
-      align-items: center;
-    }
-  }
 </style>

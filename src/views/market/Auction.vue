@@ -13,7 +13,7 @@
         </el-select>
         <span>拍卖会名称：</span>
         <el-input v-model="name" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
-        <el-button type="primary" class="handle-del mr10" @click="getAuction">搜索</el-button>
+        <el-button type="primary" class="handle-del mr10" @click="searchAuction">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addAuction">新建</el-button>
       </div>
       <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
@@ -49,7 +49,7 @@
     <!-- 添加拍卖会 -->
     <div v-else-if="rtype==1">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
-        <img src="~assets/img/goback.png" @click="$router.push('/auction')" class="mr10">
+        <img src="~assets/img/goback.png" style="width: 25px;height: 25px;" @click="$router.push('/auction')" class="mr10">
         <h3>添加拍卖会</h3>
       </div>
       <el-divider></el-divider>
@@ -58,7 +58,7 @@
     <!-- 查看拍卖会 -->
     <div v-else-if="rtype==2">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
-        <img src="~assets/img/goback.png" @click="$router.push('/auction')" class="mr10">
+        <img src="~assets/img/goback.png" style="width: 25px;height: 25px;" @click="$router.push('/auction')" class="mr10">
         <h3>编辑拍卖会</h3>
       </div>
       <el-tabs v-model="activeAuction" type="card" @tab-click="handleClick">
@@ -78,7 +78,7 @@
             </el-select>
             <span>拍卖会专场名称：</span>
             <el-input v-model="name" placeholder="请输入关键字" clearable class="handle-search mr10"></el-input>
-            <el-button type="primary" class="handle-del mr10" @click="getSpecials">搜索</el-button>
+            <el-button type="primary" class="handle-del mr10" @click="searchSpecials">搜索</el-button>
             <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addSpecials">新建</el-button>
           </div>
           <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
@@ -116,7 +116,7 @@
     <!-- 添加拍卖会专场 -->
     <div v-else-if="rtype==3">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
-        <img src="~assets/img/goback.png" @click="$router.push({ path: '/auction', query: { rtype: 2, sessionCode: $route.query.sessionCode } })" class="mr10">
+        <img src="~assets/img/goback.png" style="width: 25px;height: 25px;" @click="$router.push({ path: '/auction', query: { rtype: 2, sessionCode: $route.query.sessionCode } })" class="mr10">
         <h3>添加拍卖会专场</h3>
       </div>
       <el-divider></el-divider>
@@ -125,7 +125,7 @@
     <!-- 查看拍卖会专场 -->
     <div v-else-if="rtype==4">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
-        <img src="~assets/img/goback.png" @click="$router.push({ path: '/auction', query: { rtype: 2, sessionCode: $route.query.sessionCode } })" class="mr10">
+        <img src="~assets/img/goback.png" style="width: 25px;height: 25px;" @click="$router.push({ path: '/auction', query: { rtype: 2, sessionCode: $route.query.sessionCode } })" class="mr10">
         <h3>编辑拍卖会专场</h3>
       </div>
       <el-tabs v-model="activeSpecials" type="card" @tab-click="handleClick">
@@ -159,7 +159,7 @@
             <br>
             <span class="mt20">拍品名称：</span>
             <el-input v-model="lotName" placeholder="请输入关键字" clearable class="handle-search mr10 mt20"></el-input>
-            <el-button type="primary" class="handle-del mr10 mt20" @click="getLot">搜索</el-button>
+            <el-button type="primary" class="handle-del mr10 mt20" @click="searchLot">搜索</el-button>
             <el-button type="primary" icon="el-icon-plus" class="handle-del mr10 mt20" @click="addLot">新建</el-button>
           </div>
           <el-table v-loading="loading" :data="tableData" border class="table" header-cell-class-name="table-header">
@@ -195,7 +195,7 @@
     </div>
     <div v-else-if="rtype==5">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
-        <img src="~assets/img/goback.png" @click="$router.push({ path: '/auction', query: { rtype: 2, sessionCode: $route.query.sessionCode,specialCode:$route.query.specialCode } })" class="mr10">
+        <img src="~assets/img/goback.png" style="width: 25px;height: 25px;" @click="$router.push({ path: '/auction', query: { rtype: 2, sessionCode: $route.query.sessionCode,specialCode:$route.query.specialCode } })" class="mr10">
         <h3 v-if="$route.query.id">修改拍品</h3>
         <h3 v-else>添加拍品</h3>
       </div>
@@ -404,6 +404,11 @@
           }
         })
       },
+      searchAuction(){
+        this.PageNumber=1;
+        this.PageSize=10;
+        this.getAuction()
+      },
       //获取拍卖会列表
       getAuction() {
         this.loading = true;
@@ -419,6 +424,11 @@
             this.pageTotal = res.data.count;
           }
         })
+      },
+      searchSpecials(){
+        this.PageNumber=1;
+        this.PageSize=10;
+        this.getSpecials()
       },
       //获取专场列表
       getSpecials() {
@@ -436,6 +446,11 @@
             this.pageTotal = res.data.count;
           }
         })
+      },
+      searchLot(){
+        this.PageNumber=1;
+        this.PageSize=10;
+        this.getLot()
       },
       //获取拍品
       getLot() {

@@ -11,7 +11,7 @@
         <el-select v-model="state" placeholder="请选择状态" class="handle-select mr10">
           <el-option v-for="(item,index) in statesList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
-        <el-button type="primary" class="handle-del mr10" @click="getBanner">搜索</el-button>
+        <el-button type="primary" class="handle-del mr10" @click="searchBanner">搜索</el-button>
         <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addBanners">新建</el-button>
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
@@ -35,7 +35,7 @@
               <span v-if="scope.row.state==1">取消推荐</span>
               <span v-else>推荐</span>
             </el-button>
-            <el-button type="primary" size="mini" @click="updateBanners(scope.row)">编辑</el-button>
+            <el-button type="primary" size="mini" @click="updateBanners(scope.row)">查看</el-button>
             <!-- <el-button type="danger" size="mini" class="red" @click="delete(scope.$index, scope.row)">删除</el-button> -->
           </template>
         </el-table-column>
@@ -48,7 +48,13 @@
     </div>
     <!-- 编辑弹出框 -->
     <div v-else-if="this.$route.query.isAdd">
-      <!-- <el-dialog :title="title" center :visible.sync="editVisible" width="800"> -->
+      <div style="display: flex;align-items: center;margin-bottom: 20px;">
+        <img src="~assets/img/goback.png" @click="$router.push('/banners')" class="mr10"
+          style="width: 25px;height: 25px;">
+        <h3 v-if="$route.query.banId">编辑banner信息</h3>
+        <h3 v-else>添加banner</h3>
+      </div>
+      <el-divider></el-divider>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="位置：" prop="positions">
           <el-select v-model="form.positions" placeholder="请选择位置" class="handle-input mr10">
@@ -67,17 +73,14 @@
               accept="image/gif, image/jpeg, image/jpg, image/png, image/svg" @change="handleFileChange" />
           </label>
         </el-form-item>
-     
         <el-form-item label="内容：" prop="content">
-          <UEditor  ref="ueditor"></UEditor>
+          <UEditor ref="ueditor"></UEditor>
         </el-form-item>
         <el-form-item>
-          <el-button @click="$router.push('banners')">返 回</el-button>
+          <el-button @click="$router.push('/banners')">返 回</el-button>
           <el-button type="primary" @click="saveEdit">确 定</el-button>
         </el-form-item>
       </el-form>
-      
-      <!-- </el-dialog> -->
     </div>
   </div>
 </template>
@@ -96,9 +99,6 @@
         form: {
           purl: ""
         },
-        editVisible: false,
-        isAdd: 0,
-        title: '',
         rules: {
           positions: [{ required: true, message: "请选择位置", trigger: "blur" }],
           title: [{ required: true, message: "请输入标题", trigger: "blur" }],
@@ -127,6 +127,12 @@
       this.getBannerInfo()
     },
     methods: {
+      //搜索banners
+      searchBanner() {
+        this.PageNumber = 1;
+        this.PageSize = 10;
+        this.getBanner()
+      },
       //获取banner列表
       getBanner() {
         this.$post("/other/getBanner", {
@@ -154,15 +160,10 @@
       },
       //修改状态
       updateState(row) {
-        var state;
-        if (row.state == 1) {
-          state = 2
-        } else {
-          state = 1
-        }
+        let state = row.state ^ 3;
         this.$post("/other/updateBannerState", {
           banId: row.banId,
-          state: state
+          state
         }).then(res => {
           if (res.code == 200) {
             this.getBanner()
@@ -172,16 +173,14 @@
       },
       //触发添加按钮
       addBanners() {
-        this.$router.push({ path: "/banners", query: { isAdd: true } });
-        this.form={
-          purl:""
+        this.$router.push({ path: "/banners",query:{isAdd:true} });
+        this.form = {
+          purl: ""
         }
       },
       //触发编辑按钮
       updateBanners(row) {
-        this.$router.push({ path: "/banners", query: { isAdd: false, banId: row.banId } });
-
-
+        this.$router.push({ path: "/banners", query: { banId: row.banId,isAdd:false } });
       },
       getBannerInfo() {
         if (this.$route.query.banId) {
@@ -189,7 +188,6 @@
             if (res.code == 200) {
               this.form = res.data;
               this.$refs.ueditor.setUEContent(res.data.content)
-
             }
           })
         }
@@ -199,17 +197,16 @@
         this.form.content = this.$refs.ueditor.getUEContent();
         this.$refs.form.validate(valid => {
           if (valid) {
-            this.editVisible = false;
-            if (this.isAdd) {
-              this.$post("/other/insertBanner", this.form).then(res => {
-                if (res.code == 200) {
+            if (this.$route.query.banId) {
+              this.$post("/other/updateBanner", this.form).then(res => {
+                if (res.code) {
                   this.getBanner()
                   this.$message.success(res.msg)
                 }
               })
             } else {
-              this.$post("/other/updateBanner", this.form).then(res => {
-                if (res.code) {
+              this.$post("/other/insertBanner", this.form).then(res => {
+                if (res.code == 200) {
                   this.getBanner()
                   this.$message.success(res.msg)
                 }

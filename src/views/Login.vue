@@ -49,9 +49,18 @@
       };
     },
     mounted() {
-      this.getCookie()
+
+      this.getParam()
+
+      // this.getCookie()
     },
     methods: {
+      getParam() {
+        var bytes1 = CryptoJS.AES.decrypt(this.$cookies.get("account"), "secretkey123");
+        this.param.account = bytes1.toString(CryptoJS.enc.Utf8);
+        var bytes2 = CryptoJS.AES.decrypt(this.$cookies.get("password"), "secretkey123");
+        this.param.password = bytes2.toString(CryptoJS.enc.Utf8);
+      },
       submitForm() {
         let that = this;
         this.$refs.login.validate(valid => {
@@ -59,19 +68,26 @@
             this.$post("/userinfo/login", this.param).then(res => {
               if (res.code == 200) {
                 if (this.checked) {
-                  this.setCookie(this.param.account, this.param.password, 7)
+                  // this.setCookie(this.param.account, this.param.password, 7)
+                  this.$cookies.set("account", CryptoJS.AES.encrypt(this.param.account + '', "secretkey123").toString(),-1)
+                  this.$cookies.set("password", CryptoJS.AES.encrypt(this.param.password + '', "secretkey123").toString(), -1)
                 } else {
-                  this.clearCookie()
+                  // this.clearCookie()
+                  this.$cookies.remove("account")
+                  this.$cookies.remove("password")
                 }
                 localStorage.setItem("rememberPsw", this.checked);
                 that.$message.success('登录成功');
-                localStorage.setItem("power",JSON.stringify(res.data.Power))
-                let userinfo={
-                  mtoken:res.data.data.mtoken,
-                  account:res.data.data.account,
-                  headportrait:res.data.data.headportrait
+                // cookie.setCookie("power",JSON.stringify(res.data.Power),{expires:7})
+                localStorage.setItem("power", JSON.stringify(res.data.Power))
+                let userinfo = {
+                  mtoken: res.data.data.mtoken,
+                  account: res.data.data.account,
+                  headportrait: res.data.data.headportrait,
+                  mid: res.data.data.mid
                 }
-                localStorage.setItem('userinfo', JSON.stringify(userinfo));
+                this.$cookies.set('userinfo', JSON.stringify(userinfo))
+                // localStorage.setItem('userinfo', JSON.stringify(userinfo));
                 that.$router.push('/dashboard');
               }
             })
@@ -92,8 +108,9 @@
         exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
         //字符串拼接cookie，为什么这里用了==，因为加密后的字符串也有个=号，影响下面getcookie的字符串切割，你也可以使用更炫酷的符号。
         window.document.cookie = "account" + "==" + cipherPortId + ";path=/;expires=" + exdate.toGMTString();
-        window.document.cookie ="password" +"==" +cipherPsw +";path=/;expires=" +exdate.toGMTString();
+        window.document.cookie = "password" + "==" + cipherPsw + ";path=/;expires=" + exdate.toGMTString();
       },
+
       //读取cookie
       getCookie() {
         if (document.cookie.length > 0) {

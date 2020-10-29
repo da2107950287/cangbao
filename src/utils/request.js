@@ -80,8 +80,8 @@ export function uploadPost(url, data) {
 		});
 		// 配置请求和响应拦截
 		instance.interceptors.request.use(config => {
-			if (JSON.parse(localStorage.getItem("userinfo")).mtoken) {
-				config.headers.mtoken = JSON.parse(localStorage.getItem("userinfo")).mtoken;
+			if (this.$cookies.get('userinfo').mtoken) {
+				config.headers.mtoken =this.$cookies.get('userinfo').mtoken;
 			}
 			return config
 		}, err => {

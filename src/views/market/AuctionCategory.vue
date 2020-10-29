@@ -3,16 +3,11 @@
     <div class="container">
 
       <div v-if="$route.query.type==2" style="display: flex;align-items: center;margin-bottom: 20px;">
-        <img src="../../assets/img/goback.png" @click="$router.push('/auctionCategory')" class="mr10">
+        <img src="~/assets/img/goback.png" style="width: 25px;height: 25px;" @click="$router.push('/auctionCategory')" class="mr10">
         <h3>二级分类</h3>
       </div>
       <div class="handle-box">
-        <!-- <span>状态：</span>
-        <el-select v-model="type" placeholder="状态" class="handle-select mr10">
-          <el-option v-for="(item,index) in typeList" :key="index" :label="item.name" :value="item.id"></el-option>
-        </el-select>
-        <el-button type="primary" icon="el-icon-search" @click="getCollYears">搜索</el-button> -->
-        <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addYearList">新建</el-button>
+      <el-button type="primary" icon="el-icon-plus" class="handle-del mr10" @click="addYearList">新建</el-button>
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
         <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
@@ -41,7 +36,7 @@
     </div>
 
     <!-- 编辑弹出框 -->
-    <el-dialog center :title="title" :visible.sync="editVisible" width="40%">
+    <el-dialog center :title="title" :visible.sync="editVisible" width="600px">
       <el-form ref="form" :rules="rules" :model="form" label-width="140px">
         <el-form-item label="拍卖分类名称：" prop="name">
           <el-input v-model="form.name" placeholder="请输入分类名称" class="handle-input mr10"></el-input>
@@ -107,15 +102,7 @@
       getTwoLevel(row) {
         this.$router.push({ path: "/auctionCategory", query: { type: 2, superior: row.classCode } })
       },
-      // getType(){
-      //   if(this.$router.query.type){
-      //     this.type=
-      //   }
-      // },
-      // getTwoLevel(){
-      //   this.$router.push({ path: "/auctionCategory", query: {superior: } })
-
-      // },
+      
       // 获取藏品年份
       getArtClassList() {
         let type;
@@ -156,12 +143,10 @@
         this.$refs.form.validate(valid => {
           if (valid) {
             this.editVisible = false;
-            if (this.$route.query.id) {
-                this.form.superior = this.$route.query.id
+            if (this.$route.query.superior) {
+                this.form.superior = this.$route.query.superior
               }
-            if (this.isAdd) {
-              console.log(this.form)
-             
+            if (this.isAdd) { 
               if (this.$route.query.type) {
                 this.form.type = this.$route.query.type
               } else {
