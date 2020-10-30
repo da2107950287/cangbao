@@ -99,14 +99,14 @@
                         this.tagsList.shift();
                     }
 
-                    if (route.meta.isShow) {
+                    // if (route.meta.isShow) {
                         this.tagsList.push({
-                            title: route.meta.title,
+                            title: route.meta.name,
                             fullPath: route.fullPath,
                             path:route.path
                             // name: route.matched[1].components.default.name
                         })
-                    }
+                    // }
 
                 }
                 bus.$emit('tags', this.tagsList);

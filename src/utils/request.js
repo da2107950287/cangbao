@@ -1,5 +1,4 @@
 import originAxios from 'axios'
-import QueryString from 'qs';
 import qs from 'qs'
 export function post(url, data) {
 
@@ -29,8 +28,9 @@ export function post(url, data) {
 		});
 		// 配置请求和响应拦截
 		instance.interceptors.request.use(config => {
-			if (localStorage.getItem("userinfo")) {
-				config.headers.mtoken = JSON.parse(localStorage.getItem("userinfo")).mtoken;
+			
+			if (JSON.parse(sessionStorage.getItem('userinfo'))) {
+				config.headers.mtoken =JSON.parse(sessionStorage.getItem('userinfo')).mtoken
 			}
 			return config
 		}, err => {
@@ -38,7 +38,9 @@ export function post(url, data) {
 		})
 		instance.interceptors.response.use(response => {
 			if (response.data.code == 501) {
-				localStorage.clear();
+				this.$router.push("/login")
+				sessionStorage.clear();
+			
 			}
 			return response.data
 		}, err => {
@@ -75,19 +77,23 @@ export function uploadPost(url, data) {
 		// 1.创建axios的实例
 		const instance = originAxios.create({
 			baseURL: '/treasurebsg',
-
 			method: 'post',
 		});
 		// 配置请求和响应拦截
 		instance.interceptors.request.use(config => {
-			if (this.$cookies.get('userinfo').mtoken) {
-				config.headers.mtoken =this.$cookies.get('userinfo').mtoken;
+			if (JSON.parse(sessionStorage.getItem('userinfo'))) {
+				config.headers.mtoken =JSON.parse(sessionStorage.getItem('userinfo')).mtoken
 			}
 			return config
 		}, err => {
 			return err
 		})
 		instance.interceptors.response.use(response => {
+			if (response.data.code == 501) {
+				sessionStorage.clear();
+				this.$router.push("/login")
+
+			}
 			return response.data
 		}, err => {
 			if (err && err.response) {

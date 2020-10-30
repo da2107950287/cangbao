@@ -17,21 +17,18 @@
           <el-checkbox v-model="checked" class="login-tips" style="float: left;">记住密码</el-checkbox>
           <router-link to="forgetPassword" style="float: right;">忘记密码</router-link>
         </el-form-item>
-
         <div class="login-btn">
           <el-button type="primary" @click="submitForm()">登录</el-button>
         </div>
-        <!-- <el-form-item style="text-align: center;" class="margin0">
-          <router-link to="forgetPassword">立即注册&nbsp;</router-link>|
-          
-        </el-form-item> -->
         <p class="login-tips">登录遇到问题请联系客服：400-239849823。</p>
       </el-form>
     </div>
+    
   </div>
 </template>
 
 <script>
+  import mock from "../utils/data.js";
   import CryptoJS from "crypto-js";
   export default {
     data: function () {
@@ -49,8 +46,10 @@
       };
     },
     mounted() {
+      if (localStorage.getItem("rememberPsw")) {
+        this.getParam()
 
-      this.getParam()
+      }
 
       // this.getCookie()
     },
@@ -65,11 +64,12 @@
         let that = this;
         this.$refs.login.validate(valid => {
           if (valid) {
-            this.$post("/userinfo/login", this.param).then(res => {
+          
+            that.$post("/userinfo/login", this.param).then(res => {
               if (res.code == 200) {
                 if (this.checked) {
                   // this.setCookie(this.param.account, this.param.password, 7)
-                  this.$cookies.set("account", CryptoJS.AES.encrypt(this.param.account + '', "secretkey123").toString(),-1)
+                  this.$cookies.set("account", CryptoJS.AES.encrypt(this.param.account + '', "secretkey123").toString(), -1)
                   this.$cookies.set("password", CryptoJS.AES.encrypt(this.param.password + '', "secretkey123").toString(), -1)
                 } else {
                   // this.clearCookie()
@@ -77,6 +77,7 @@
                   this.$cookies.remove("password")
                 }
                 localStorage.setItem("rememberPsw", this.checked);
+                localStorage.setItem("test",JSON.stringify(mock))
                 that.$message.success('登录成功');
                 // cookie.setCookie("power",JSON.stringify(res.data.Power),{expires:7})
                 localStorage.setItem("power", JSON.stringify(res.data.Power))
@@ -86,18 +87,19 @@
                   headportrait: res.data.data.headportrait,
                   mid: res.data.data.mid
                 }
-                this.$cookies.set('userinfo', JSON.stringify(userinfo))
+
+                sessionStorage.setItem('userinfo', JSON.stringify(userinfo))
                 // localStorage.setItem('userinfo', JSON.stringify(userinfo));
                 that.$router.push('/dashboard');
               }
             })
           } else {
             this.$message.error('请输入账号和密码');
-            console.log('error submit!!');
             return false;
           }
         });
       },
+
       //设置cookie
       setCookie(account, password, exdays) {
         // Encrypt，加密账号密码

@@ -78,7 +78,8 @@
         })
       },
       getMangerInfo() {
-        this.$post("/userinfo/showManger", { mid:this.$cookies.get("userinfo").mid }).then(res => {
+      
+        this.$post("/userinfo/showManger", { mid:JSON.parse(sessionStorage.getItem("userinfo")).mid}).then(res => {
           if (res.code == 200) {
             this.form = res.data;
           }
@@ -98,7 +99,7 @@
       submit() {
         this.$refs.form.validate(valid => {
           if (valid) {
-            this.form.mid = this.$cookies.get("userinfo").mid
+            this.form.mid =JSON.parse(sessionStorage.getItem("userinfo")).mid
             this.$post("/userinfo/updateManger", this.form).then(res => {
               if (res.code == 200) {
                 this.$message.success(res.msg)
@@ -109,7 +110,7 @@
                   headportrait:  this.form.headportrait,
                   mid:  this.form.mid
                 }
-                this.$cookies.set('userinfo', JSON.stringify(userinfo))
+                sessionStorage.setItem('userinfo', JSON.stringify(userinfo))
                 window.location.reload()
               }
             })

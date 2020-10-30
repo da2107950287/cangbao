@@ -165,7 +165,27 @@
               @size-change="handleSizeChange($event,5)"></el-pagination>
           </div>
         </el-tab-pane>
+        <el-tab-pane label="积分" name="6">
+          <el-table v-loading="loading" :data="tableData" border class="table" ref="multipleTable"
+            header-cell-class-name="table-header">
+            <el-table-column type="index" label="序号" width="100" align="center"></el-table-column>
+            <el-table-column prop="describes" label="描述" align="center"></el-table-column>
+            <el-table-column prop="number" label="积分数量" align="center"></el-table-column>
+            <el-table-column prop="price" label="充值金额" align="center"></el-table-column>
+            <el-table-column label="类型 " align="center">
+              <template slot-scope="scope">
+                <span v-if="scope.row.type==1">增加</span>
+                <span v-else>减少</span>
+              </template>
+            </el-table-column>
 
+          </el-table>
+          <div class="pagination">
+            <el-pagination background layout="total,sizes, prev, pager, next,jumper" :current-page="PageNumber"
+              :page-size="PageSize" :total="pageTotal" @current-change="handlePageChange($event,5)"
+              @size-change="handleSizeChange($event,5)"></el-pagination>
+          </div>
+        </el-tab-pane>
       </el-tabs>
     </div>
 
@@ -225,6 +245,8 @@
             this.getUserCourse()
           } else if (tab.index == 4) {
             this.getCollection()
+          }else if(tab.index==5){
+            this.getIntegralRecord()
           }
         }
       },
@@ -246,6 +268,10 @@
             this.getCircle()
           } else if (this.tabIndex == 3) {
             this.getUserCourse()
+          }else if(this.tabIndex==4){
+            this.getCollection()
+          }else if(this.tabIndex==5){
+            this.getIntegralRecord()
           }
         }
       },
@@ -363,7 +389,21 @@
           }
         })
       },
-
+      //获取积分
+      getIntegralRecord(){
+        this.loading=true;
+        this.$post("/circle/getIntegralRecord",{
+          uid: this.$route.query.uid,
+          PageNumber: this.PageNumber,
+          PageSize: this.PageSize
+        }).then(res => {
+          if (res.code == 200) {
+            this.loading = false;
+            this.tableData = res.data.list;
+            this.pageTotal = res.data.count;
+          }
+        })
+      },
       // 分页导航
       handlePageChange(val, type) {
         this.PageNumber = val;

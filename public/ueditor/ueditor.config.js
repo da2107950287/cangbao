@@ -429,7 +429,7 @@
 			video:  ['autoplay', 'controls', 'loop', 'preload', 'src', 'height', 'width', 'class', 'style']
 		}
     };
-    console.log(window.UEDITOR_CONFIG);
+    // console.log(window.UEDITOR_CONFIG);
 
     function getUEBasePath(docUrl, confUrl) {
 
