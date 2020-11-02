@@ -1,6 +1,7 @@
 <template>
   <div>
     <script id="editor" type="text/plain"></script>
+
   </div>
 </template>
 
@@ -9,6 +10,7 @@
   import '../../public/ueditor/ueditor.all.js'
   import '../../public/ueditor/lang/zh-cn/zh-cn.js'
   import '../../public/ueditor/jquery-2.2.3.min.js'
+
 
   export default {
     name: "UEditor",
@@ -24,7 +26,7 @@
           initialFrameWidth: 1000,
           initialFrameHeight: 450,
           BaseUrl: '',
-          UEDITOR_HOME_URL: '/ueditor/',
+          UEDITOR_HOME_URL: 'ueditor/',
           //启用自动保存
           enableAutoSave: false,
           autosave: false

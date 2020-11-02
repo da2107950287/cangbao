@@ -30,6 +30,8 @@
 <script>
   import mock from "../utils/data.js";
   import CryptoJS from "crypto-js";
+
+
   export default {
     data: function () {
       return {
@@ -91,6 +93,8 @@
                 sessionStorage.setItem('userinfo', JSON.stringify(userinfo))
                 // localStorage.setItem('userinfo', JSON.stringify(userinfo));
                 that.$router.push('/dashboard');
+              }else{
+                this.$message.error(res.msg)
               }
             })
           } else {
@@ -137,6 +141,7 @@
         this.setCookie("", "", -1);
       }
     },
+  
   };
 </script>
 

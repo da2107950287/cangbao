@@ -8060,6 +8060,7 @@ var fillCharReg = new RegExp(domUtils.fillChar, 'g');
 UE.Editor.defaultOptions = function(editor){
 
     var _url = editor.options.UEDITOR_HOME_URL;
+    console.log( _url + 'themes/iframe.css')
     return {
         isShow: true,
         initialContent: '',
@@ -24537,6 +24538,8 @@ UE.plugin.register('simpleupload', function (){
                 return;
               }
               // 判断文件格式是否错误
+              console.log(input)
+              
               var filename = input.value,
                 fileext = filename ? filename.substr(filename.lastIndexOf('.')):'';
               if (!fileext || (allowFiles && (allowFiles.join('') + '.').indexOf(fileext.toLowerCase() + '.') == -1)) {
@@ -24547,7 +24550,7 @@ UE.plugin.register('simpleupload', function (){
               var params = utils.serializeParam(me.queryCommandValue('serverparam')) || '';
               var action = utils.formatUrl(imageActionUrl + (imageActionUrl.indexOf('?') == -1 ? '?' : '&') + params);
               var formData = new FormData();
-              formData.append("upfile", form[0].files[0] );
+              formData.append("file", form[0].files[0] );
               console.log(999999999999)
               $.ajax({
                 url: action,
