@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import routes from "./staticRoute.js"
-console.log(routes)
+import {getPower} from "../utils/data.js"
 Vue.use(VueRouter)
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -22,7 +22,9 @@ function flat(arr) {
 function initRoute(router) {
   return new Promise((resolve) => {
     if (permissionList.length == 0) {
-      let res = JSON.parse(localStorage.getItem("test"))
+      let res = getPower()
+      
+
       flat(res)
      
       permissionList.forEach(function (v) {

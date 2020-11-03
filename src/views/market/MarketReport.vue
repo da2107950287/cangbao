@@ -94,6 +94,13 @@
 
   export default {
     data() {
+      var validateContent = (rule, value, callback) => {
+        if (!this.$refs.ueditor.getUEContent()) {
+          return callback(new Error("请输入内容"))
+        }else{
+          return callback();
+        }
+      }
       return {
         type: "all",
         query: {},
@@ -113,7 +120,7 @@
           title: [{ required: true, message: "请输入标题", trigger: "blur" }],
           team: [{ required: true, message: "请输入团队", trigger: "blur" }],
           label: [{ required: true, message: "请输入标签", trigger: "blur" }],
-          reporturl: [{ required: true, message: "请输入内容", trigger: "blur" }],
+          reporturl: [{ required: true, validator:validateContent, trigger: "blur" }],
           coverPicture: [{ required: true, message: "请上传时间", trigger: "blur" }],
           times: [{ required: true, message: "请输入时间", trigger: "blur" }],
           introduction: [{ required: true, message: "请输入简介", trigger: "blur" }],
@@ -274,7 +281,7 @@
 
   .img {
     width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    /* height: 100px;
+    border-radius: 50%; */
   }
 </style>

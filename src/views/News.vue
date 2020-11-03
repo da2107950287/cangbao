@@ -55,19 +55,19 @@
       </div>
       <el-divider></el-divider>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="新闻公司：">
+        <el-form-item label="新闻公司：" prop="newsName">
           <el-input v-model="form.newsName" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="新闻标题：">
+        <el-form-item label="新闻标题：" prop="newsTitle">
           <el-input v-model="form.newsTitle" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="新闻标签：">
+        <el-form-item label="新闻标签：" prop="label">
           <el-checkbox-group v-model="form.label">
             <el-checkbox v-for="(item,index) in labelsList" :label="item.dicName" :key="index">{{item.dicName}}
             </el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item label="新闻时间：">
+        <el-form-item label="新闻时间：" prop="newsTime">
           <el-date-picker v-model="form.newsTime" value-format="yyyy-MM-dd HH:mm:ss" type="datetime"
             class="handle-input" placeholder="选择日期时间">
           </el-date-picker>
@@ -96,6 +96,13 @@
 
   export default {
     data() {
+      var validateContent =(rule,value,callback)=>{
+        if(!this.$refs.ueditor.getUEContent()){
+          return callback(new Error("请输入新闻内容"))
+        }else{
+          return callback();
+        }
+      }
       return {
         newsName: '',
         newsTitle: '',
@@ -109,13 +116,17 @@
           newsPurl: "",
           label: []
         },
-        editVisible: false,
-        isAdd: false,
+       
         title: '',
         rules: {
-          dicType: [{ required: true, message: "请选择类型", trigger: "blur" }],
-          dicName: [{ required: true, message: "请输入名称", trigger: "blur" }],
-          orders: [{ required: true, message: "请输入排序", trigger: "blur" }],
+        
+          content: [{ required: true, validator: validateContent, trigger: "blur" }],
+          label: [{ required: true, message: "请选择标签", trigger: "blur" }],
+          newsPurl: [{ required: true, message: "请上传图片", trigger: "blur" }],
+          newsName: [{ required: true, message: "请输入新闻公司", trigger: "blur" }],
+          newsTitle: [{ required: true, message: "请输入新闻标题", trigger: "blur" }],
+          newsTime: [{ required: true, message: "请输入选择新闻时间", trigger: "blur" }],
+
         },
         statesList: [
           { id: "all", name: "全部" },
@@ -229,7 +240,8 @@
               labelArr[i] = "#" + labelArr[i]
             }
             this.form.label = labelArr.join(" ")
-            if (this.isAdd) {
+           
+            if (this.$route.query.isAdd) {
               this.$post("/other/insertNews", this.form).then(res => {
                 if (res.code == 200) {
                   this.$message.success(res.msg)
@@ -299,7 +311,7 @@
 
   img {
     width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    /* height: 100px;
+    border-radius: 50%; */
   }
 </style>

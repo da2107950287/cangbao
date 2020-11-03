@@ -111,7 +111,7 @@
                   mid:  this.form.mid
                 }
                 sessionStorage.setItem('userinfo', JSON.stringify(userinfo))
-                window.location.reload()
+                // window.location.reload()
               }
             })
           }

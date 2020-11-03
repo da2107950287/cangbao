@@ -334,8 +334,8 @@
 
   .img {
     width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    /* height: 100px;
+    border-radius: 50%; */
   }
 
   .el-form h2 {

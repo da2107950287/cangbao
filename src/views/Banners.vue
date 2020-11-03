@@ -65,7 +65,7 @@
         <el-form-item label="标题：" prop="title">
           <el-input v-model="form.title" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="头像：" prop="purl" class="personal-icon">
+        <el-form-item label="图片：" prop="purl" class="personal-icon">
           <label for="inputId" icon="el-icon-plus">
             <img v-if="form.purl" :src="form.purl" />
             <img v-else src="~assets/img/headportrait.png" alt="">
@@ -88,7 +88,15 @@
   import UEditor from '@/components/ueditor.vue'
 
   export default {
+    
     data() {
+      var validateContent = (rule,value,callback) => {
+        if (!this.$refs.ueditor.getUEContent()) {
+          return callback(new Error("请输入内容"))
+        }else{
+          return callback();
+        }
+      }
       return {
         position: "",
         state: "all",
@@ -103,7 +111,7 @@
           positions: [{ required: true, message: "请选择位置", trigger: "blur" }],
           title: [{ required: true, message: "请输入标题", trigger: "blur" }],
           purl: [{ required: true, message: "请上传图片", trigger: "blur" }],
-          content: [{ required: true, message: "请输入内容", trigger: "blur" }],
+          content: [{ required: true,validator: validateContent, trigger: "blur" }],
         },
         positionList: [
           { id: "1", name: '首页' },
@@ -196,6 +204,7 @@
       saveEdit() {
         this.form.content = this.$refs.ueditor.getUEContent();
         this.$refs.form.validate(valid => {
+          console.log(valid)
           if (valid) {
             if (this.$route.query.banId) {
               this.$post("/other/updateBanner", this.form).then(res => {
@@ -264,7 +273,7 @@
 
   img {
     width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    /* height: 100px; */
+    /* border-radius: 50%; */
   }
 </style>

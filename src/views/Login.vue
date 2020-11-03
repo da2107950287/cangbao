@@ -82,6 +82,7 @@
                 localStorage.setItem("test",JSON.stringify(mock))
                 that.$message.success('登录成功');
                 // cookie.setCookie("power",JSON.stringify(res.data.Power),{expires:7})
+                
                 localStorage.setItem("power", JSON.stringify(res.data.Power))
                 let userinfo = {
                   mtoken: res.data.data.mtoken,

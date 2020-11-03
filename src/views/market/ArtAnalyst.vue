@@ -439,8 +439,8 @@
 
   .img {
     width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    /* height: 100px;
+    border-radius: 50%; */
   }
 
   .inline-width {

@@ -13,8 +13,13 @@
     </div>
     <!-- 编辑弹出框 -->
     <div v-else-if="$route.query.id">
+      <div style="display: flex;align-items: center;">
+        <img src="../../assets/img/goback.png" @click="$router.push('/document')" class="mr10">
+        <h3>查看协议</h3>
+      </div>
+      <el-divider></el-divider>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="文档内容：">
+        <el-form-item label="内容：" prop="content">
           <UEditor ref="ueditor"></UEditor>
         </el-form-item>
         <el-form-item>
@@ -29,6 +34,13 @@
   import UEditor from '@/components/ueditor.vue'
   export default {
     data() {
+      var validateContent = (rule,value,callback) => {
+        if (!this.$refs.ueditor.getUEContent()) {
+          return callback(new Error("请输入内容"))
+        }else{
+          return callback()
+        }
+      }
       return {
         type: "",
         tableData: [],
@@ -36,7 +48,8 @@
         
         },
         rules: {
-          content: [{ required: true, message: "请输入文档内容", trigger: "blur" }],
+          content: [{ required: true,validator: validateContent, trigger: "change" }],
+
         },
         tableData: [
           { id: 'A', name: '用户协议' },
@@ -62,7 +75,6 @@
         if (this.$route.query.id) {
           this.$post("/other/getAgreement", { type: this.$route.query.id }).then(res => {
             if (res.code==200) {
-            
               this.form = res.data;
               this.$refs.ueditor.setUEContent(this.form.content)
               
@@ -73,8 +85,11 @@
       // 保存编辑
       saveEdit() {
         this.form.content = this.$refs.ueditor.getUEContent();
+        console.log(this.form.content)
         this.$refs.form.validate(valid => {
+          console.log(valid)
           if (valid) {
+
             this.$post("/other/setAgreement", this.form).then(res => {
               if (res.code == 200) {
                 this.$message.success(res.msg);

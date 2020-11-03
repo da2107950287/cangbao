@@ -59,13 +59,21 @@
       }
     },
     data() {
+      var validateIntro =(rule,value,callback)=>{
+        if(!this.$refs.ueditor.getUEContent()){
+          return callback(new Error("请输入课程介绍"))
+        }else{
+          return callback();
+        }
+      }
+    
       return {
         rules: {
           couType: [{ required: true, message: "请选择课程类型", trigger: "blur" }],
           couName: [{ required: true, message: "请输入课程名称", trigger: "blur" }],
           author: [{ required: true, message: "请输入课程作者", trigger: "blur" }],
           cover: [{ required: true, message: "请选择上传封面", trigger: "blur" }],
-          intro: [{ required: true, message: "请输入课程介绍", trigger: "blur" }],
+          intro: [{ required: true, validator: validateIntro, trigger: "change" }],
           state: [{ required: true, message: "请输入选择状态", trigger: "blur" }],
         },
       }
@@ -89,9 +97,11 @@
       },
       // 修改/添加课程
       saveEdit() {
+        this.form.intro = this.$refs.ueditor.getUEContent();
+
         this.$refs.form.validate(valid => {
           if (valid) {
-            this.form.intro = this.$refs.ueditor.getUEContent();
+           
             if (this.$route.query.couId) {
               this.$post("/course/updateCourse", this.form).then(res => {
                 if (res.code == 200) {
@@ -131,7 +141,7 @@
 
   img {
     height: 100px;
-    width: 100px;
-    border-radius: 50%;
+    /* width: 100px;
+    border-radius: 50%; */
   }
 </style>

@@ -5,6 +5,7 @@ import store from './store'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
 import './assets/css/icon.css';
+import "./assets/iconfont/iconfont.css"
 import { post, uploadPost } from "./utils/request.js"
 import VueCookies from 'vue-cookies'
 Vue.use(VueCookies)

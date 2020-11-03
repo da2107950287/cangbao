@@ -15,6 +15,11 @@
         </el-option>
       </el-select>
     </el-form-item>
+    <el-form-item label="圈子介绍：" prop="cirIntro" style="width: 1000px;">
+      <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 6}" v-model="form.cirIntro" placeholder="请输入圈子介绍" class="handle-input"></el-input>
+      <!-- <UEditor ref="ueditor"></UEditor> -->
+
+    </el-form-item>
     <el-form-item label="圈子头像：" prop="cirUrl" class="personal-icon">
       <label for="cirUrl" icon="el-icon-plus">
         <img v-if="form.cirUrl" :src="form.cirUrl" />
@@ -31,11 +36,7 @@
           accept="image/gif, image/jpeg, image/jpg, image/png, image/svg" @change="handleFileChange($event,2)" />
       </label>
     </el-form-item>
-    <el-form-item label="圈子介绍：" prop="cirIntro" style="width: 1000px;">
- 
-      <UEditor ref="ueditor"></UEditor>
-
-    </el-form-item>
+  
     <el-form-item>
       <el-button @click="goback">返 回</el-button>
       <el-button type="primary" @click="saveEdit">确 定</el-button>
@@ -43,7 +44,7 @@
   </el-form>
 </template>
 <script>
-  import UEditor from '@/components/ueditor.vue'
+  // import UEditor from '@/components/ueditor.vue'
 
   export default {
     props: {
@@ -79,11 +80,11 @@
         },
       }
     },
-    watch: {
-      form() {
-        this.$refs.ueditor.setUEContent(this.form.cirIntro)
-      }
-    },
+    // watch: {
+    //   form() {
+    //     this.$refs.ueditor.setUEContent(this.form.cirIntro)
+    //   }
+    // },
     methods: {
       //上传图片
       handleFileChange(e, ind) {
@@ -104,7 +105,7 @@
       saveEdit() {
         this.$refs.form.validate(valid => {
           if (valid) {
-            this.form.cirIntro = this.$refs.ueditor.getUEContent();
+            // this.form.cirIntro = this.$refs.ueditor.getUEContent();
 
             if (this.$route.query.cirId) {
               this.$post("/circle/updateCircle", this.form).then(res => {
@@ -128,24 +129,24 @@
         this.$router.go(-1)
       }
     },
-    components: {
-      UEditor
-    }
+    // components: {
+    //   UEditor
+    // }
   }
 </script>
 <style scoped>
   .handle-select {
-    width: 300px;
+    width: 400px;
   }
 
   .handle-input {
-    width: 300px;
+    width: 400px;
     display: inline-block;
   }
 
   img {
     width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    /* height: 100px;
+    border-radius: 50%; */
   }
 </style>

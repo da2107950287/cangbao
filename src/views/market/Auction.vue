@@ -600,7 +600,7 @@
   .img {
     width: 100px;
     height: 100px;
-    border-radius: 50%;
+    /* border-radius: 50%; */
   }
 
   .el-form h2 {

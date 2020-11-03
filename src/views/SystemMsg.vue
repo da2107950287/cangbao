@@ -46,13 +46,13 @@
       </div>
       <el-divider></el-divider>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="标题：">
+        <el-form-item label="标题：" prop="msgTitle">
           <el-input v-model="form.msgTitle" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="描述：">
+        <el-form-item label="描述：" prop="describes">
           <el-input v-model="form.describes" class="handle-input"></el-input>
         </el-form-item>
-        <el-form-item label="内容：">
+        <el-form-item label="内容：" prop="content">
           <UEditor ref="ueditor"></UEditor>
         </el-form-item>
         <el-form-item>
@@ -67,6 +67,13 @@
   import UEditor from '@/components/ueditor.vue'
   export default {
     data() {
+      var validateContent = (rule, value, callback) => {
+        if (!this.$refs.ueditor.getUEContent()) {
+          return callback(new Error("请输入内容"))
+        }else{
+          return callback();
+        }
+      }
       return {
         state: "all",
         PageNumber: 1,
@@ -75,9 +82,9 @@
         tableData: [],
         form: {},
         rules: {
-          title: [{ required: true, message: "请选择标题", trigger: "blur" }],
+          msgTitle: [{ required: true, message: "请选择标题", trigger: "blur" }],
           describes: [{ required: true, message: "请输入描述", trigger: "blur" }],
-          content: [{ required: true, message: "请输入内容", trigger: "blur" }],
+          content: [{ required: true, validator: validateContent, trigger: "blur" }],
         },
         statesList: [
           { id: "all", name: "全部" },
@@ -138,7 +145,7 @@
         this.$refs.form.validate(valid => {
           if (valid) {
             this.editVisible = false;
-            if (this.isAdd) {
+            if (this.$route.query.isAdd) {
               this.$post("/other/insertMessage", this.form).then(res => {
                 if (res.code == 200) {
 
