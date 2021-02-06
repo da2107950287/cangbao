@@ -1,7 +1,6 @@
 import originAxios from 'axios'
 import qs from 'qs'
 export function post(url, data) {
-
 	function transformRequest(data) {
 		for (const key in data) {
 			if (data.hasOwnProperty(key)) {
@@ -40,7 +39,6 @@ export function post(url, data) {
 			if (response.data.code == 501) {
 				this.$router.push("/login")
 				sessionStorage.clear();
-			
 			}
 			return response.data
 		}, err => {

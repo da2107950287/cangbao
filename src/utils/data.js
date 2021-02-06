@@ -164,7 +164,7 @@ export function getPower() {
         break;
       case "B":
         routes.push({
-    icon:"icon-quanziguanli",
+          icon: "icon-quanziguanli",
 
           path: '/circle',
           name: '藏友圈管理'
@@ -172,7 +172,7 @@ export function getPower() {
         break;
       case "C":
         routes.push({
-    icon:"icon-yonghushezhi",
+          icon: "icon-yonghushezhi",
 
           path: '/user',
           name: '用户管理'
@@ -180,7 +180,7 @@ export function getPower() {
         break;
       case "D":
         routes.push({
-    icon:"icon-xinwen",
+          icon: "icon-xinwen",
 
           path: '/news',
           name: '新闻管理'
@@ -188,7 +188,7 @@ export function getPower() {
         break;
       case "E":
         routes.push({
-    icon:"icon-tuku",
+          icon: "icon-tuku",
 
           path: '/banners',
           name: 'banner管理'
@@ -196,7 +196,7 @@ export function getPower() {
         break;
       case "F":
         routes.push({
-    icon:"icon-xiaoxi",
+          icon: "icon-xiaoxi",
 
           path: '/systemMsg',
           name: '系统消息'
@@ -205,7 +205,7 @@ export function getPower() {
       case "G":
         routes.push({
           name: "藏品管理",
-    icon:"icon-zaizhancangpin",
+          icon: "icon-zaizhancangpin",
 
           child: [
             {
@@ -233,7 +233,7 @@ export function getPower() {
         break;
       case "H":
         routes.push({
-    icon:"icon-shichangfenxi",
+          icon: "icon-shichangfenxi",
 
           name: "市场管理",
           child: [
@@ -254,7 +254,7 @@ export function getPower() {
         break;
       case "I":
         routes.push({
-    icon:"icon-paimai",
+          icon: "icon-paimai",
 
           name: "拍卖会管理",
           child: [
@@ -288,21 +288,17 @@ export function getPower() {
         break;
       case "J":
         routes.push({
-    icon:"icon-shezhi",
-
+          icon: "icon-shezhi",
           name: "系统设置",
           child: [
             {
               path: '/role',
-
               name: '角色管理'
             },
             {
               path: '/manager',
-
               name: '管理员管理'
             },
-
             {
               path: '/dictionary',
               name: '数据字典'
@@ -311,7 +307,6 @@ export function getPower() {
               path: '/document',
               name: '文档管理'
             },
-
             {
               path: '/systemUpdate',
               name: '系统更新'
@@ -323,7 +318,7 @@ export function getPower() {
     }
   })
   routes.push({
-    icon:"icon-wodedangxuan",
+    icon: "icon-wodedangxuan",
     name: "个人中心",
     child: [
       {

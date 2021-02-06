@@ -2,18 +2,18 @@
   <div class="container">
     <el-form ref="form" :model="form" :rules="rules" label-width="100px">
       <el-form-item label="角色：" prop="rId">
-        <el-select v-model="form.rId" placeholder="请选择角色" class="handle-select mr10">
+        <el-select v-model="form.rId" disabled placeholder="请选择角色" class="handle-select mr10">
           <el-option v-for="(item,index) in rolesList" :key="index" :label="item.rName" :value="item.rId"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="账号：" prop="account">
-        <el-input v-model="form.account" placeholder="请输入账号" class="handle-input mr10"></el-input>
+        <el-input v-model="form.account" disabled placeholder="请输入账号" class="handle-input mr10"></el-input>
       </el-form-item>
       <!-- <el-form-item label="密码：" prop="password">
         <el-input v-model="form.password" placeholder="请输入密码" class="handle-input mr10"></el-input>
       </el-form-item> -->
       <el-form-item label="手机号：" prop="mobile">
-        <el-input v-model="form.mobile" placeholder="请输入手机号" class="handle-input mr10"></el-input>
+        <el-input v-model="form.mobile" disabled placeholder="请输入手机号" class="handle-input mr10"></el-input>
       </el-form-item>
       <el-form-item label="姓名：" prop="username">
         <el-input v-model="form.username" placeholder="请输入姓名" class="handle-input mr10"></el-input>
@@ -111,7 +111,7 @@
                   mid:  this.form.mid
                 }
                 sessionStorage.setItem('userinfo', JSON.stringify(userinfo))
-                // window.location.reload()
+              
               }
             })
           }

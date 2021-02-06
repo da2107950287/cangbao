@@ -51,6 +51,8 @@
             this.$post("/userinfo/modifyPassword", this.form).then(res => {
               if(res.code==200){
                 this.$message.success(res.msg)
+                sessionStorage.removeItem("userinfo")
+                this.$router.push("/login")
               }else{
                 this.$message.error(res.msg)
               }

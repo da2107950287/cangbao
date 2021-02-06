@@ -10,9 +10,7 @@ VueRouter.prototype.push = function push(location) {
 let permissionList = []
 function flat(arr) {
   for (const v of arr) {
-
     if (v.child && v.child.length) {
-
       flat(v.child)
     } else {
       permissionList.push(v)
@@ -23,10 +21,7 @@ function initRoute(router) {
   return new Promise((resolve) => {
     if (permissionList.length == 0) {
       let res = getPower()
-      
-
       flat(res)
-     
       permissionList.forEach(function (v) {
         let routeItem = router.match(v.path)
         if (routeItem) {

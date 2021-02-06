@@ -77,7 +77,7 @@
             <img v-if="form.newsPurl" :src="form.newsPurl" />
             <img v-else src="~assets/img/headportrait.png" alt="">
             <input style="display: none" id="inputId" ref="input" type="file"
-              accept="image/gif, image/jpeg, image/jpg, image/png, image/svg" @change="handleFileChange" />
+              accept="image/gif, image/jpeg, image/jpg, image/png, image/svg" @change="($evet,'identityJust')" />
           </label>
         </el-form-item>
         <el-form-item label="新闻内容：" prop="content">
